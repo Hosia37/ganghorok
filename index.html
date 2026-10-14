@@ -692,6 +692,29 @@
   #sv-auto .sv-slot.auto { border-color:#5aa0d8; } #sv-auto .sv-no { color:#a9d4ff; }
   #sv-auto { margin-bottom:2px; }
   #t-continue small { display:block; font-size:11px; letter-spacing:1px; opacity:.8; margin-top:2px; }
+  /* 집무실 탭 · 기록 */
+  .of-tabs { display:flex; gap:6px; border-bottom:1px solid rgba(138,119,82,.5); padding-bottom:6px; }
+  .of-tab { position:relative; padding:4px 12px; font-size:12px; color:#c9b98a; border:1px solid #5d4f36; border-radius:3px; cursor:pointer; background:rgba(12,9,6,.6); }
+  .of-tab.on { color:#ffe2a8; border-color:#d8a24a; background:rgba(70,50,24,.75); }
+  .of-tab.badge::after { content:''; position:absolute; right:-4px; top:-4px; width:9px; height:9px; border-radius:50%; background:#d9463a; box-shadow:0 0 0 2px #1a130b; }
+  #of-box { height:min(92%, 560px); }
+  .cx-wrap { display:flex; gap:8px; min-height:0; flex:1; height:100%; }
+  .cx-list { width:38%; flex:none; display:flex; flex-direction:column; gap:3px; overflow-y:auto; min-height:0; }
+  .cx-row { display:flex; align-items:center; gap:7px; padding:3px 6px; border:1px solid transparent; border-radius:3px; cursor:pointer; font-size:12px; color:#e8dcc0; background:rgba(12,9,6,.55); }
+  .cx-row.sel { border-color:#d8a24a; background:rgba(70,50,24,.7); color:#ffe2a8; }
+  .cx-face { width:26px; height:26px; border-radius:50%; object-fit:cover; border:1px solid #8a7752; flex:none; }
+  .cx-icon { width:26px; height:26px; border-radius:50%; border:1px solid #8a7752; flex:none; display:flex; align-items:center; justify-content:center;
+    font-family:serif; font-size:14px; color:#ffd88a; background:#2a2016; }
+  .cx-nm { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cx-new { font-size:9px; color:#fff; background:#b8382c; border-radius:2px; padding:0 4px; flex:none; }
+  .cx-detail { flex:1; overflow-y:auto; min-height:0; background:rgba(12,9,6,.6); border:1px solid #4d4230; border-radius:3px; padding:8px 10px; display:flex; flex-direction:column; gap:6px; }
+  .cx-top { display:flex; align-items:center; gap:10px; }
+  .cx-top .cx-face, .cx-top .cx-icon { width:40px; height:40px; font-size:20px; }
+  .cx-top b { display:block; color:#ffd88a; font-weight:normal; font-size:clamp(14px,calc(3 * var(--vh)),16px); }
+  .cx-top small { color:#b9a982; font-size:11px; }
+  .cx-note { font-size:clamp(11px,calc(2.5 * var(--vh)),13px); color:#e8dcc0; line-height:1.55; padding-left:9px; border-left:2px solid #5d4f36; }
+  .cx-note.new { border-left-color:#d8a24a; color:#fff1d0; }
+  .notice.codex { border-left-color:#c9a2e8; } .notice.codex b { color:#e2c8ff; }
   #pyo-modal { position:absolute; inset:0; z-index:93; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.62); }
   #pyo-box { width:min(560px,92%); max-height:92%; display:flex; flex-direction:column; gap:8px; padding:12px 16px; }
   #pyo-grade { font-size:12px; color:#c9b98a; }
@@ -797,6 +820,7 @@
   </div>
   <div id="office-modal"><div class="st-box" id="of-box">
     <div class="of-head"><span class="st-title">집 무 실</span><span id="of-gold"></span></div>
+    <div class="of-tabs"><div class="of-tab on" data-t="mission">임무</div><div class="of-tab" data-t="people">기록 · 인물</div><div class="of-tab" data-t="faction">기록 · 세력</div></div>
     <div id="of-body"></div>
     <div class="st-foot"><div class="top-btn" id="of-close">닫기</div></div>
   </div></div>
@@ -2294,7 +2318,7 @@ const SCENES = {
      talk        : 승리 후 대사
      loot        : 전리품 (배낭으로 들어감)  '목검' 또는 { item:'금창약', n:3 }
      gold        : 금전 보상
-     suryeon     : 수련치 보상 (훈련장에서 씀). 전투마다 100씩 늘림 — 무당산 350 → 철검문 450 → 보복 550 → 안마당 650
+     suryeon     : 수련치 보상 (훈련장에서 씀). 전투마다 100씩 늘림 — 무당산 450 → 철검문 550 → 보복 650 → 안마당 750 → 화산 850 → 배신자 950
      exp         : 경험치 보상 (출전한 아군 모두)
      next        : 다음 장면 (data/scenes.js). { mission:'임무', done:'장면', else:'장면' } 이면 그 임무를 완료했는지에 따라 갈림
      bossDown    : 이 적('e1' 등)을 쓰러뜨리면 승리 (패퇴)
@@ -2387,7 +2411,7 @@ const BATTLES = {
       ],
       loot: ['토납법 서책'],
       gold: 300,
-      suryeon: 350,
+      suryeon: 450,
       exp: 60,
       next: 'wudang_after',
     },
@@ -2433,7 +2457,7 @@ const BATTLES = {
       ],
       loot: [ { item:'금창약', n:3 } ],
       gold: 500,
-      suryeon: 450,
+      suryeon: 550,
       exp: 40,
       next: 'yangyang_after',
     },
@@ -2482,9 +2506,9 @@ const BATTLES = {
       ],
       loot: [ { item:'금창약', n:3 } ],
       gold: 600,
-      suryeon: 550,
+      suryeon: 650,
       exp: 50,
-      next: { mission:'cheolgeom_talk', done:'yangyang_revenge_talked', else:'yangyang_revenge_after' },   // 대사형과 대화했으면 저잣거리, 아니면 객잔
+      next: 'yangyang_revenge_after',   // (예전 : 대사형과 대화했으면 yangyang_revenge_talked — 임무가 '대사형 처치'로 바뀌어 지금은 늘 객잔)
     },
   },
 
@@ -2559,7 +2583,7 @@ const BATTLES = {
       ],
       loot: ['전뢰심법'],
       gold: 600,
-      suryeon: 650,
+      suryeon: 750,
       exp: 30,
       next: 'cheolgeom_hall_talk',
     },
@@ -2601,7 +2625,7 @@ const BATTLES = {
         { who:'cheolmyeong', text:'……' },
       ],
       gold: 300,
-      suryeon: 750,
+      suryeon: 850,
       exp: 30,
       next: 'yangyang_hwasan_after',
     },
@@ -2640,7 +2664,7 @@ const BATTLES = {
     victory: {
       enemiesLeft: 0,
       gold: 600,
-      suryeon: 850,
+      suryeon: 950,
       exp: 30,
       next: 'yangyang_traitors_after',
     },
@@ -2668,6 +2692,8 @@ const BATTLES = {
        { type:'talk', target:'cheolgeom_sahyeong', by:['hero'], talk:[대사] }
             → by 의 인물이 target 바로 옆(상하좌우)에서 '대화' 명령 (그 인물의 행동 1번).
               target 이 쓰러지기 전에 해야 함. talk 의 who : 'by' = 말을 건 아군, 'target' = 상대
+       { type:'kill', target:'cheolgeom_sahyeong', by:['hero'] }
+            → target 을 by 의 인물이 직접 쓰러뜨림 (마지막 일격 — 반격 포함). 다른 인물이 쓰러뜨리면 실패
        { type:'turns', n:10 }    → n턴 안에 승리
        { type:'noDown' }         → 아군이 아무도 쓰러지지 않고 승리
      reward : { gold:300, suryeon:100, item:'금창약', n:2, exp:20 }   — 금 · 수련치 · 물건 · 경험치(출전한 아군 모두). 필요한 것만 적기
@@ -2675,28 +2701,15 @@ const BATTLES = {
    ※ 이름 · 대사 · 보상은 모두 임시
    ===================================================================== */
 const MISSIONS = {
-  // 제1장 · 철검문의 보복
+  // 제1장 · 철검문의 보복 — 주인공이 직접 대사형을 쓰러뜨리기
   cheolgeom_talk: {
     battle: 'cheolgeom_revenge',
-    kind:   '대화',
-    title:  '철검문의 사정',
-    desc:   '철검문이 어제 일을 갚겠다며 몰려왔다. 하지만 철검문에도 무슨 사정이 있지 않았을까? 무리를 이끄는 대사형과 이야기를 나눠 보자.',
-    goal:   '대사형과 대화',
-    cond: {
-      type:'talk', target:'cheolgeom_sahyeong', by:['hero'],
-      talk: [
-        { who:'by',     text:'잠깐! 칼을 거두고 하나만 묻겠소.' },
-        { who:'target', text:'이제 와서 목숨이라도 구걸하려는 거냐?' },
-        { who:'by',     text:'철검문은 본래 저렇게 막돼먹은 문파가 아니었다 들었소. 그런 문파가 어쩌다 관아에 뇌물을 바치고 이웃 문파를 짓밟게 된 거요?' },
-        { who:'target', text:'…네놈이 그걸 어떻게.' },
-        { who:'by',     text:'문도들 얼굴에 신이 난 기색은 하나도 없었소. 억지로 칼을 드는 사람의 얼굴이었지.' },
-        { who:'target', text:'…몇 해 전, 사파 연합에서 사람들이 찾아왔다. 문주님은 처음엔 단칼에 거절하셨지.' },
-        { who:'target', text:'그 뒤로 문도들의 가족이 하나둘 사라졌다. 문주님이 연합의 손을 잡고 나서야 돌아왔고.' },
-        { who:'target', text:'거역하면 어떻게 되는지 우리는 똑똑히 봤다. …말이 너무 많았군. 칼이나 들어라!' },
-        { who:'by',     text:'(사파 연합이 철검문을 협박해 끌어들인 거였나…)' },
-      ],
-    },
-    reward: { gold:300 },
+    kind:   '처치',
+    title:  '무리를 이끄는 자',
+    desc:   '철검문이 어제 일을 갚겠다며 몰려왔다. 무리를 이끄는 대사형을 직접 쓰러뜨려 놈들의 기세를 꺾자.',
+    goal:   '주인공이 대사형 처치',
+    cond:   { type:'kill', target:'cheolgeom_sahyeong', by:['hero'] },
+    reward: { gold:500, suryeon:250 },
   },
 
   // 제1장 · 철검문 안마당 (임시 — 조건 · 보상은 바꾸기 쉬움)
@@ -2707,7 +2720,7 @@ const MISSIONS = {
     desc:   '간부가 직접 창을 들기 전에 끝내야 한다. 절정의 고수인 문주님의 검이라면 간부와 겨뤄 볼 만하다.',
     goal:   '6턴 안에 승리',
     cond:   { type:'turns', n:6 },
-    reward: { gold:300 },
+    reward: { gold:300, suryeon:250 },
   },
 };
 
@@ -2739,6 +2752,168 @@ const PYOGUK = {
     { title:'비단 상단 호위',     route:'양양 → 성도',     reward:'보물',   n:[1,2], weight:2 },
     { title:'약재 상단 호위',     route:'양양 → 무당산',   reward:'영약',   n:[1,1], weight:2 },
     { title:'의원 왕진 호위',     route:'양양 → 형주',     reward:'영약',   n:[1,1], weight:2 },
+  ],
+};
+
+</script>
+<script>
+/* ---- data/codex.js ---- */
+/* =====================================================================
+   기록 (거점 → 집무실 → 인물 · 세력)
+   ---------------------------------------------------------------------
+   - 이야기가 진행되면 저절로 채워짐. 쪽지(note) 하나 = 한 줄 기록
+       from : 이 장면이 끝나면 (또는 다음 장면으로 넘어가면) 보임 — data/scenes.js 의 장면 이름
+       text : 기록 내용 ({name} = 주인공 이름)
+       name : (선택) 이 쪽지부터 이름이 바뀜 (예: '사파 간부' → '구후')
+   - 새로 보이는 쪽지가 생기면 화면 오른쪽 위에 '기록이 갱신되었습니다' 알림, 집무실에 ! 표시
+   - 인물 : face = 얼굴 그림 (data/units.js 의 인물 id, 주인공은 'hero')
+   - 세력 : icon = 동그라미 안 글자
+   - 새 인물 · 세력을 넣거나 쪽지를 덧붙이면 그대로 반영됨 (순서 = 목록 순서)
+   ===================================================================== */
+const CODEX = {
+  people: [
+    { id:'hero', face:'hero', name:'{name}', tag:'천씨세가',
+      notes: [
+        { from:'prologue',            text:'천씨세가의 후인. 하산하자마자 무한성 앞에서 사파에게 쫓기다 곽정 · 황용을 만났다.' },
+        { from:'wudang',              text:'십 년 전 몽골군이 양양을 덮쳤을 때 가문이 무너졌고, 가전 무공을 이은 사람은 이제 혼자뿐이다.' },
+        { from:'yangyang',            text:'남은 식솔들과 함께 양양의 장원을 다시 일구어 거처로 삼고 있다.' },
+        { from:'cheolgeom_hall_talk', text:'진명은 천명화. 천씨세가의 가주이지만, 지금은 가명으로 지낸다.' },
+        { from:'yangyang_lord_trial', text:'천씨세가의 멸문이 천교가 내린 첫 명령이었음을 알게 되었다.' },
+      ] },
+    { id:'cheonghwa', face:'cheonghwa', name:'청화', tag:'무당파',
+      notes: [
+        { from:'wudang',       text:'무당파 2대제자이자 대사형. 장삼봉을 사조님이라 부른다.' },
+        { from:'wudang_after', text:'장삼봉의 허락을 받아 산을 내려와, {name}과 함께 사파의 움직임을 살핀다.' },
+      ] },
+    { id:'cheolmyeong', face:'cheolmyeong', name:'철명', tag:'화원파',
+      notes: [
+        { from:'yangyang_after',      text:'화산파의 속가 화원파의 문주였다. 철검문에 멸문당한 뒤 산에서 사냥꾼으로 지냈다. 화원파의 원한을 풀기 위해 일행에 합류했다.' },
+        { from:'cheolgeom_hall_talk', text:'철검문주의 사과를 받고, 진짜 원수는 사파 연합의 간부라며 복수를 다짐했다.' },
+        { from:'yangyang_heart',      text:'화원파가 무너질 때 오지 않은 화산파에 서운함을 품고 있지만, 결국은 약했던 자신의 탓이라 여긴다.' },
+        { from:'yangyang_lord_trial', text:'4년 전 관원 · 구후 · 철검문주의 아버지가 거래하던 자리를 본 탓에 화원파가 멸문당했음을 알게 되었다.' },
+      ] },
+    { id:'guo', face:'guo', name:'곽정', tag:'북협 · 개방',
+      notes: [
+        { from:'prologue',         text:'북협. 무한성 앞에서 사파에게 쫓기던 {name}을 구해 주었다.' },
+        { from:'wudang_after',     text:'개방 형제들과 사파의 길목을 살피며, 한 달 뒤 남궁세가에서 다시 만나기로 했다.' },
+        { from:'yangyang_lord',    text:'양양성의 방어를 맡아 지금껏 성을 지켜 왔다.' },
+        { from:'yangyang_guo_inn', text:'십삼 년 전 화산논검 전까지 서독 구양봉에게 시달렸다. 백타산의 장로 구후의 이름을 들은 적이 있다.' },
+      ] },
+    { id:'huang', face:'huang', name:'황용', tag:'개방',
+      notes: [
+        { from:'prologue',         text:'곽정과 함께 다니는 여협. 눈치가 빠르고 말솜씨가 좋다.' },
+        { from:'wudang',           text:'개방의 방주. 장삼봉은 그를 황 방주라 부른다.' },
+        { from:'yangyang_guo_inn', text:'천교에 \'사해용왕\'이라는 자와 백타산의 후인이 있고, 해남파까지 합류했다는 소식을 전했다.' },
+      ] },
+    { id:'zhang', face:'zhang', name:'장삼봉', tag:'무당파',
+      notes: [
+        { from:'wudang',       text:'무당파의 진인. {name}의 선친과 연이 있어, 그 검을 기억하고 있다.' },
+        { from:'wudang_after', text:'사파의 규합을 경계해, 구파일방과 오대세가를 한 달 뒤 남궁세가로 불러 모으기로 했다.' },
+      ] },
+    { id:'cheolgeom_sahyeong', face:'cheolgeom_sahyeong', name:'철검문 대사형', tag:'철검문',
+      notes: [
+        { from:'yangyang',         text:'철검문 무리를 이끄는 대사형. 저잣거리에서 일행과 시비가 붙었다.' },
+        { from:'yangyang_trail',   text:'관아의 관원에게 철검문의 뇌물을 바치고, 저잣거리의 소란을 덮어 달라 청했다.' },
+        { from:'cheolgeom_coup',   text:'문주의 편에 서서, 연합에 붙은 배신자들과 싸웠다.' },
+      ] },
+    { id:'cheolgeom_munju', face:'cheolgeom_munju', name:'철검문주', tag:'철검문',
+      notes: [
+        { from:'cheolgeom_visit',     text:'철검문의 문주. 젊은 시절 천씨세가에 목숨을 빚졌다. 사파 연합의 협박에 굴복해 연합의 간부가 되었고, 본보기로 부친을 잃었다.' },
+        { from:'cheolgeom_coup',      text:'천씨를 감쌌다는 이유로 연합에서 추방되자, 배신한 문원들과 연합의 간부에게 맞서 검을 뽑았다.' },
+        { from:'cheolgeom_hall_talk', text:'화원파의 일을 철명에게 사죄했다. 어린 시절의 명화를 기억하고 있다.' },
+        { from:'yangyang_lord_trial', text:'관원의 말에 따르면, 4년 전 그의 아버지가 구후 · 관원과 거래하던 자리에 있었다. 문주는 아직 이 사실을 모른다.' },
+      ] },
+    { id:'sapa_ganbu', face:'sapa_ganbu', name:'사파 간부', tag:'천교',
+      notes: [
+        { from:'cheolgeom_coup',      text:'사파 연합의 간부. 창을 쓰는 절정의 고수. 천씨를 감쌌다며 철검문주를 추방하러 왔다가 철검문 안마당에서 물러났다.' },
+        { from:'yangyang_lord_trial', name:'구후', text:'천교의 간부 일곱 중 하나로, 양양 지부를 맡은 구후. 십 년 전 천씨세가를, 사 년 전 화원파를 없애라 명했다.' },
+        { from:'yangyang_guo_inn',    text:'합마공과 뱀독을 쓴다. 백타산의 장로이자 구양봉의 후인으로 보인다.' },
+      ] },
+    { id:'yangyang_lord', face:'yangyang_lord', name:'양양 성주', tag:'양양성',
+      notes: [
+        { from:'yangyang_lord',       text:'양양성의 성주. {name}의 선친에게 입은 은혜를 갚고자 그동안 물자를 보내 장원을 도왔다. 어린 {name}을 사고뭉치로 기억한다.' },
+        { from:'yangyang_lord_trial', text:'사파와 내통한 관원을 잡아들여 직접 심문했다.' },
+      ] },
+    { id:'hwasan_hyeonwon', face:'hwasan_hyeonwon', name:'현원', tag:'화산파',
+      notes: [
+        { from:'yangyang_hwasan',       text:'사파 연합을 조사하러 양양에 내려온 화산파의 제자. 차분하고 예의 바르다.' },
+        { from:'yangyang_hwasan_after', text:'화원파가 무너질 때 오지 못한 것을 사죄하고, 이제는 돕겠다고 했다.' },
+        { from:'yangyang_lord',         text:'{name} 일행과 함께 사파 조사에 합류했다.' },
+      ] },
+    { id:'hwasan_hyeonjeok', face:'hwasan_hyeonjeok', name:'현적', tag:'화산파',
+      notes: [
+        { from:'yangyang_hwasan',       text:'현원과 같은 문하의 화산파 제자. 말과 검이 거칠고 곧다.' },
+        { from:'yangyang_hwasan_after', text:'먼저 간 화원파 사람들에게 화산의 이름으로 사죄했다.' },
+        { from:'yangyang_heart',        text:'"화산은 화원파를 잊은 적이 없다"는 말을 철명에게 전해 달라 부탁했다.' },
+      ] },
+    { id:'yangyang_official', face:'yangyang_official', name:'관원', tag:'양양 관아',
+      notes: [
+        { from:'yangyang_trail',      text:'양양 관아의 관원. 철검문의 뇌물을 받고 저잣거리의 소란을 덮어 주었다.' },
+        { from:'yangyang_lord_trial', text:'십 년 전부터 구후와 손잡고, 사파가 양양에 자리 잡도록 눈을 감아 주었다. 처형을 앞두고 있다.' },
+      ] },
+  ],
+  factions: [
+    { id:'cheonssi', icon:'家', name:'천씨세가',
+      notes: [
+        { from:'wudang',              text:'양양의 무가. 십 년 전 몽골군이 양양을 덮쳤을 때 무너졌다.' },
+        { from:'yangyang',            text:'{name}이 남은 식솔들과 장원을 다시 일구었다. 지금의 거점이다.' },
+        { from:'yangyang_lord_trial', text:'양양 제일의 세가였지만 오대세가에 들지 못해 뒤를 봐줄 곳이 없었고, 그래서 천교의 첫 표적이 되었다.' },
+      ] },
+    { id:'mudang', icon:'武', name:'무당파',
+      notes: [
+        { from:'wudang',       text:'장삼봉이 이끄는 정파의 대문파. 산문 밖의 공격과 경내의 자객을 한꺼번에 맞았다.' },
+        { from:'wudang_after', text:'붙잡은 자객들의 옷깃에 처음 보는 같은 문양이 수놓아져 있었다.' },
+      ] },
+    { id:'gaebang', icon:'丐', name:'개방',
+      notes: [
+        { from:'wudang_after',     text:'황용이 방주로 있는 문파. 강남 곳곳에서 사파가 사람을 모은다는 소식을 모으고 있다.' },
+        { from:'yangyang_guo_inn', text:'천교라는 이름이 개방에도 몇 번 흘러들었다.' },
+      ] },
+    { id:'cheolgeom', icon:'鐵', name:'철검문',
+      notes: [
+        { from:'yangyang',            text:'양양의 문파. 저잣거리에서 자릿세를 뜯으며 위세를 부린다.' },
+        { from:'yangyang_after',      text:'몇 해 사이에 세를 불려 사파 연합의 간부 자리를 꿰찼고, 이웃 군소 문파들을 짓밟았다.' },
+        { from:'yangyang_trail',      text:'관아에 뇌물을 바쳐 비호를 받고 있다.' },
+        { from:'cheolgeom_visit',     text:'사파 연합이 문도들의 가족을 볼모로 잡아 억지로 끌어들인 것이었다.' },
+        { from:'cheolgeom_coup',      text:'문원 일부가 연합에 붙어 배신했으나, 문주가 연합과 갈라서며 배신자 대부분을 처단했다. 몇은 달아났다.' },
+      ] },
+    { id:'hwawon', icon:'花', name:'화원파',
+      notes: [
+        { from:'yangyang_after',      text:'화산파의 속가 문파. 철명이 문주였다. 철검문에 멸문당했다.' },
+        { from:'yangyang_lord_trial', text:'사 년 전, 문주 철명이 구후의 거래 자리를 목격한 탓에 멸문당했다.' },
+      ] },
+    { id:'hwasan', icon:'華', name:'화산파',
+      notes: [
+        { from:'yangyang_hwasan',       text:'화원파의 본산. 현원과 현적이 사파 연합을 조사하러 양양에 왔다.' },
+        { from:'yangyang_hwasan_after', text:'화원파가 무너지던 무렵, 화산도 일이 있어 산문 밖으로 사람을 낼 수 없었다.' },
+        { from:'yangyang_heart',        text:'그 무렵 화산 역시 사파의 습격을 받았다고 한다.' },
+      ] },
+    { id:'cheongyo', icon:'敎', name:'사파 연합',
+      notes: [
+        { from:'wudang_after',        text:'흩어져 있던 사파가 한 깃발 아래 모이고 있다. 누군가 뒤에서 판을 짜고 있다.' },
+        { from:'yangyang_after',      text:'양양에서는 철검문이 연합의 간부 자리를 차지하고 있다.' },
+        { from:'cheolgeom_hall_talk', text:'몇 해 전 생겨났으며, 맹주가 누구인지는 간부들조차 모른다. 간부마다 맡은 땅이 있어 관아를 매수하고, 정파의 작은 문파부터 하나씩 삼킨다.' },
+        { from:'yangyang_lord_trial', name:'천교 (사파 연합)', text:'스스로를 천교(天敎)라 부른다. 간부는 일곱. 근래 생긴 연합이라지만, 이미 십 년 전부터 숨어서 움직이던 세력이었다.' },
+        { from:'yangyang_guo_inn',    text:'\'사해용왕\'이라 불리는 자와 백타산의 후인이 있고, 해남파까지 합류했다고 한다.' },
+      ] },
+    { id:'baektasan', icon:'駝', name:'백타산',
+      notes: [
+        { from:'yangyang_guo_inn', text:'서독 구양봉의 문파. 장로 구후가 있었다. 합마공과 뱀독을 쓴다.' },
+      ] },
+    { id:'haenam', icon:'海', name:'해남파',
+      notes: [
+        { from:'yangyang_guo_inn', text:'천교에 합류했다는 소문이 있다.' },
+      ] },
+    { id:'namgung', icon:'南', name:'남궁세가',
+      notes: [
+        { from:'wudang_after',     text:'안휘의 세가. 정파가 한 달 뒤 이곳에 모이기로 했다.' },
+        { from:'yangyang_guo_inn', text:'곽정이 천교의 일을 알리기로 했다.' },
+      ] },
+    { id:'yangyang', icon:'襄', name:'양양성',
+      notes: [
+        { from:'yangyang_lord',       text:'성주가 다스리고, 북협 곽정이 성의 방어를 맡고 있다.' },
+        { from:'yangyang_lord_trial', text:'관아의 관원이 십 년 전부터 사파와 내통해 왔다.' },
+      ] },
   ],
 };
 
@@ -3081,7 +3256,7 @@ function chainScene(next){
     storyTextSpan.textContent = ''; storyName.textContent = ''; storyNext.style.visibility = 'hidden';
     if (newChapter){ card.innerHTML = '<b>'+to.chapter+'</b><span>'+(to.title || to.place || '')+'</span>'; card.classList.add('on'); }
   }, ()=>{
-    const go = ()=>{ storyBusy = false; advanceTo(0); setTimeout(pyoArrive, 500); setTimeout(()=>autoSave('start'), 700); };
+    const go = ()=>{ storyBusy = false; advanceTo(0); setTimeout(()=>autoSave('start'), 700); };
     if (newChapter) setTimeout(()=>{ card.classList.remove('on'); setTimeout(go, 650); }, 1900); else go();
   });
 }
@@ -3097,7 +3272,8 @@ function resetStoryScreen(sc){
 }
 function startScene(name, fromLoad){
   curScene = name; playBgm('story');
-  if (!fromLoad){ setTimeout(pyoArrive, 1300); setTimeout(()=>autoSave('start'), 1500); }   // 새 이야기 장면 : 표국 귀환 · 승급, 자동 저장
+  if (!fromLoad){ setTimeout(()=>autoSave('start'), 1500); }
+  else setTimeout(()=>codexCheck(true), 50);   // 새 이야기 장면 : 표국 귀환 · 승급, 자동 저장
   ['intro-screen','battle-screen','hub-screen','npc-screen'].forEach(id=>{ const el=document.getElementById(id); if (el) el.style.display='none'; });
   resetStoryScreen(SCENES[name]);
   scriptIdx = 0; advanceTo(0);
@@ -3190,8 +3366,10 @@ document.getElementById('story-box').addEventListener('click', ()=>{
     if (hubOpen()) document.getElementById('hub-open-wrap').classList.remove('hidden');
     refreshMissionBadges();
     if (opened.includes('hub')) setTimeout(()=>showToast('거점이 열렸습니다 — 아래 거점 버튼'), 500);
-    setTimeout(noticeMissions, 900);
-    autoSave('end');                                  // 장면이 끝난 화면 : 자동 저장
+    setTimeout(pyoArrive, 500);                       // 대화가 다 끝나고 출정 전 : 표국 행렬 귀환 · 승급
+    setTimeout(noticeMissions, 1100);
+    setTimeout(()=>codexCheck(), 1500);
+    setTimeout(()=>autoSave('end'), 700);             // 표국이 가져온 물건까지 담아서                                  // 장면이 끝난 화면 : 자동 저장
     return;
   }
   advanceTo(scriptIdx);
@@ -3266,13 +3444,14 @@ function pyoFill(){
   }
 }
 function pyoIdle(){ if (!PLAYER.pyo) return pyoSlots(pyoGrade()); return PLAYER.pyo.offers.length + Math.max(0, pyoSlots(PLAYER.pyo.grade) - PLAYER.pyo.offers.length - PLAYER.pyo.sent.length); }
-// 새 이야기 장면이 시작될 때 : 보낸 행렬이 돌아옴 + 장이 바뀌었으면 승급
+// 이야기 대화가 다 끝난 화면 (출정 전) : 그 전 장면에서 보낸 행렬이 돌아옴 + 장이 바뀌었으면 승급
 function pyoArrive(){
   if (!hubOpen()) return;
   const P = pyoState(), g = pyoGrade();
-  if (P.sent.length){
-    const lines = P.sent.map(j=>{ PLAYER.inv[j.reward] = (PLAYER.inv[j.reward] || 0) + j.n; return j.title + ' — ' + j.reward + ' ' + j.n + '개'; });
-    P.sent = [];
+  const back = P.sent.filter(j=> j.at !== curScene);    // 보낸 장면이 아닌, 그 뒤 이야기의 끝 화면에서 돌아옴
+  if (back.length){
+    P.sent = P.sent.filter(j=> j.at === curScene);
+    const lines = back.map(j=>{ PLAYER.inv[j.reward] = (PLAYER.inv[j.reward] || 0) + j.n; return j.title + ' — ' + j.reward + ' ' + j.n + '개'; });
     notify('표국 행렬이 돌아왔습니다', lines.join('\n') + '\n(배낭에 넣었습니다)', 'pyo');
   }
   if (g > (P.grade || 1)){
@@ -3284,7 +3463,7 @@ function pyoArrive(){
 function renderPyo(){
   const P = pyoState(); pyoFill();
   document.getElementById('pyo-grade').textContent = pyoGradeName(P.grade) + ' · 의뢰 ' + pyoSlots(P.grade) + '칸';
-  let h = '<div class="of-sec">들어온 의뢰 — 보내면 다음 이야기 장면에서 돌아옵니다</div>';
+  let h = '<div class="of-sec">들어온 의뢰 — 보내면 다음 이야기가 끝나고 출정하기 전에 돌아옵니다</div>';
   if (P.offers.length) P.offers.forEach((j,i)=>{
     h += '<div class="of-card"><div class="of-top"><span class="of-kind">의뢰</span><b>' + j.title + '</b><span class="of-rw">' + itemIcon(j.reward) + ' ' + j.reward + ' ' + j.n + '개</span></div>' +
          '<div class="of-cond">' + j.route + '</div><div class="of-act"><div class="top-btn pyo-send" data-i="' + i + '">보내기</div></div></div>';
@@ -3292,7 +3471,7 @@ function renderPyo(){
   else h += '<div class="of-empty">새 의뢰가 없습니다. 행렬이 돌아오면 새 의뢰가 들어옵니다.</div>';
   if (P.sent.length){
     h += '<div class="of-sec">길을 떠난 행렬</div>';
-    P.sent.forEach(j=>{ h += '<div class="of-past"><span>' + j.title + ' · ' + j.route + '</span><span class="ok">' + j.reward + ' ' + j.n + '개 · 다음 장면에 돌아옴</span></div>'; });
+    P.sent.forEach(j=>{ h += '<div class="of-past"><span>' + j.title + ' · ' + j.route + '</span><span class="ok">' + j.reward + ' ' + j.n + '개 · 다음 이야기가 끝나면 돌아옴</span></div>'; });
   }
   const body = document.getElementById('pyo-body'); body.innerHTML = h;
   body.querySelectorAll('.pyo-send').forEach(b=> b.addEventListener('click', ()=> pyoSend(+b.dataset.i)));
@@ -3300,8 +3479,8 @@ function renderPyo(){
 }
 function pyoSend(i){
   const P = pyoState(), j = P.offers[i]; if (!j) return;
-  P.offers.splice(i, 1); P.sent.push(j);
-  showToast(j.title + ' — 행렬이 길을 떠났습니다');
+  P.offers.splice(i, 1); j.at = curScene; P.sent.push(j);
+  showToast(j.title + ' — 행렬이 길을 떠났습니다 (다음 이야기가 끝나면 돌아옴)');
   renderPyo(); refreshMissionBadges();
 }
 function openPyo(){ clearNotices(); renderPyo(); document.getElementById('pyo-modal').style.display = 'flex'; }
@@ -3309,9 +3488,61 @@ document.getElementById('hub-pyo').addEventListener('click', openPyo);
 document.getElementById('pyo-close').addEventListener('click', ()=>{ document.getElementById('pyo-modal').style.display = 'none'; });
 document.getElementById('pyo-all').addEventListener('click', ()=>{
   const P = pyoState(); if (!P.offers.length) return;
-  const n = P.offers.length; P.sent = P.sent.concat(P.offers); P.offers = [];
-  showToast('행렬 ' + n + '곳이 길을 떠났습니다 — 다음 이야기 장면에서 돌아옵니다'); renderPyo(); refreshMissionBadges();
+  const n = P.offers.length; P.offers.forEach(j=>{ j.at = curScene; }); P.sent = P.sent.concat(P.offers); P.offers = [];
+  showToast('행렬 ' + n + '곳이 길을 떠났습니다 — 다음 이야기가 끝나면 돌아옵니다'); renderPyo(); refreshMissionBadges();
 });
+
+/* ================= 기록 : 인물 · 세력 (data/codex.js) =================
+   쪽지는 그 장면이 끝나면 (다음 장면으로 넘어가면) 보임. PLAYER.codex = { seen:{ 'p:hero':본 쪽지 수 }, known:{ … 알린 쪽지 수 } } */
+let storyOrderCache = null;
+function storyIdx(sc){ if (!storyOrderCache) storyOrderCache = storyOrder(); return storyOrderCache.indexOf(sc); }
+function codexPos(){
+  let i = storyIdx(curScene);
+  if (i < 0){ const nx = SCENES[curScene] && resolveNext(SCENES[curScene].next, true); return nx ? storyIdx(nx) : 0; }   // 갈림길 장면 (순서에 없음) → 다음 장면 바로 앞
+  const ended = document.getElementById('story-screen').classList.contains('ended');
+  return i + (ended ? 1 : 0);
+}
+function codexDB(){ return (typeof CODEX !== 'undefined') ? CODEX : { people:[], factions:[] }; }
+function codexAll(){ const C = codexDB(); return (C.people||[]).map(e=>({ kind:'p', e })).concat((C.factions||[]).map(e=>({ kind:'f', e }))); }
+function codexKey(kind, e){ return kind+':'+e.id; }
+function codexNotes(e){ const p = codexPos(); return (e.notes||[]).filter(n=>{ const i = storyIdx(n.from); return i >= 0 && i < p; }); }
+function codexName(e, notes){ let nm = e.name; (notes || codexNotes(e)).forEach(n=>{ if (n.name) nm = n.name; }); return codexText(nm); }
+// {name} + 조사 : {name}이/가 · 을/를 · 은/는 · 과/와 를 주인공 이름에 맞게
+function codexText(t){
+  const P = { '이':['이','가'], '가':['이','가'], '을':['을','를'], '를':['을','를'], '은':['은','는'], '는':['은','는'], '과':['과','와'], '와':['과','와'] };
+  return String(t||'').replace(/\{name\}(이|가|을|를|은|는|과|와)(?=[\s.,!?·]|$)/g, (m, j)=> HERO.name + josa(HERO.name, P[j][0], P[j][1])).split('{name}').join(HERO.name);
+}
+function codexState(){ PLAYER.codex = PLAYER.codex || { seen:{}, known:{} }; PLAYER.codex.seen = PLAYER.codex.seen || {}; PLAYER.codex.known = PLAYER.codex.known || {}; return PLAYER.codex; }
+function codexNewCount(){ const S = codexState(); return codexAll().filter(({kind,e})=> codexNotes(e).length > (S.seen[codexKey(kind,e)]||0)).length; }
+// 새로 보이게 된 쪽지 알림 (거점이 열린 뒤에만). silent = 불러오기 등 → 알리지 않고 맞추기만
+function codexCheck(silent){
+  if (window.__codexSilent){ silent = true; window.__codexSilent = false; }
+  const S = codexState(), fresh = [];
+  codexAll().forEach(({kind,e})=>{
+    const k = codexKey(kind,e), n = codexNotes(e).length;
+    if (n > (S.known[k]||0)){ fresh.push((kind==='p' ? '인물 · ' : '세력 · ') + codexName(e)); S.known[k] = n; }
+  });
+  if (fresh.length && !silent && hubOpen()) notify('기록이 갱신되었습니다', fresh.slice(0,4).join(', ') + (fresh.length>4 ? ' 외 '+(fresh.length-4)+'건' : '') + '\n거점 → 집무실 → 기록', 'codex');
+  refreshMissionBadges();
+}
+let ofTab = 'mission', cxSel = null;
+function renderCodex(kind){
+  const S = codexState();
+  const list = codexAll().filter(x=>x.kind===kind && codexNotes(x.e).length);
+  if (!list.length) return '<div class="of-empty">아직 기록된 '+(kind==='p' ? '인물' : '세력')+'이 없습니다. 이야기를 진행하면 채워집니다.</div>';
+  if (!cxSel || !list.some(x=>codexKey(x.kind,x.e)===cxSel)) cxSel = codexKey(list[0].kind, list[0].e);
+  const seenN = S.seen[cxSel]||0;
+  { const c0 = list.find(x=>codexKey(x.kind,x.e)===cxSel); S.seen[cxSel] = codexNotes(c0.e).length; }   // 고른 항목은 본 것으로 (NEW 표시는 목록에서 바로 사라짐)
+  const icon = (x)=> x.kind==='p' ? '<img class="cx-face" src="'+(x.e.face==='hero' ? faceOf('hero') : faceOf(x.e.face))+'" alt="">' : '<span class="cx-icon">'+(x.e.icon||'?')+'</span>';
+  let h = '<div class="cx-wrap"><div class="cx-list">';
+  list.forEach(x=>{ const k = codexKey(x.kind,x.e), nn = codexNotes(x.e), isNew = nn.length > (S.seen[k]||0);
+    h += '<div class="cx-row'+(k===cxSel ? ' sel' : '')+'" data-k="'+k+'">'+icon(x)+'<span class="cx-nm">'+codexName(x.e, nn)+'</span>'+(isNew ? '<span class="cx-new">NEW</span>' : '')+'</div>'; });
+  const cur = list.find(x=>codexKey(x.kind,x.e)===cxSel), notes = codexNotes(cur.e);
+  h += '</div><div class="cx-detail"><div class="cx-top">'+icon(cur)+'<div><b>'+codexName(cur.e, notes)+'</b>'+(cur.e.tag ? '<small>'+cur.e.tag+'</small>' : '')+'</div></div>';
+  notes.forEach((n,i)=>{ h += '<div class="cx-note'+(i>=seenN ? ' new' : '')+'">'+codexText(n.text)+'</div>'; });
+  h += '</div></div>';
+  return h;
+}
 
 /* ================= 집무실 임무 (data/missions.js) ================= */
 function missionDB(){ return (typeof MISSIONS !== 'undefined') ? MISSIONS : {}; }
@@ -3324,13 +3555,18 @@ function refreshMissionBadges(){
   const n = offerMissions().filter(id=>!missionState(id)).length;
   const p = hubOpen() ? pyoIdle() : 0;                 // 표국 : 아직 보내지 않은 의뢰
   const set = (id, on)=>{ const el = document.getElementById(id); if (el) el.classList.toggle('badge', on); };
-  set('hub-office', n>0); set('hub-pyo', p>0); set('btn-hub', n>0 || p>0);
+  const cx = hubOpen() ? codexNewCount() : 0;           // 기록 : 아직 안 본 쪽지가 있는 인물 · 세력
+  set('hub-office', n>0 || cx>0); set('hub-pyo', p>0); set('btn-hub', n>0 || p>0 || cx>0);
 }
 function battleShortName(id){ const n = (BATTLES[id] || {}).name || '', i = n.indexOf(' · '); return i>=0 ? n.slice(i+3) : n; }
 function condText(c){
   if (c.type==='talk'){
     const by = (c.by || ['hero']).map(nameOf).join(' · '), t = (UNITS[c.target] || {}).name || c.target;
     return '전투 중 '+by+josa(by,'이','가')+' '+t+' 바로 옆에서 \'대화\' 명령 ('+t+josa(t,'이','가')+' 쓰러지기 전에) · 그리고 승리';
+  }
+  if (c.type==='kill'){
+    const by = (c.by || ['hero']).map(nameOf).join(' · '), t = (UNITS[c.target] || {}).name || c.target;
+    return '전투 중 '+by+josa(by,'이','가')+' 직접 '+t+josa(t,'을','를')+' 쓰러뜨리기 (마지막 일격) · 그리고 승리';
   }
   if (c.type==='turns')  return c.n+'턴 안에 승리';
   if (c.type==='noDown') return '아군이 아무도 쓰러지지 않고 승리';
@@ -3347,6 +3583,17 @@ function rewardText(r){
 function renderOffice(){
   const M = missionDB(), b = upcomingBattle(), offer = offerMissions();
   document.getElementById('of-gold').textContent = '보유 금 '+PLAYER.gold.toLocaleString();
+  document.querySelectorAll('.of-tab').forEach(t=>{ t.classList.toggle('on', t.dataset.t===ofTab);
+    const k = t.dataset.t==='people' ? 'p' : t.dataset.t==='faction' ? 'f' : null;
+    t.classList.toggle('badge', !!k && codexAll().some(x=>x.kind===k && codexNotes(x.e).length > (codexState().seen[codexKey(x.kind,x.e)]||0)));
+    if (t.dataset.t==='mission') t.classList.toggle('badge', offer.some(id=>!missionState(id))); });
+  if (ofTab!=='mission'){
+    const body = document.getElementById('of-body'); body.innerHTML = renderCodex(ofTab==='people' ? 'p' : 'f');
+    body.querySelectorAll('.cx-row').forEach(r=> r.addEventListener('click', ()=>{ cxSel = r.dataset.k; renderOffice(); }));
+    document.querySelectorAll('.of-tab').forEach(t=>{ if (t.dataset.t===ofTab) t.classList.remove('badge'); });
+    refreshMissionBadges();
+    return;
+  }
   let h = b ? '<div class="of-sec">다음 전투 · '+battleShortName(b)+'</div>' : '';
   if (offer.length) offer.forEach(id=>{
     const m = M[id], taken = missionState(id)==='taken';
@@ -3369,6 +3616,7 @@ function renderOffice(){
 }
 function openOffice(){ clearNotices(); renderOffice(); document.getElementById('office-modal').style.display = 'flex'; }
 document.getElementById('hub-office').addEventListener('click', openOffice);
+document.querySelectorAll('.of-tab').forEach(t=> t.addEventListener('click', ()=>{ ofTab = t.dataset.t; renderOffice(); }));
 document.getElementById('of-close').addEventListener('click', ()=>{ document.getElementById('office-modal').style.display = 'none'; });
 document.getElementById('hub-back').addEventListener('click', ()=>{
   document.getElementById('hub-screen').style.display = 'none';
@@ -3376,6 +3624,7 @@ document.getElementById('hub-back').addEventListener('click', ()=>{
 });
 
 document.getElementById('btn-go-battle').addEventListener('click', ()=>{
+  clearNotices();
   const id = SCENES[curScene].sortie;
   if (!id || !BATTLES[id]){ showToast('다음 전투는 준비 중입니다'); return; }
   document.getElementById('story-screen').style.display = 'none';
@@ -3631,7 +3880,7 @@ function makeHero(){
   HERO.name = name; HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
   HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = 0; delete HERO.train;
   resetParty();
-  PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null;
+  PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null;
   document.getElementById('name-input').blur();
   startStory();
 }
@@ -3664,7 +3913,7 @@ function makeSnapshot(){
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
                   tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:HERO.elixir||0 },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
-           player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null } };
+           player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
   return snap;
 }
@@ -3734,6 +3983,9 @@ function applySnapshot(s){
   PLAYER.gold = s.player.gold; PLAYER.inv = Object.assign({}, s.player.inv); PLAYER.flags = Object.assign({}, s.player.flags || {});
   PLAYER.missions = Object.assign({}, s.player.missions || {});
   PLAYER.pyo = s.player.pyo ? JSON.parse(JSON.stringify(s.player.pyo)) : null;
+  if (PLAYER.pyo && PLAYER.pyo.sent) PLAYER.pyo.sent.forEach(j=>{ if (!j.at) j.at = s.scene; });
+  PLAYER.codex = s.player.codex ? JSON.parse(JSON.stringify(s.player.codex)) : null;   // 예전 저장 : 처음 맞출 때 조용히 채움
+  if (!PLAYER.codex) window.__codexSilent = true;
   PLAYER.trainCnt = Object.assign({}, s.player.trainCnt || {});
   PLAYER.suryeon = (typeof s.player.suryeon === 'number') ? s.player.suryeon : earnedSuryeon(s.scene);   // 수련치가 생기기 전 저장 → 지나온 전투 보상만큼
   renameOldItems(); ensureSavedItems();          // 강화한 물건 (철검 +3 …) 을 물건 사전에 등록
@@ -3769,6 +4021,7 @@ function goStoryEnd(scene){
   document.getElementById('top-menu-wrap').classList.remove('hidden');
   unlockFromScene(sc);
   document.getElementById('hub-open-wrap').classList.toggle('hidden', !hubOpen());
+  codexCheck(true);
   refreshMissionBadges();
   setTimeout(noticeMissions, 900);
   const ts = document.getElementById('title-screen');
@@ -5497,7 +5750,7 @@ function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 �
   positionToken(def);
   def.el.classList.add('flash','shake');
   setTimeout(()=>def.el.classList.remove('flash','shake'), 320);
-  if (def.hp<=0){ def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); }
+  if (def.hp<=0){ def.killedBy = atk.id; def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); }   // killedBy : 임무 '처치' 판정
   return { miss:false, dmg, hitChance };
 }
 // 한 번 치기 (연출 + 피해 + 경험치). kind = 'attack' | 'counter'
@@ -5663,7 +5916,7 @@ function missionProgress(id){
   return '';
 }
 // 승리했을 때 완료인지
-function missionOk(id){ const c = missionDB()[id].cond, p = missionProgress(id); return p!=='fail' && (c.type!=='talk' || p==='ok'); }
+function missionOk(id){ const c = missionDB()[id].cond, p = missionProgress(id); return p!=='fail' && ((c.type!=='talk' && c.type!=='kill') || p==='ok'); }
 function renderMissionHud(){
   const el = document.getElementById('b-mission'); if (!el) return;
   el.innerHTML = battleMissions().map(id=>{ const m = missionDB()[id], p = missionProgress(id);
@@ -5686,22 +5939,26 @@ function doTalk(u, e, id){
   runBattleDialog(lines, ()=>{
     bState.mission[id] = 'ok';
     bState.intro = false; document.getElementById('b-end-turn').classList.remove('hidden');
-    u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
     renderMissionHud(); sfx('levelup');
     hint('임무 달성 — '+m.title+' (승리하면 보상)', 2000);
-    autoEndCheck();
+    // 대화는 행동을 쓰지 않음 → 메뉴를 다시 열어 이동 · 공격 · 무공 · 대기를 이어서 (이동 취소는 불가)
+    if (u.hp>0 && !u.acted && !bState.over) setTimeout(()=>{ if (bState.turn==='ally' && !bState.over) openMenu(u); }, 350);
   });
 }
 // 대화 상대가 대화 전에 쓰러지거나 물러나면 실패
 function missionDeathCheck(){
   let failed = null;
+  let done = null;
   battleMissions().forEach(id=>{
     const c = missionDB()[id].cond;
-    if (c.type!=='talk' || (bState.mission||{})[id]) return;
-    const all = Object.values(units).filter(e=>e.id===c.target);
-    if (all.length && all.every(e=>e.hp<=0)){ bState.mission[id] = 'fail'; failed = missionDB()[id]; }
+    if ((c.type!=='talk' && c.type!=='kill') || (bState.mission||{})[id]) return;
+    const all = Object.values(units).filter(e=>e.id===c.target && e.side==='enemy');
+    if (!all.length || !all.every(e=>e.hp<=0)) return;
+    if (c.type==='kill' && all.some(e=> !e.fled && (c.by || ['hero']).includes(e.killedBy))){ bState.mission[id] = 'ok'; done = missionDB()[id]; }
+    else { bState.mission[id] = 'fail'; failed = missionDB()[id]; }
   });
   if (failed) setTimeout(()=>toast('임무 실패 — '+failed.title, 1800), 900);
+  if (done){ sfx('levelup'); setTimeout(()=>hint('임무 달성 — '+done.title+' (승리하면 보상)', 2000), 900); }
   renderMissionHud();
 }
 document.getElementById('bs-next').addEventListener('click', ()=>{
