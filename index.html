@@ -78,9 +78,13 @@
   }
   #story-text {
     background:linear-gradient(180deg, rgba(30,24,17,0.93), rgba(12,9,6,0.96));
-    border:1px solid #8a7752; border-radius:2px; padding:18px 24px;
-    color:#f3ead9; font-size:17px; line-height:1.6; min-height:64px;
+    border:1px solid #8a7752; border-radius:2px; padding:16px 24px 22px;
+    color:#f3ead9; font-size:17px; line-height:1.6; min-height:calc(3.2em + 38px);   /* 두 줄 자리를 늘 비워 둠 (창 크기가 들쭉날쭉하지 않게) */
   }
+  /* 대사 : 줄 나눔은 engine.js 의 dlgPages ('\n'), 낱말 중간에서는 끊지 않음. .ghost = 아직 안 나온 글자 (자리만 차지) */
+  #story-text-span, #bd-text, #snpc-text { white-space:pre-line; word-break:keep-all; overflow-wrap:anywhere; }
+  #story-text .ghost, #bd-text .ghost, #snpc-text .ghost { visibility:hidden; }
+  #snpc-box > div { flex:1; min-width:0; }
   #story-next {
     position:absolute; right:14px; bottom:10px; font-size:11px; color:#c9b98a; animation:blink 1.2s infinite;
   }
@@ -105,7 +109,7 @@
   .snpc .mark { position:absolute; top:-6px; right:-4px; width:20px; height:20px; border-radius:50%; background:#ffd24a; color:#4a2a00;
     font-weight:bold; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.6); }
   @keyframes snpcBob { 0%,100%{ margin-top:0 } 50%{ margin-top:-4px } }
-  #snpc-box { position:absolute; left:6%; right:6%; bottom:6%; z-index:25; display:none; cursor:pointer; gap:14px; padding:12px 16px;
+  #snpc-box { position:absolute; left:6%; right:6%; bottom:6%; z-index:25; display:none; cursor:pointer; gap:14px; padding:12px 16px 22px;
     background:linear-gradient(180deg, rgba(30,24,17,0.94), rgba(12,9,6,0.97)); border:1px solid #8a7752; border-radius:3px; }
   #snpc-box img { width:clamp(60px, calc(13 * var(--vh)), 96px); height:clamp(60px, calc(13 * var(--vh)), 96px); object-fit:cover; border:2px solid #f08c1e; border-radius:4px; flex:none; }
   #snpc-name { color:#ffd88a; font-weight:bold; font-size:clamp(14px, calc(2.6 * var(--vh)), 17px); margin-bottom:4px; }
@@ -610,6 +614,24 @@
   .um-flip::before { content:'◀'; }
   #unit-menu.on-left .um-flip::before { content:'▶'; }
   #unit-menu.show { display:flex; }
+  /* 정보 창 (적 · 우군 · 행동을 마친 아군) — 명령 메뉴의 이름 패널과 같은 모양 */
+  #peek-info { position:absolute; z-index:36; display:none; width:max-content; max-width:260px; padding:5px 22px 6px 10px; text-align:left;
+    color:#f3ead9; font-size:11px; line-height:1.55; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    background:rgba(12,9,6,.92); border:1px solid #8a7752; border-radius:3px; box-shadow:0 3px 12px rgba(0,0,0,.5); }
+  #peek-info.show { display:block; }
+  #peek-info.enemy { border-color:#b4473f; }
+  #peek-info.friend { border-color:#c9771c; }
+  #peek-info b { color:#ffd88a; font-size:12px; }
+  #peek-info.enemy b { color:#ffb3ad; }
+  #peek-info .job { color:#c9b98a; margin-left:6px; }
+  #peek-info .lbl { color:#c9b98a; }
+  #peek-info .lv { color:#fff; margin-left:5px; font-size:11px; }
+  #peek-info .realm { color:#9fd8c8; margin-left:6px; }
+  #peek-info .gap { display:inline-block; width:8px; }
+  #peek-info .done { color:#9a9484; margin-left:6px; }
+  #peek-info .sk { white-space:normal; color:#e8dcc0; }
+  #peek-info .um-flip::before { content:'◀'; }
+  #peek-info.on-left .um-flip::before { content:'▶'; }
   .um-btn { padding:7px 0; text-align:center; font-size:12px; color:#e8dcc0; cursor:pointer;
     background:linear-gradient(180deg, rgba(60,50,35,.94), rgba(20,16,10,.96)); border:1px solid #8a7752; border-radius:3px; }
   .um-btn:hover { color:#fff6dd; border-color:#e0c98a; }
@@ -1004,6 +1026,8 @@
         <div class="um-btn" data-a="cancel">취소</div>
         <div id="um-skills"></div>
       </div>
+      <!-- 적 · 우군 · 행동을 마친 아군을 누르면 : 명령 메뉴의 이름 패널과 같은 모양의 정보 창 -->
+      <div id="peek-info"></div>
       <div id="terrain-info"><div class="ti-name" id="ti-name">초원</div><div class="ti-coord" id="ti-coord">(1,1)</div>
         <div>이동 <span id="ti-cost">1</span></div></div>
     </div></div>
@@ -2192,7 +2216,7 @@ const SCENES = {
       { who:'hero',             text:'아직 끝나지 않았습니다. 그 간부라는 자가 누구입니까?' },
       { who:'yangyang_lord',    shake:true, text:'들었느냐! 그 간부란 놈이 누구인지 고하라!' },
       { who:'yangyang_official', text:'그, 그분은… 스스로를 \'천교(天敎)\'라 부르는 곳의 사람입니다요. 바깥에서는 사파 연합이라들 하지만…' },
-      { who:'yangyang_official', text:'천교에는 간부가 일곱 있는데, 그중 하나인 자기, 구후가 이 양양 지부를 맡았다며… 소인에게 은자를 쥐여 주셨습니다요.' },
+      { who:'yangyang_official', text:'천교에는 간부가 일곱 있는데, 그중 하나인 자기, 구후가\n이 양양 지부를 맡았다며… 소인에게 은자를 쥐여 주셨습니다요.' },
       { who:'yangyang_official', text:'철검문에 지시를 내려 두었으니, 앞으로 일은 모두 그 문파를 통해 처리하라 하셨고요…' },
       { who:'hero',             text:'그자와 손을 잡은 게 언제부터입니까.' },
       { who:'yangyang_official', text:'…십 년 전입니다요. 처음 받은 명은… 천씨세가부터 없애라는 것이었습니다요.' },
@@ -2355,7 +2379,7 @@ const BATTLES = {
     ],
     victory: {
       enemiesLeft: 1,
-      retreat: { line:'이만 물러가자!', to:[1,5] },
+      retreat: { line:'크윽… 북협까지 끼어들 줄이야. 일단 물러나서 위에 알려야겠다!', to:[1,5] },
       talk: [
         { who:'guo',   text:'후… 다친 데는 없소, {name} 소협?' },
         { who:'hero',  text:'덕분에 무사합니다. 두 분이 아니었다면 큰일 날 뻔했습니다.' },
@@ -3285,6 +3309,122 @@ const HERO = { name:'주인공', look:'m', job:HERO_DEFAULT.job, move:HERO_DEFAU
 function fillName(t){ return String(t||'').split('{name}').join(HERO.name); }   // {name} → 주인공 이름
 function lineText(line){ return fillName(line.text); }
 
+/* ---------- 대사 줄 나눔 · 창 넘김 (이야기 · 전투 대사 · 인물에게 말 걸기 공통) ----------
+   - 문장(. ? !)이 끝나면 줄을 바꿈. 아주 짧은 말("흥." "예." "알겠소.")은 한 줄에 들어가면 다음 문장과 붙여 둠
+   - 한 줄에 안 들어가는 긴 문장은 줄 수는 가장 적게, 줄 길이는 고르게 나눔 (쉼표 · 말줄임 · 닫는 괄호 뒤에서 끊기를 좋아함)
+     → 마지막 줄에 낱말 하나만 덩그러니 남지 않음
+   - 창 하나에 들어가는 줄 수(dlgRows)를 넘으면 '클릭해서 계속' 으로 다음 창. 한 문장은 되도록 한 창 안에
+   - 대사 글에 '\n' 을 넣으면 그 자리에서 줄을 바꿈
+   - 줄 길이는 기기 화면 폭에 맞춰 그때그때 잼 (canvas 로 글자 폭 측정) */
+let _dlgCtx = null;
+function dlgMeasurer(el){
+  if (!_dlgCtx) _dlgCtx = document.createElement('canvas').getContext('2d');
+  const cs = getComputedStyle(el), font = cs.fontStyle+' '+cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily, cache = {};
+  return s=>{ if (cache[s] === undefined){ _dlgCtx.font = font; cache[s] = _dlgCtx.measureText(s).width; } return cache[s]; };
+}
+function dlgWidth(box){      // 글이 놓일 칸의 안쪽 폭
+  const cs = getComputedStyle(box);
+  return box.clientWidth - (parseFloat(cs.paddingLeft)||0) - (parseFloat(cs.paddingRight)||0) - 3;
+}
+function dlgRows(kind){ return kind==='story' && window.innerHeight <= 500 ? 2 : 3; }   // 폰 가로 : 이야기 창은 두 줄
+function dlgSentences(par){
+  const out = [], re = /[.?!]+["'”’」』)\]]*\s+/g; let last = 0, m;
+  while ((m = re.exec(par))){ out.push(par.slice(last, m.index + m[0].trimEnd().length)); last = m.index + m[0].length; }
+  if (last < par.length) out.push(par.slice(last));
+  return out.map(s=>s.trim()).filter(Boolean);
+}
+// 낱말 a 뒤 · 낱말 b 앞에서 줄을 바꿀 때의 벌점 — 작을수록 자연스러운 자리
+function dlgBreakCost(a, b){
+  if (/[,…)」』:;~—]$/.test(a)) return 0;                                         // 쉼표 · 말줄임 뒤
+  const core = a.replace(/[^가-힣]+$/,'');
+  if (/^(그|이|저|몇|한|두|세|네|새|옛|온|모든|어느|무슨|웬|십|백|천|만|열|스무|다섯|여섯|일곱|여덟|아홉)$/.test(core)) return 0.6;   // '그 / 무렵' · '십 / 년'
+  if (/^(수|것|줄|뿐|때문|듯|만큼|채|척|터|바)/.test(b) && b.length <= 4) return 0.6;              // '할 / 수 있다'
+  if (/지$/.test(core) && /^(못|않|말)/.test(b)) return 0.6;                                       // '끼지 / 못해'
+  if (/[아어여해와워줘봐]$/.test(core) && /^(주|줘|준|보|봐|본|버|두|놓|있|내|드|댔)/.test(b)) return 0.4;   // '알아 / 보다'
+  if (/(지만|는데|은데|인데|던데|니까|으니|면서|다가|도록|려고|어서|아서|해서|여서|으며|니|며|고|면|서)$/.test(core)) return 0.05;   // 이어지는 말 끝
+  return 0.2;
+}
+// 한 문장을 폭 W 안의 줄들로 : (줄 수, 들쭉날쭉한 정도 + 끊는 자리 벌점) 이 가장 작게
+function dlgWrap(s, W, mw){
+  if (mw(s) <= W) return [s];
+  const w = s.split(' '), n = w.length, seg = (a,b)=> w.slice(a,b).join(' ');
+  const best = [{ rows:0, cost:0, prev:-1 }];
+  for (let b=1;b<=n;b++){
+    let bb = null;
+    for (let a=b-1;a>=0;a--){
+      const tw = mw(seg(a,b));
+      if (tw > W && b-a > 1) break;
+      const p = best[a]; if (!p) continue;
+      const slack = Math.max(0, (W - tw) / W);
+      const cost = p.cost + slack*slack + (b<n ? dlgBreakCost(w[b-1], w[b]) : 0), rows = p.rows + 1;
+      if (!bb || rows < bb.rows || (rows===bb.rows && cost < bb.cost)) bb = { rows, cost, prev:a };
+    }
+    best[b] = bb;
+  }
+  const out = []; let b = n;
+  while (b > 0){ const a = best[b].prev; out.unshift(seg(a,b)); b = a; }
+  return out;
+}
+// 대사 하나 → 창(page) 목록. 창마다 줄은 '\n' 으로
+function dlgPages(text, el, W, maxRows){
+  const mw = dlgMeasurer(el);
+  const pars = String(text||'').split('\n').map(dlgSentences);
+  // ① 문장마다 한 줄 (아주 짧은 말은 한 줄에 들어가면 다음 문장과 함께)
+  const groups = [];
+  pars.forEach(ss=>{
+    for (let i=0;i<ss.length;i++){
+      let s = ss[i];
+      while (i+1 < ss.length && s.replace(/[^가-힣A-Za-z0-9]/g,'').length <= 3 && mw(s+' '+ss[i+1]) <= W) s = s+' '+ss[++i];
+      groups.push(dlgWrap(s, W, mw));
+    }
+  });
+  // ② 창 하나를 넘치면 : 이웃한 짧은 문장끼리 한 줄에 붙여서 창 하나에 담을 수 있는지 (붙이는 건 되도록 적게, 줄 길이는 고르게)
+  if (groups.reduce((n,g)=>n+g.length,0) > maxRows){
+    const units = []; pars.forEach((ss,pi)=> ss.forEach(s=> units.push({ s, par:pi, rows:dlgWrap(s, W, mw) })));
+    const k = units.length;
+    if (k > 1 && k <= 10){
+      let best = null;
+      for (let mask=0; mask < (1<<(k-1)); mask++){            // mask 의 i 번째 비트 = i 번째와 i+1 번째 문장을 한 줄에
+        const rows = []; let ok = true, i = 0;
+        while (ok && i < k){
+          let j = i; while (j < k-1 && (mask>>j & 1)) j++;
+          if (j === i) rows.push(...units[i].rows);
+          else {
+            const grp = units.slice(i, j+1), t = grp.map(u=>u.s).join(' ');
+            if (grp.some(u=>u.rows.length > 1 || u.par !== units[i].par) || mw(t) > W) ok = false; else rows.push(t);
+          }
+          i = j + 1;
+        }
+        if (!ok || rows.length > maxRows) continue;
+        const cost = rows.reduce((c,t)=>{ const sl = Math.max(0, (W - mw(t)) / W); return c + sl*sl; }, 0);
+        if (!best || rows.length > best.rows.length || (rows.length === best.rows.length && cost < best.cost)) best = { rows, cost };
+      }
+      if (best) return [best.rows.join('\n')];
+    }
+  }
+  // ③ 그래도 넘치면 다음 창으로 (한 문장은 되도록 한 창 안에)
+  const pages = []; let cur = [];
+  groups.forEach(g=>{
+    if (cur.length + g.length <= maxRows){ cur = cur.concat(g); return; }
+    if (cur.length){ pages.push(cur); cur = []; }
+    g = g.slice(); while (g.length > maxRows) pages.push(g.splice(0, maxRows));
+    cur = g;
+  });
+  if (cur.length || !pages.length) pages.push(cur);
+  return pages.map(p=>p.join('\n'));
+}
+// 글자를 하나씩 — 아직 안 나온 글자도 자리를 미리 차지해서 줄이 도중에 바뀌며 글이 튀지 않게. 타이머 id 를 돌려줌
+function typeText(el, text, ms, onDone){
+  const chars = Array.from(text); let c = 0;
+  el.innerHTML = '<span></span><span class="ghost"></span>';
+  const a = el.firstChild, g = el.lastChild; g.textContent = text;
+  const id = setInterval(()=>{
+    c++; a.textContent = chars.slice(0,c).join(''); g.textContent = chars.slice(c).join('');
+    if (c >= chars.length){ clearInterval(id); if (onDone) onDone(); }
+  }, ms);
+  return id;
+}
+
 /* ---------- 아군 파티 (주인공 + 합류한 인물) ---------- */
 let PARTY = ['hero'];      // 합류 순서
 let MEMBERS = {};          // 합류 인물 상태 { level, exp, realm, equip }
@@ -3330,28 +3470,26 @@ function showLine(i){
     el.classList.toggle('dim', line.who!==id);
     el.classList.toggle('speaking', line.who===id);
   });
-  const text = lineText(line);
-  storyTextSpan.textContent = '';
+  storyPages = dlgPages(lineText(line), storyTextSpan, dlgWidth(document.getElementById('story-text')), dlgRows('story'));
+  storyPage = 0; showStoryPage();
+}
+let storyPages = [''], storyPage = 0;
+function showStoryPage(){
   storyNext.style.visibility = 'hidden';
-  typing = true;
-  let c = 0;
-  clearInterval(typeTimer);
-  typeTimer = setInterval(()=>{
-    storyTextSpan.textContent += text[c];
-    c++;
-    if (c>=text.length){ clearInterval(typeTimer); typing=false; storyNext.style.visibility='visible'; }
-  }, 40);
+  typing = true; clearInterval(typeTimer);
+  typeTimer = typeText(storyTextSpan, storyPages[storyPage], 40, ()=>{ typing = false; storyNext.style.visibility = 'visible'; });
 }
 
 document.getElementById('story-box').addEventListener('click', ()=>{
   if (storyBusy) return;
   if (typing){
     clearInterval(typeTimer);
-    storyTextSpan.textContent = lineText(curScript()[scriptIdx]);
+    storyTextSpan.textContent = storyPages[storyPage];
     typing = false;
     storyNext.style.visibility = 'visible';
     return;
   }
+  if (storyPage < storyPages.length - 1){ storyPage++; showStoryPage(); return; }   // 긴 대사 : 다음 창
   scriptIdx++;
   if (scriptIdx >= curScript().length){
     const sc = SCENES[curScene];
@@ -3398,6 +3536,7 @@ document.getElementById('btn-hub').addEventListener('click', ()=>{
    notify(제목, 내용, 종류) — 종류 : 'pyo'(표국) · 'mission'(임무) · 'up'(승급). 몇 초 뒤 사라지고, 누르면 바로 닫힘 */
 function notify(title, body, kind){
   const st = document.getElementById('notice-stack'); if (!st) return;
+  if (document.getElementById('battle-screen').style.display === 'block') return;   // 출정을 서둘러 눌러도 전투 화면에는 띄우지 않음
   const el = document.createElement('div'); el.className = 'notice ' + (kind || '');
   el.innerHTML = '<b>' + title + '</b>' + (body ? '<span>' + String(body).split('\n').join('<br>') + '</span>' : '');
   const close = ()=>{ if (el.classList.contains('out')) return; el.classList.add('out'); setTimeout(()=> el.remove(), 320); };
@@ -3412,7 +3551,7 @@ function clearNotices(){ document.querySelectorAll('#notice-stack .notice').forE
 const noticedMissions = new Set();
 function noticeMissions(){
   const vis = id=>{ const el = document.getElementById(id); return el && el.style.display && el.style.display!=='none'; };
-  if (vis('hub-screen') || vis('npc-screen')) return;      // 이미 거점에 들어갔으면 알리지 않음 (배지로 충분)
+  if (vis('hub-screen') || vis('npc-screen') || vis('battle-screen')) return;      // 이미 거점 · 전투에 들어갔으면 알리지 않음 (배지로 충분)
   const M = missionDB();
   offerMissions().filter(id=>!missionState(id) && !noticedMissions.has(id)).forEach(id=>{
     noticedMissions.add(id);
@@ -3680,8 +3819,8 @@ function talkStoryNpc(n, el){
   const t = document.getElementById('snpc-text'); t.textContent = '';
   box.style.display = 'flex';
   if (el){ const m = el.querySelector('.mark'); if (m) m.remove(); }
-  let c = 0; clearInterval(snpcTimer);
-  const gk = 'give:'+curScene+':'+n.id, given = n.give && PLAYER.flags[gk];
+  clearInterval(snpcTimer);
+  const gk ='give:'+curScene+':'+n.id, given = n.give && PLAYER.flags[gk];
   if (n.give && !given){                             // 처음 말을 걸 때만
     PLAYER.flags[gk] = true;
     const g = n.give, k = g.n || 1, got = [];
@@ -3689,10 +3828,15 @@ function talkStoryNpc(n, el){
     if (g.item){ for (let i=0;i<k;i++) addToBag(g.item); got.push(g.item+' '+k+'개'); }
     setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 400);
   }
-  const line = fillName(given && n.after ? n.after : n.line);
-  snpcTimer = setInterval(()=>{ t.textContent += line[c]; c++; if (c>=line.length) clearInterval(snpcTimer); }, 35);
+  const pages = dlgPages(fillName(given && n.after ? n.after : n.line), t, dlgWidth(t), dlgRows('npc'));
+  let pg = 0, busy = false;
+  const close = document.getElementById('snpc-close');
+  const show = ()=>{ busy = true; clearInterval(snpcTimer); close.textContent = pg < pages.length - 1 ? '▶ 눌러서 계속' : '눌러서 닫기';
+                     snpcTimer = typeText(t, pages[pg], 35, ()=>{ busy = false; }); };
+  show();
   box.onclick = ()=>{
-    if (t.textContent.length < line.length){ clearInterval(snpcTimer); t.textContent = line; return; }
+    if (busy){ clearInterval(snpcTimer); t.textContent = pages[pg]; busy = false; return; }
+    if (pg < pages.length - 1){ pg++; show(); return; }                 // 긴 말 : 다음 창
     box.style.display = 'none';
   };
 }
@@ -4636,7 +4780,7 @@ const TIPS = {
     { t:'아군 움직이기', d:'파란 테두리의 아군을 누르면 갈 수 있는 칸이 밝게 보입니다. 가고 싶은 칸을 누르면 이동합니다.<br>제자리에서 행동하려면 아군을 누른 뒤 메뉴를 고르면 됩니다.' },
     { t:'행동 메뉴', d:'<b>공격</b> 바로 옆 적(활은 한 칸 띄운 적) · <b>무공</b> 내공을 써서 강한 공격 · <b>도구</b> 금창약 등 · <b>대기</b> 행동 끝<br>메뉴 위 이름 패널을 누르면 메뉴가 반대쪽으로 옮겨 갑니다.' },
     { t:'반격', d:'공격이나 무공을 맞고 살아남은 상대는 사거리가 닿으면 한 번 되받아칩니다.<br>멀리서 쏘는 활 · 원거리 무공은 근접 적의 반격을 받지 않습니다.' },
-    { t:'정보 보기', d:'적을 누르면 체력 · 내공을, 빈 칸을 누르면 지형(이동 소모)을 볼 수 있습니다.<br>오른쪽 위 <b>확대</b> 버튼으로 지도를 크게 볼 수 있습니다.' },
+    { t:'정보 보기', d:'적을 누르면 정보 창(체력 · 내공 · 공격 · 방어 · 이동 · 무공)이, 빈 칸을 누르면 지형(이동 소모)이 보입니다. 다시 누르면 닫힙니다.<br>오른쪽 위 <b>확대</b> 버튼으로 지도를 크게 볼 수 있습니다.' },
     { t:'턴 넘기기 · 저장', d:'모두 행동하면 자동으로 적 턴이 됩니다. 일찍 넘기려면 <b>턴 종료</b>.<br>아군 턴이 시작될 때마다 <b>자동 저장</b>되고, ⚙ 설정에서 직접 저장할 수도 있습니다.' },
   ],
   hub: [
@@ -5026,14 +5170,20 @@ function showBdLine(i){
   document.getElementById('bd-name').textContent = L.name || (u ? u.name : nameOf(L.who));
   if (u && cam.zoom) camTo(u);
   if (u){ u.el.classList.add('selected'); Object.values(units).forEach(o=>{ if(o!==u) o.el.classList.remove('selected'); }); }
-  const t = document.getElementById('bd-text'), nx = document.getElementById('bd-next');
-  t.textContent = ''; nx.style.visibility = 'hidden'; bdTyping = true;
-  let c = 0; clearInterval(bdTimer);
-  const text = lineText(L);
-  bdTimer = setInterval(()=>{ t.textContent += text[c]; c++; if (c>=text.length){ clearInterval(bdTimer); bdTyping=false; nx.style.visibility='visible'; } }, 35);
+  const t = document.getElementById('bd-text');
+  t.textContent = '';
+  bdPages = dlgPages(lineText(L), t, dlgWidth(t), dlgRows('battle')); bdPage = 0;
+  showBdPage();
+}
+let bdPages = [''], bdPage = 0;
+function showBdPage(){
+  const nx = document.getElementById('bd-next');
+  nx.style.visibility = 'hidden'; bdTyping = true; clearInterval(bdTimer);
+  bdTimer = typeText(document.getElementById('bd-text'), bdPages[bdPage], 35, ()=>{ bdTyping = false; nx.style.visibility = 'visible'; });
 }
 document.getElementById('bd-box').addEventListener('click', ()=>{
-  if (bdTyping){ clearInterval(bdTimer); document.getElementById('bd-text').textContent = lineText(bdLines[bdIdx]); bdTyping=false; document.getElementById('bd-next').style.visibility='visible'; return; }
+  if (bdTyping){ clearInterval(bdTimer); document.getElementById('bd-text').textContent = bdPages[bdPage]; bdTyping=false; document.getElementById('bd-next').style.visibility='visible'; return; }
+  if (bdPage < bdPages.length - 1){ bdPage++; showBdPage(); return; }   // 긴 대사 : 다음 창
   bdIdx++;
   if (bdIdx < bdLines.length){ showBdLine(bdIdx); return; }
   document.getElementById('bd-box').style.display = 'none';
@@ -5249,16 +5399,47 @@ function onUnitClick(u){
       if (bCells[key] && bCells[key].classList.contains('atk-range')){
         bState.attackMode = false; doAttack(bState.selected, u);
       } else { toast('사거리 밖입니다.'); }
-    } else { toast(u.name+' '+(u.job||'')+(u.realm?' · '+u.realm:'')+'  체력 '+u.hp+'/'+u.maxHp+'  내공 '+(u.mp||0)+'/'+(u.maxMp||0)); }
+    } else togglePeek(u);                             // 적 정보 창 (다시 누르면 닫힘)
     return;
   }
-  if (u.noControl){ toast(u.name+' '+(u.job||'')+' · '+(u.realm||'')); return; }
-  if (u.acted){ toast('이미 행동을 마쳤습니다.'); return; }
+  if (u.noControl || u.acted){ togglePeek(u); return; }   // 우군 · 행동을 마친 아군 : 정보 창만
   openMenu(u);
 }
 
+/* 정보 창 — 적 · 우군 · 행동을 마친 아군을 누르면 인물 옆에 (명령 메뉴의 이름 패널과 같은 모양)
+   다시 누르거나 다른 곳을 누르면 닫힘. 창을 누르면 인물 반대쪽으로 옮겨감 */
+const peekEl = document.getElementById('peek-info');
+let peekUnit = null;
+function peekHtml(u){
+  const lv = '<span class="lv">Lv'+(u.level||1)+'</span>';
+  const rg = ((u.range||1) > 1 || (u.minRange||1) > 1) ? '<span class="job">사거리 '+((u.minRange||1)===(u.range||1) ? u.range : (u.minRange||1)+'~'+u.range)+'</span>' : '';
+  const sk = (u.skills||[]).filter(n=>SKILLS[n]);
+  return '<b>'+u.name+'</b>'+lv+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
+         (u.side==='ally' && u.acted && !u.noControl ? '<span class="done">행동 완료</span>' : '')+'<br>'+
+         '<span class="lbl">체력</span> '+u.hp+'/'+u.maxHp+'<span class="gap"></span><span class="lbl">내공</span> '+(u.mp||0)+'/'+(u.maxMp||0)+'<br>'+
+         '<span class="lbl">공격</span> '+u.atk+'<span class="gap"></span><span class="lbl">방어</span> '+u.def+'<span class="gap"></span><span class="lbl">이동</span> '+(u.move||0)+
+         (sk.length ? '<div class="sk"><span class="lbl">무공</span> '+sk.join(' · ')+'</div>' : '')+
+         '<span class="um-flip"></span>';
+}
+function showPeek(u){
+  peekUnit = u;
+  peekEl.className = u.side==='enemy' ? 'enemy' : (u.friend || u.noControl ? 'friend' : '');
+  peekEl.innerHTML = peekHtml(u);
+  peekEl.classList.add('show');
+  const sel = bState.selected;                        // 명령 메뉴가 열려 있으면 그 반대쪽으로
+  placeBeside(peekEl, u, sel && sel !== u && sel.x > u.x ? 'l' : 'r');
+}
+function hidePeek(){ peekEl.classList.remove('show'); peekUnit = null; }
+function togglePeek(u){ if (peekUnit === u && peekEl.classList.contains('show')) hidePeek(); else { hideTerrainInfo(); showPeek(u); } }
+peekEl.addEventListener('click', ev=>{
+  ev.stopPropagation();
+  const u = peekUnit; if (!u) return;
+  const want = peekEl.classList.contains('on-left') ? 'r' : 'l';
+  if (placeBeside(peekEl, u, want) !== want) hint('반대쪽에는 창을 둘 자리가 없습니다', 1300);
+});
+
 function openMenu(u){
-  clearHi(); hideTerrainInfo();
+  clearHi(); hideTerrainInfo(); hidePeek();
   if (bState.selected && bState.selected!==u) bState.selected.el.classList.remove('selected');
   bState.selected = u; bState.attackMode = false; bState.skillMode = null; bState.itemMode = null;
   unitMenu.classList.remove('skills');
@@ -5279,28 +5460,31 @@ function openMenu(u){
 let menuSide = 'r';
 function placeMenu(u, want){
   if (!u || !unitMenu.classList.contains('show')) return menuSide;
+  return (menuSide = placeBeside(unitMenu, u, want));
+}
+// 창(el)을 인물 옆에 — 명령 메뉴 · 정보 창 공통
+function placeBeside(el, u, want){
   const px=(u.x-1)*B_TILE, py=(u.y-1)*B_TILE, GAP = B_TILE + 6;
-  const mw = unitMenu.offsetWidth, mh = unitMenu.offsetHeight;
+  const mw = el.offsetWidth, mh = el.offsetHeight;
   const S = BS.getBoundingClientRect();
   const leftOf = side => side==='r' ? px + B_TILE + GAP : px - mw - GAP;
   const fits = side => {
     const left = leftOf(side);
     if (left < 4 || left + mw > STAGE_W - 4) return false;          // 지도 밖
-    unitMenu.style.left = left+'px';
-    const r = unitMenu.getBoundingClientRect();
+    el.style.left = left+'px';
+    const r = el.getBoundingClientRect();
     return r.left >= S.left + 6 && r.right <= S.right - 6;           // 화면 밖
   };
   const other = want==='r' ? 'l' : 'r';
   let side = fits(want) ? want : fits(other) ? other : (leftOf(want) >= 4 && leftOf(want) + mw <= STAGE_W - 4 ? want : other);
-  unitMenu.style.left = leftOf(side)+'px';
-  menuSide = side;
+  el.style.left = leftOf(side)+'px';
   // 세로 : 인물 높이에 맞추고, 화면 아래 · 위로 넘치면 안쪽으로
   let top = Math.max(4, Math.min(py - 10, STAGE_H - mh - 4));
-  unitMenu.style.top = top+'px';
-  let mr = unitMenu.getBoundingClientRect();
-  if (mr.bottom > S.bottom - 6){ top -= (mr.bottom - (S.bottom - 6)) / (cam.s || 1); top = Math.max(4, top); unitMenu.style.top = top+'px'; mr = unitMenu.getBoundingClientRect(); }
-  if (mr.top < S.top + 6){ top += ((S.top + 6) - mr.top) / (cam.s || 1); unitMenu.style.top = top+'px'; }
-  unitMenu.classList.toggle('on-left', side==='l');
+  el.style.top = top+'px';
+  let mr = el.getBoundingClientRect();
+  if (mr.bottom > S.bottom - 6){ top -= (mr.bottom - (S.bottom - 6)) / (cam.s || 1); top = Math.max(4, top); el.style.top = top+'px'; mr = el.getBoundingClientRect(); }
+  if (mr.top < S.top + 6){ top += ((S.top + 6) - mr.top) / (cam.s || 1); el.style.top = top+'px'; }
+  el.classList.toggle('on-left', side==='l');
   return side;
 }
 // 이름 패널을 누르면 (마우스 클릭 · 터치) 메뉴가 인물 반대쪽으로 옮겨감 — 가려진 칸을 누를 수 있게
@@ -5703,6 +5887,7 @@ function playCutin(u, name, done){
 (function preloadCutins(){ Object.keys(ASSETS.cutin || {}).forEach(k=>{ const p = asset('cutin.'+k); if (p){ const i = new Image(); i.src = p; } }); })();
 function onCellClick(x,y){
   if (bState.over || bState.intro || bState.busy) return;
+  if (peekUnit){ hidePeek(); return; }                           // 정보 창이 열려 있으면 먼저 닫기만
   if (!bState.selected){
     if (bState.moving) return;
     const key=x+','+y;
@@ -6265,6 +6450,7 @@ function toastAvoid(el, us){
   el.style.top = (y - H.top)+'px'; el.style.transform = 'translateX(-50%)';
 }
 function showTerrainInfo(x,y){
+  hidePeek();
   const t = terrainOf(x,y); const d = terrainData(x,y);
   const panel = document.getElementById('terrain-info');
   document.getElementById('ti-name').textContent = t;
@@ -6276,7 +6462,7 @@ function showTerrainInfo(x,y){
   panel.style.left=left+'px'; panel.style.top=top+'px';
   panel.classList.add('show'); terrainInfoKey = x+','+y;
 }
-function hideTerrainInfo(){ document.getElementById('terrain-info').classList.remove('show'); terrainInfoKey=null; }
+function hideTerrainInfo(){ document.getElementById('terrain-info').classList.remove('show'); terrainInfoKey=null; if (typeof hidePeek==='function') hidePeek(); }
 
 // 시작 화면 배경음 (data/assets.js 의 bgm.title 이 있을 때)
 playBgm('title');
