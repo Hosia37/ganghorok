@@ -88,6 +88,13 @@
   #story-next {
     position:absolute; right:14px; bottom:10px; font-size:11px; color:#c9b98a; animation:blink 1.2s infinite;
   }
+  /* 폰 가로 (화면 높이 500 이하) : 대사창을 화면 아래쪽에 붙이고 조금 얇게 → 초상화 얼굴이 가려지지 않게 */
+  @media (max-height:500px){
+    #story-box { bottom:calc(1.5 * var(--vh)); left:4%; right:4%; }
+    #story-name { font-size:15px; padding:3px 18px; margin-left:16px; }
+    #story-text { padding:9px 22px 14px; min-height:calc(3.2em + 23px); }
+    #story-next { bottom:4px; }
+  }
   @keyframes blink { 0%,100%{opacity:.3} 50%{opacity:1} }
 
   #top-menu-wrap { position:absolute; right:3%; top:4%; display:flex; justify-content:flex-end; gap:14px; z-index:20; }
