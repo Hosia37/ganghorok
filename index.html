@@ -678,6 +678,11 @@
   .float-num.heal { color:#6dff8e; }
   .float-num.mp   { color:#7fc8ff; font-size:26px; }
   .float-num.buff { color:#a8d8ff; font-size:26px; }
+  .float-num.poison { color:#c58bff; font-size:24px; }
+  /* 중독 : 보랏빛 테두리 (방어 무공 테두리보다 안쪽) */
+  .token.poison .ring { outline:3px solid #a45ee5; outline-offset:-1px; }
+  .token.poison .ring img { filter:saturate(.75) hue-rotate(-20deg); }
+  #peek-info .psn, #um-info .psn { color:#d7a8ff; margin-left:6px; }
   @keyframes floatUp {
     0%   { opacity:0; transform:translate(-50%, 10px) scale(.5); }
     14%  { opacity:1; transform:translate(-50%, -14px) scale(1.35); }
@@ -1372,6 +1377,8 @@ const UNITS = {
   bandit_chief:    { name:'산적 두목', job:'적룡채 두목', level:1, move:4, face:'bandit', card:'bandit', foe:true, skills:['개산도법'] },
   bandit_archer:   { name:'산적 궁수', job:'적룡채 산적', level:1, move:4, range:2, minRange:2, face:'bandit', card:'bandit', foe:true },   // 활 : 한 칸 띄운 적만
   // ---- 천교 ----
+  guhu:            { name:'구후', job:'천교 간부 · 백타산 장로', level:45, move:4, skills:['합마공', '독사장'], passive:{ mpRegen:15 }, passiveName:'연단운기술',
+                     face:'ganbu', card:'ganbu', foe:true },   // 정체를 드러낸 구후 (다음에 싸울 때). 철검문 안마당의 '사파 간부'(sapa_ganbu)와 같은 사람
   sado_gyeol:      { name:'사도결', job:'천교 절강 지부 부지부장', title:'흑건도', level:1, move:4, face:'sado_gyeol', card:'sado_gyeol', foe:true },   // 구후의 오른팔 (전투 능력은 나올 때 정함)
   jeokryong_chief: { name:'적룡채주',  job:'녹림 적룡채주', level:1, move:4, face:'jeokryong_chief', card:'jeokryong_chief', foe:true,
                      skills:['적룡파산권', '개산도법'], passive:{ mpRegen:10 }, passiveName:'녹림심법' },
@@ -1438,6 +1445,9 @@ const SKILLS = {
   '전사창법 · 찌르기': { range:2, area:'line2',  power:5,   mp:30, desc:'직진 2칸 찌르기 · 사파 간부의 창법' },
   '개산도법':          { range:1, area:'sweep3', power:1.4, mp:20, desc:'앞쪽 가로 3칸 베기 · 산적 두목의 큰 칼' },
   '난도질':            { range:1, area:'single', power:1.5, mp:12, desc:'1칸 단일 · 산적의 막칼' },
+  // 구후 (천교 간부 · 백타산 장로) 의 본래 무공 — 철검문 안마당에서는 정체를 숨기려고 창법(전사창법)만 썼음
+  '합마공':            { range:4, area:'line4',  power:2.3, mp:40, desc:'직진 4칸 범위 · 두꺼비처럼 웅크렸다 한 번에 터뜨리는 백타산의 공' },
+  '독사장':            { range:1, area:'single', power:1.5, mp:20, poison:{ turns:3, dmg:23 }, desc:'1칸 단일 · 뱀독을 실은 장법 — 맞으면 3턴 동안 중독 (턴마다 체력 -23)' },
   '적룡파산권':        { range:1, area:'single', power:2.2, mp:25, desc:'1칸 단일 · 쇠장갑으로 바위도 깨뜨리는 적룡채주의 주먹' },
   // 회복 무공 (아군)
   '운기요상':        { range:1, area:'ally', heal:0.3, mp:12, desc:'자신 · 옆 아군 · 체력 30% 회복 — 내공으로 기혈을 다스려 상처를 치료' },
@@ -1463,7 +1473,7 @@ const ITEM_DB = {
   '천옷':   { type:'armor',      icon:'衣', img:'cloth', price:100, stat:{ def:3, eva:3 }, desc:'평범한 천으로 지은 옷. 가벼워 몸놀림이 편하다.' },
   '가죽갑옷': { type:'armor',    icon:'甲', img:'leather', price:100, stat:{ def:6 }, desc:'질긴 가죽을 덧대 만든 갑옷. 무겁지만 단단하다.' },
   '금창약': { type:'consumable', icon:'藥', img:'salve', price:50,  heal:50,        desc:'상처에 바르는 금창약. 전투 중 "도구"로 쓰면 체력을 50 회복한다.' },
-  '해독제': { type:'consumable', icon:'解', img:'bottle', price:80,                  desc:'독을 푸는 약 (샘플)' },
+  '해독제': { type:'consumable', icon:'解', img:'bottle', price:80, cure:'poison',   desc:'독을 푸는 약. 전투 중 "도구"로 쓰면 중독이 풀린다.' },
   '철광석': { type:'material',   icon:'鐵', price:120,                 desc:'대장간 재료 (샘플)' },
   '가죽끈': { type:'material',   icon:'繩', price:30,                  desc:'잡다한 재료 (샘플)' },
   '부적':   { type:'accessory',  icon:'符', price:200, stat:{ eva:3 }, desc:'액운을 막아 준다는 부적. 몸에 지니면 몸놀림이 가벼워진다.' },
@@ -1526,7 +1536,7 @@ const TREASURE_BOX = {
 };
 
 // 잡화점에서 파는 물건 (가격은 ITEM_DB)
-const SHOP_ITEMS = ['금창약', '철검', '활', '천옷', '가죽갑옷'];
+const SHOP_ITEMS = ['금창약', '해독제', '철검', '활', '천옷', '가죽갑옷'];
 const SELL_RATE = 0.5;        // 판매가 = 가격 × 0.5
 
 // 거점 상인
@@ -2617,7 +2627,7 @@ const SCENES = {
       { who:'narr',        text:'적룡채 사람들이 짐을 꾸리기 시작했다. 세 사람은 산채 문 앞에서 잠시 걸음을 멈췄다.' },
       { who:'cheonghwa',   text:'생각보다 시간을 많이 썼습니다. 황 방주님께서 급한 일이라 하셨으니 서둘러야겠습니다.' },
       { who:'cheolmyeong', text:'구후가 사람까지 사서 노린 물건이오. 다음엔 또 어떤 놈들이 길을 막을지 모르오.' },
-      { who:'hero',        text:'쉬지 않고 가도 며칠은 걸릴 겁니다. 서두릅시다.' },
+      { who:'hero',        text:'쉬지 않고 가도 열흘은 넘게 걸릴 겁니다. 서두릅시다.' },
       { who:'narr',        text:'세 사람은 적룡채를 뒤로하고 절강을 향해 걸음을 재촉했다.' },
     ],
     next: 'cheongyo_meeting',
@@ -2629,15 +2639,17 @@ const SCENES = {
     bg:'cheongyo_hall', cast:['sapa_ganbu','sado_gyeol'],
     script: [
       { who:'narr',       text:'같은 무렵, 절강. 사파 연합 절강 지부의 깊은 안채.' },
+      { who:'narr',       text:'절강 지부장이 죽은 뒤, 구후는 지부를 수습하러 양양에서 이곳까지 와 있었다.' },
       { who:'sado_gyeol', text:'구후 님, 송구합니다. 적룡채가 일을 그르쳤습니다.' },
       { who:'sapa_ganbu', name:'구후', text:'…그 산적 놈들이?' },
       { who:'sado_gyeol', text:'보따리를 든 자들이 오히려 적룡채를 쳐부쉈고, 채주까지 그쪽에 붙었다 합니다.' },
-      { who:'sado_gyeol', text:'이대로라면 며칠 안에 절강에 당도할 겁니다.' },
+      { who:'sado_gyeol', text:'이대로라면 열흘 남짓이면 절강에 당도할 겁니다.' },
       { who:'sapa_ganbu', name:'구후', text:'천씨 놈이로군. 양양에서부터 끈질기게도 따라붙는구나.' },
       { who:'sado_gyeol', text:'어찌할까요? 분타에 닿기 전에 길목에서 끊어 낼까요?' },
-      { who:'sapa_ganbu', name:'구후', text:'늦었다. 물건은 이미 거지들 손에 넘어간 셈이다.' },
+      { who:'sapa_ganbu', name:'구후', text:'늦었다. 개방에서 이미 지원을 내보냈을 게다.' },
       { who:'sapa_ganbu', name:'구후', text:'대신 그 물건이 무엇인지 알게 된 놈들은 하나도 살려 둘 수 없다.' },
       { who:'sapa_ganbu', name:'구후', text:'나는 대계를 위해 본교에 다녀와야 한다.' },
+      { who:'sapa_ganbu', name:'구후', text:'양양 지부와 절강 지부를 하나로 묶었으니, 교에 직접 아뢰어야 할 일이다.' },
       { who:'sapa_ganbu', name:'구후', text:'그동안 절강 지부는 네가 맡아라. 그리고 그놈들을 죽여라.' },
       { who:'sado_gyeol', text:'명을 받들겠습니다. 절강 땅을 밟은 걸 후회하게 해 드리지요.' },
       { who:'sapa_ganbu', name:'구후', text:'실패는 한 번으로 족하다. 두 번은 없다.' },
@@ -2651,7 +2663,7 @@ const SCENES = {
     chapter:'제2장', place:'절강 개방 분타',
     bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'],
     script: [
-      { who:'narr',  text:'한편, 길을 서둘러 절강성에 당도한 일행은 개방 분타를 찾았다.' },
+      { who:'narr',  text:'한편, 보름 남짓 길을 서둘러 절강성에 당도한 일행은 개방 분타를 찾았다.' },
       { bg:'gaebang_branch', cast:['hero','cheonghwa','cheolmyeong'],
         who:'npc', name:'분타주', text:'황 방주님께서 보내신 분들이오? 먼 길 오느라 고생 많았소.' },
       { who:'hero',  text:'양양 천씨세가의 {name}입니다. 이 물건을 전해 드리라 하셨습니다.' },
@@ -3326,7 +3338,7 @@ const CODEX = {
         { from:'yangyang_guo_inn',    text:'합마공과 뱀독을 쓴다. 백타산의 장로이자 구양봉의 후인으로 보인다.' },
         { from:'jeokryong_inside',    text:'사파 무인들을 보내 적룡채에 은자를 쥐여 주고, 황용의 물건을 든 일행을 막게 했다.' },
         { from:'zhejiang_branch',     text:'그 무리가 절강 바닷가 포구에 자리를 잡고 있다고 한다.' },
-        { from:'cheongyo_meeting',    text:'적룡채가 실패하자 \'대계를 위해 본교에 다녀오겠다\'며 절강 지부를 사도결에게 맡기고 떠났다.' },
+        { from:'cheongyo_meeting',    text:'절강 지부장이 죽자 지부를 수습하러 절강에 와 있었다. 양양 지부와 절강 지부를 하나로 묶은 일을 아뢰러 본교로 떠나며, 절강 지부를 사도결에게 맡겼다.' },
       ] },
     { id:'yangyang_lord', face:'yangyang_lord', name:'양양 성주', tag:'양양성',
       notes: [
@@ -5842,7 +5854,7 @@ function battleSnapshot(){
            expBy: Object.assign({}, bState.expBy), mission: Object.assign({}, bState.mission || {}), goalText: bState.goalText || null,
            units: Object.keys(units).map(k=>{ const u = units[k];
              return { key:k, id:u.id, side:u.side, friend:!!u.friend, noControl:!!u.noControl,
-                      x:u.x, y:u.y, level:u.level, hp:u.hp, mp:u.mp||0, acted:!!u.acted, moved:!!u.moved, fled:!!u.fled, guard:u.guard||null,
+                      x:u.x, y:u.y, level:u.level, hp:u.hp, mp:u.mp||0, acted:!!u.acted, moved:!!u.moved, fled:!!u.fled, guard:u.guard||null, poison:u.poison ? Object.assign({}, u.poison) : null,
                       hold:u.hold, holdRange:u.holdRange, roused:!!u.roused, ov:u.ov || null }; }) };
 }
 function battlePlace(){
@@ -5874,6 +5886,7 @@ function resumeBattle(b){
     u.acted = !!s.acted; u.moved = !!s.moved; u.fled = !!s.fled;
     if (u.hp<=0){ u.el.classList.add('dead'); u.el.style.display = 'none'; }
     if (s.guard){ u.guard = s.guard; u.el.classList.add('guard'); }
+    if (s.poison){ u.poison = Object.assign({}, s.poison); u.el.classList.add('poison'); }
     if (s.roused) u.roused = true;
     positionToken(u);
   });
@@ -5967,7 +5980,8 @@ function peekHtml(u){
   const rg = ((u.range||1) > 1 || (u.minRange||1) > 1) ? '<span class="job">사거리 '+((u.minRange||1)===(u.range||1) ? u.range : (u.minRange||1)+'~'+u.range)+'</span>' : '';
   const sk = (u.skills||[]).filter(n=>SKILLS[n]);
   return '<b>'+u.name+'</b>'+lv+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
-         (u.side==='ally' && u.acted && !u.noControl ? '<span class="done">행동 완료</span>' : '')+'<br>'+
+         (u.side==='ally' && u.acted && !u.noControl ? '<span class="done">행동 완료</span>' : '')+
+         (u.poison ? '<span class="psn">중독 '+u.poison.turns+'턴</span>' : '')+'<br>'+
          '<span class="lbl">체력</span> '+u.hp+'/'+u.maxHp+'<span class="gap"></span><span class="lbl">내공</span> '+(u.mp||0)+'/'+(u.maxMp||0)+'<br>'+
          '<span class="lbl">공격</span> '+u.atk+'<span class="gap"></span><span class="lbl">방어</span> '+u.def+'<span class="gap"></span><span class="lbl">이동</span> '+(u.move||0)+
          (sk.length ? '<div class="sk"><span class="lbl">무공</span> '+sk.join(', ')+'</div>' : '')+
@@ -6049,7 +6063,8 @@ document.getElementById('um-info').addEventListener('click', ev=>{
 });
 function unitInfoHtml(u){
   const rg = ((u.range||1) > 1 || (u.minRange||1) > 1) ? '<span class="job">사거리 '+((u.minRange||1)===(u.range||1) ? u.range : (u.minRange||1)+'~'+u.range)+'</span>' : '';
-  return '<b>'+u.name+'</b>'+(u.side==='ally'?'<span class="lv">Lv'+(u.level||1)+'</span>':'')+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+'<br>'+
+  return '<b>'+u.name+'</b>'+(u.side==='ally'?'<span class="lv">Lv'+(u.level||1)+'</span>':'')+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
+         (u.poison ? '<span class="psn">중독 '+u.poison.turns+'턴</span>' : '')+'<br>'+
          '<span class="lbl">체력</span> '+u.hp+'/'+u.maxHp+'<span class="gap"></span><span class="lbl">내공</span> '+(u.mp||0)+'/'+(u.maxMp||0)+
          ((u.side==='ally' && !u.friend) ? '<br><span class="lbl">경험</span> '+(u.exp||0)+'/'+EXP_MAX : '');
 }
@@ -6094,7 +6109,7 @@ unitMenu.addEventListener('click', (e)=>{
 });
 
 /* ---------- 도구 (배낭의 회복약) ---------- */
-function battleItems(){ return Object.keys(PLAYER.inv).filter(n=>PLAYER.inv[n]>0 && ITEM_DB[n] && ITEM_DB[n].type==='consumable' && ITEM_DB[n].heal); }
+function battleItems(){ return Object.keys(PLAYER.inv).filter(n=>PLAYER.inv[n]>0 && ITEM_DB[n] && ITEM_DB[n].type==='consumable' && (ITEM_DB[n].heal || ITEM_DB[n].cure)); }
 // 도구를 쓸 수 있는 대상 : 자신 + 붙어 있는 아군·우군
 function itemTargets(u){ return [u].concat(aliveOf('ally').filter(a=>a!==u && !a.noControl && manhattan(a,u)===1)); }
 function openItemList(u){
@@ -6104,7 +6119,7 @@ function openItemList(u){
   items.forEach(n=>{
     const it = ITEM_DB[n], b = document.createElement('div');
     b.className = 'sk-btn';
-    b.innerHTML = itemIcon(n)+' '+n+' ×'+PLAYER.inv[n]+'<small>체력 +'+it.heal+' · 자신 / 옆 아군</small>';
+    b.innerHTML = itemIcon(n)+' '+n+' ×'+PLAYER.inv[n]+'<small>'+(it.cure ? '중독 풀기' : '체력 +'+it.heal)+' · 자신 / 옆 아군</small>';
     b.addEventListener('click', ev=>{ ev.stopPropagation(); startItem(u, n); });
     list.appendChild(b);
   });
@@ -6130,6 +6145,14 @@ function onItemTarget(x, y){
 function useItem(u, t, n){
   bState.itemMode = null; clearHi();
   const it = ITEM_DB[n];
+  if (it.cure){                                      // 해독제 : 중독 풀기
+    if (!t.poison){ toast(t.name+josa(t.name,'은','는')+' 중독되지 않았습니다.'); bState.itemMode = { u, n }; itemTargets(u).forEach(a=>{ const c = bCells[a.x+','+a.y]; if (c) c.classList.add('heal-range'); }); return; }
+    if (!takeFromBag(n)) return;
+    cureUnit(t); floatNum(t, '해독', 'heal'); sfx('heal');
+    toast(u.name+josa(u.name,'이','가')+' '+n+josa(n,'을','를')+' 썼습니다 — '+t.name+'의 중독이 풀렸습니다  (남은 '+n+' '+(PLAYER.inv[n]||0)+'개)', 1800, [u, t]);
+    u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
+    autoEndCheck(); return;
+  }
   if (!takeFromBag(n)) return;
   const before = t.hp; t.hp = Math.min(t.maxHp, t.hp + it.heal);
   floatNum(t, '+'+(t.hp-before), 'heal'); sfx('heal');
@@ -6256,8 +6279,8 @@ function showExpPop(u, before, amount, ups){
 const DIRS = [[1,0],[-1,0],[0,1],[0,-1]];
 function inBounds(x,y){ return x>=1 && x<=B_COLS && y>=1 && y<=B_ROWS; }
 // 선택한 칸 → 실제 피해 범위
-// 방향을 고르는 무공 : line3 (직진 3칸) · line2 (직진 2칸) · sweep3 (앞쪽 가로 3칸 베기)
-function lineLen(d){ return d.area==='line3' ? 3 : d.area==='line2' ? 2 : 0; }
+// 방향을 고르는 무공 : line4 (직진 4칸) · line3 (직진 3칸) · line2 (직진 2칸) · sweep3 (앞쪽 가로 3칸 베기)
+function lineLen(d){ return d.area==='line4' ? 4 : d.area==='line3' ? 3 : d.area==='line2' ? 2 : 0; }
 function dirSkill(d){ return !!lineLen(d) || d.area==='sweep3'; }
 function areaSkill(d){ return dirSkill(d) || d.area==='volley3'; }             // 여러 칸을 치는 무공 (숙련 위력 · 미리 보기)
 // volley3 : 고른 칸과 그 양옆 — 쏘는 방향(가로/세로 중 더 먼 쪽)과 직각으로 3칸. 대각선이면 가로로 펼침
@@ -6356,8 +6379,26 @@ function castSelf(u, name){
   u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
   autoEndCheck();
 }
-// 아군 턴 시작 : 방어 무공 풀림, 심법 회복 (체력 · 내공)
+/* 중독 (data/skills.js 의 poison:{ turns, dmg }) — 그 무공에 맞고 살아남으면 걸림 (이미 걸렸으면 다시 3턴)
+   자기 편 턴이 시작될 때마다 체력 -dmg, turns 만큼. 중독으로는 쓰러지지 않음 (체력 1 에서 멈춤). 해독제로 풀림 */
+function applyPoison(t, p){
+  if (!t || t.hp<=0 || !p) return;
+  t.poison = { turns:p.turns, dmg:p.dmg };
+  t.el.classList.add('poison');
+  floatNum(t, '중독', 'poison', 250);
+}
+function cureUnit(t){ if (t && t.poison){ t.poison = null; t.el.classList.remove('poison'); return true; } return false; }
+function poisonTick(list){
+  list.forEach(u=>{
+    if (!u.poison || u.hp<=0) return;
+    const d = Math.min(u.poison.dmg, u.hp - 1);
+    if (d > 0){ u.hp -= d; floatNum(u, '중독 -'+d, 'poison'); positionToken(u); }
+    if (--u.poison.turns <= 0) cureUnit(u);
+  });
+}
+// 아군 턴 시작 : 방어 무공 풀림, 중독 피해, 심법 회복 (체력 · 내공)
 function allyTurnStart(){
+  poisonTick(aliveOf('ally'));
   aliveOf('ally').forEach(u=>{
     if (u.guard){ u.guard = null; u.el.classList.remove('guard'); }
     const p = u.passive; if (!p) return;
@@ -6405,7 +6446,7 @@ function castSkill(u, name, x, y){
     const targets = area.map(([cx,cy])=>unitAt(cx,cy,'enemy')).filter(Boolean);
     let hits=0, total=0, kills=0;
     const pw = d.power + ((u.mastery && u.mastery[name] && u.mastery[name].power) || 0);     // 숙련(n성)으로 오른 위력
-    targets.forEach(t=>{ const r = strike(u, t, pw, true); if(!r.miss){ hits++; total+=r.dmg; if(t.hp<=0) kills++; } });
+    targets.forEach(t=>{ const r = strike(u, t, pw, true); if(!r.miss){ hits++; total+=r.dmg; if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });
     sfx(hits ? 'skill' : 'miss');
     const near = [u].concat(targets);
     if (!targets.length) toast(name+'! 범위 안에 적이 없습니다.');
@@ -6913,7 +6954,8 @@ function enemySkillPick(e){
     const foesIn = cells => cells.map(([x,y])=>unitAt(x,y,'ally')).filter(f=>f && !f.noControl);
     const consider = (x, y)=>{
       const list = foesIn(skillArea(name, x, y, e)); if (!list.length) return;
-      const sc = list.reduce((a,f)=>{ const dm = Math.max(1, e.atk*d.power - f.def*0.5); return a + Math.min(f.hp, dm) + (dm >= f.hp ? 200 : 0) + ((e.focus||[]).includes(f.id) ? 150 : 0); }, 0);
+      const sc = list.reduce((a,f)=>{ const dm = Math.max(1, e.atk*d.power - f.def*0.5); return a + Math.min(f.hp, dm) + (dm >= f.hp ? 200 : 0) + ((e.focus||[]).includes(f.id) ? 150 : 0)
+                                                 + (d.poison && !f.poison ? d.poison.dmg * d.poison.turns * 0.6 : 0); }, 0);   // 중독 : 아직 안 걸린 상대를 노림
       if (!best || sc > best.score) best = { name, x, y, score:sc };
     };
     if (dirSkill(d)) DIRS.forEach(([dx,dy])=>consider(e.x+dx, e.y+dy));
@@ -6933,9 +6975,10 @@ function enemyCast(e, name, x, y, done){
     area.forEach(([cx,cy])=>{ const c = bCells[cx+','+cy]; if (!c) return; c.classList.remove('skill-hit'); void c.offsetWidth; c.classList.add('skill-hit'); });
     const targets = area.map(([cx,cy])=>unitAt(cx,cy,'ally')).filter(t=>t && !t.noControl);
     let hits = 0, total = 0, kills = 0;
-    targets.forEach(t=>{ const r = strike(e, t, d.power, true); if (!r.miss){ hits++; total += r.dmg; if (t.hp<=0) kills++; } });
+    let poisoned = 0;
+    targets.forEach(t=>{ const r = strike(e, t, d.power, true); if (!r.miss){ hits++; total += r.dmg; if (t.hp<=0) kills++; else if (d.poison){ applyPoison(t, d.poison); poisoned++; } } });
     sfx(hits ? 'skill' : 'miss');
-    toast(e.name+' — '+name+'! '+(hits ? hits+'명에게 총 '+total+' 데미지'+(kills ? ' · '+kills+'명 쓰러짐' : '') : '모두 피했습니다'), 1500, [e].concat(targets));
+    toast(e.name+' — '+name+'! '+(hits ? hits+'명에게 총 '+total+' 데미지'+(kills ? ' · '+kills+'명 쓰러짐' : '')+(poisoned ? ' · 중독 ('+d.poison.turns+'턴 동안 체력 -'+d.poison.dmg+')' : '') : '모두 피했습니다'), 1700, [e].concat(targets));
     checkEnd();
     if (bState.over){ setTimeout(done, 650); return; }
     setTimeout(()=> runCounters(e, targets, ()=>{ checkEnd(); setTimeout(done, 350); }), 300);   // 맞고 살아남은 아군 · 우군의 반격
@@ -6943,6 +6986,7 @@ function enemyCast(e, name, x, y, done){
 }
 function enemyTurn(){
   if (bState.over) return;
+  poisonTick(aliveOf('enemy'));                     // 적 턴 시작 : 중독 피해
   aliveOf('enemy').forEach(u=>{                     // 적 턴 시작 : 심법 회복 (내공 · 체력)
     const p = u.passive; if (!p) return;
     if (p.mpRegen) u.mp = Math.min(u.maxMp, (u.mp||0) + p.mpRegen);
