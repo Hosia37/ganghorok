@@ -148,7 +148,11 @@
     gap:clamp(8px,calc(2 * var(--vh)),18px); background:rgba(6,4,2,.78); backdrop-filter:blur(3px); padding:2vh 3vw; }
   #select-title { color:#ffd88a; font-size:clamp(16px,calc(3.2 * var(--vh)),24px); letter-spacing:4px; }
   #select-cards { display:flex; gap:clamp(14px,3vw,40px); }
-  .sel-card { height:calc(52 * var(--vh)); aspect-ratio:4/5; object-fit:cover; border:2px solid rgba(138,119,82,.8); border-radius:6px; cursor:pointer;
+  .sel-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .sel-cap { color:#cdbb92; font-size:clamp(13px,calc(2.6 * var(--vh)),17px); letter-spacing:2px; text-align:center; line-height:1.2; }
+  .sel-cap b { color:#f3ead9; } .sel-cap small { display:block; font-size:.78em; color:#e0b860; letter-spacing:0; }
+  .sel-item.on .sel-cap b { color:#ffd88a; }
+  .sel-card { height:calc(44 * var(--vh)); aspect-ratio:4/5; object-fit:cover; border:2px solid rgba(138,119,82,.8); border-radius:6px; cursor:pointer;
     filter:grayscale(.6) brightness(.65); transition:filter .2s ease, transform .2s ease, border-color .2s ease; }
   .sel-card:hover { filter:grayscale(.2) brightness(.9); }
   .sel-card.on { filter:none; border-color:#ffd88a; transform:scale(1.04); box-shadow:0 0 22px rgba(255,200,110,.45); }
@@ -157,7 +161,8 @@
     background:rgba(20,15,9,.9); border:1px solid #8a7752; border-radius:3px; outline:none; font-family:inherit; user-select:text; -webkit-user-select:text; }
   #name-input:focus { border-color:#d8a24a; }
   #name-make { padding:10px 26px; font-size:clamp(15px,calc(2.6 * var(--vh)),18px); }
-  #name-msg { min-height:18px; font-size:13px; color:#e59a7a; }
+  #name-msg { min-height:18px; max-width:min(560px,80vw); font-size:clamp(12px,calc(2.3 * var(--vh)),14px); color:#e8dcc0; text-align:center; line-height:1.4; }
+  #name-msg.warn { color:#e59a7a; }
 
   /* ---------------- 시작 화면 ---------------- */
   #title-screen { position:absolute; inset:0; z-index:90; background:#000 center top/cover no-repeat;
@@ -712,6 +717,7 @@
   #shop-list .top-btn.off { opacity:.4; }
   /* 장비 등급 색 : 일반 · 희귀 · 보구 */
   .grade-1 { color:#8fe0a8 !important; } .grade-2 { color:#8cc4ff !important; } .grade-3 { color:#ffb85c !important; }
+  .named { color:#e2a8ff !important; text-shadow:0 0 6px rgba(200,140,255,.35); }   /* 명품 */
   #shop-panel.enh #shop-list { max-height:min(calc(66 * var(--vh)),440px); gap:4px; }
   .shop-row.enh { padding:5px 8px; gap:8px; }
   .shop-row.enh .nm { font-size:clamp(12px,calc(2.6 * var(--vh)),15px); }
@@ -889,14 +895,11 @@
     <div id="select-wrap">
       <div id="select-title">강호에서의 모습을 선택해주세요</div>
       <div id="select-cards">
-        <img class="sel-card" data-hero="m" data-asset="card.hero_m" alt="">
-        <img class="sel-card" data-hero="f" data-asset="card.hero_f" alt="">
-      </div>
-      <div id="name-row">
-        <input id="name-input" type="text" maxlength="5" placeholder="이름 (2~5자)" autocomplete="off">
-        <div class="top-btn" id="name-make">생성</div>
+        <div class="sel-item"><img class="sel-card" data-hero="m" data-asset="card.hero_m" alt=""><div class="sel-cap" data-hero="m"></div></div>
+        <div class="sel-item"><img class="sel-card" data-hero="f" data-asset="card.hero_f" alt=""><div class="sel-cap" data-hero="f"></div></div>
       </div>
       <div id="name-msg"></div>
+      <div id="name-row"><div class="top-btn" id="name-make">이 모습으로 시작</div></div>
     </div>
   </div>
   <div id="office-modal"><div class="st-box" id="of-box">
@@ -1383,6 +1386,12 @@ const COUNTER = { on:true, power:1.0 };   // power : 반격 위력 (1.0 = 일반
 
 // 주인공 기본값
 const HERO_DEFAULT = { job:'무인', move:4, skills:[] };
+// 주인공은 이름이 정해져 있음 — 시작할 때 고른 모습(m 남 / f 여)에 따라
+//   stat : 처음부터 붙는 능력치 (atk 공격, mp 내력 …)   story : 고르는 화면에 보이는 짧은 사연
+const HERO_LOOKS = {
+  m: { name:'천명우', stat:{ atk:8 }, story:'어린 시절 세가가 멸문할 때 누이 명화를 잃었다. 원수를 잊지 않는다.' },
+  f: { name:'천명화', stat:{ mp:8 },  story:'어린 시절 세가가 멸문할 때 오라버니 명우를 잃었다. 세가 어른들의 당부대로, 살아남는 것이 먼저다.' },
+};
 
 const UNITS = {
   // ---- 아군 (합류 인물) ----
@@ -1529,6 +1538,7 @@ const SKILLS = {
 //   img  : 그림 (data/assets.js 의 item 이름) — 있으면 글자 대신 그림
 //   stat : 장착 시 능력치 보너스 (atk 공격, def 방어, hit 명중, eva 회피, hp 체력, mp 내력)
 //   kind : (무기만) 'bow' = 활 — 활을 쓰는 인물(data/units.js 의 weapon:'bow')만 장착. 적지 않으면 검 · 도 등 (활 쓰는 인물은 못 씀)
+//   named : true = 명품 (이름난 보물). 이름이 금빛으로 보이고, 대장간 '승급'은 안 됨 ('강화'는 됨). 제2장부터 전투 보상으로 하나씩
 const ITEM_DB = {
   '목검':   { type:'weapon',     icon:'劍', img:'wood_sword', price:60,  stat:{ atk:5 }, desc:'나무로 깎은 연습용 검. 가볍고 손에 익히기 좋다.' },
   '철검':   { type:'weapon',     icon:'劍', img:'sword', price:80,  stat:{ atk:8 }, desc:'무쇠를 두드려 만든 검. 투박하지만 날이 단단하다.' },
@@ -1549,6 +1559,11 @@ const ITEM_DB = {
   '승급석': { type:'material', icon:'昇', price:300, desc:'물건의 격을 끌어올리는 귀한 돌. 대장간 "승급"으로 무기 · 방어구의 등급을 올린다 (흔함 → 일반 → 희귀 → 보구).' },
   '보물상자': { type:'material', icon:'箱', price:400, desc:'표국 행렬이 사례로 받아 온 상자. 열면 장신구나 심법 서책이 하나 나온다.' },
   '영약':   { type:'material', icon:'丹', img:'pills', price:500, desc:'기운을 북돋는 귀한 약. 배낭에서 "복용"하면 최대 체력 · 내력이 영구히 오른다 (인물마다 5개까지).' },
+  // ---- 명품 (전투 보상 — 제2장부터 한 전투에 하나씩) ----
+  '야명주': { type:'accessory', icon:'珠', named:true, price:3000, stat:{ hit:4, mp:6 },  desc:'어둠 속에서도 달빛처럼 빛나는 구슬. 지니면 눈이 밝아지고 기가 맑아진다.' },
+  '간장':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:15, hit:3 }, desc:'오나라의 명장 간장이 아내 막야와 함께 벼려 낸 한 쌍의 명검 중 웅검(雄劍). 묵직하고 곧다.' },
+  '막야':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:13, eva:4 }, desc:'간장과 한 쌍을 이루는 자검(雌劍). 아내 막야의 이름을 땄다. 가볍고 날래다.' },
+  '화씨벽': { type:'accessory', icon:'璧', named:true, price:5000, stat:{ def:4, hp:20 }, desc:'초나라 사람 변화가 두 번이나 발이 잘리면서도 바친 천하의 보옥. 지니면 몸이 굳건해진다.' },
 };
 // 이름을 바꾼 물건 (예전 저장을 불러올 때 새 이름으로 바꿔 줌)  옛 이름 : 새 이름
 const ITEM_RENAMED = { '토나법 서책':'토납법 서책', '보물':'보물상자' };
@@ -3168,6 +3183,7 @@ const BATTLES = {
       ],
       loot: ['목검', '천옷'],
       gold: 200,
+      suryeon: 300,
       next: 'wudang',
     },
   },
@@ -3568,7 +3584,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 내가 졌다.', all:true, msg:'산적들이 무기를 내려놓습니다.' },   // 채주가 먼저 말하고 → 남은 산적들이 무기를 내려놓음
-      loot: ['보물상자'],
+      loot: ['보물상자', '영약', '야명주'],      // 제2장부터 : 영약 + 명품 하나
       gold: 800,
       suryeon: 1150,
       exp: 30,
@@ -3622,6 +3638,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 거지들이 이 정도일 줄이야. 물러난다!', all:true, msg:'남은 무리가 포구 쪽으로 달아납니다.' },
+      loot: ['영약', '간장'],
       gold: 900,
       suryeon: 1250,
       exp: 30,
@@ -3671,7 +3688,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 구후 님… 대계는… 이미 움직이기 시작했다…', all:true, msg:'남은 천교 무인들이 무기를 내던집니다.' },
-      loot: ['영약'],
+      loot: ['영약', '막야'],
       gold: 1000,
       suryeon: 1350,
       exp: 30,
@@ -3719,6 +3736,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 그, 그만! 항복이오, 항복!', all:true, msg:'남은 녹림도들이 무기를 내던집니다.' },
+      loot: ['영약', '화씨벽'],
       gold: 1000,
       suryeon: 1400,
       exp: 30,
@@ -4216,6 +4234,8 @@ function asset(key, depth){
 }
 function cssUrl(p){ return p ? "url('"+p+"')" : 'none'; }
 function heroLook(){ return HERO.look==='f' ? 'hero_f' : 'hero_m'; }
+// 주인공 이름은 모습에 따라 정해짐 (data/units.js 의 HERO_LOOKS)
+function heroNameOf(look, fallback){ const L = (typeof HERO_LOOKS !== 'undefined') && HERO_LOOKS[look==='f' ? 'f' : 'm']; return (L && L.name) || fallback || '주인공'; }
 function faceOf(id){ return id==='hero' ? asset('face.'+heroLook()) : asset('face.'+((UNITS[id]||{}).face||'')); }
 function cardOf(id){ return id==='hero' ? asset('card.'+heroLook()) : asset('card.'+((UNITS[id]||{}).card||'')); }
 function nameOf(id){ return id==='hero' ? HERO.name : ((UNITS[id]||{}).name||''); }
@@ -4313,6 +4333,7 @@ function treeBonus(id){
 function growthBonus(id){
   const b = treeBonus(id), st = memberState(id) || {}, n = st.elixir || 0;
   if (n && typeof ELIXIR !== 'undefined') for (const k in ELIXIR.stat) b[k] = (b[k]||0) + ELIXIR.stat[k] * n;
+  if (id==='hero' && typeof HERO_LOOKS !== 'undefined'){ const L = HERO_LOOKS[HERO.look==='f' ? 'f' : 'm']; if (L && L.stat) for (const k in L.stat) b[k] = (b[k]||0) + L.stat[k]; }   // 남 : 공격 +8 · 여 : 내력 +8
   return b;
 }
 // 해금한 심법(패시브)들의 효과 합
@@ -5174,8 +5195,9 @@ function openSelect(){
   document.getElementById('intro-box').style.display = 'none';
   document.getElementById('intro-skip').style.display = 'none';
   setIntroBg(INTRO[INTRO.length-1].bg);
-  document.querySelectorAll('.sel-card').forEach(c=>c.classList.remove('on'));
-  document.getElementById('name-input').value = '';
+  document.querySelectorAll('.sel-card, .sel-item').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.sel-cap').forEach(c=>{ const L = HERO_LOOKS[c.dataset.hero] || {};
+    c.innerHTML = '<b>' + (L.name||'') + '</b><small>' + Object.keys(L.stat||{}).map(k=> STAT_NAME[k] + ' +' + L.stat[k]).join(' · ') + '</small>'; });
   document.getElementById('name-msg').textContent = '';
   HERO.look = null;
   document.getElementById('select-wrap').style.display = 'flex';
@@ -5189,27 +5211,22 @@ document.getElementById('intro-box').addEventListener('click', ()=>{
 document.getElementById('intro-skip').addEventListener('click', openSelect);
 document.querySelectorAll('.sel-card').forEach(c=>{
   c.addEventListener('click', ()=>{
-    document.querySelectorAll('.sel-card').forEach(x=>x.classList.toggle('on', x===c));
+    document.querySelectorAll('.sel-card').forEach(x=>{ x.classList.toggle('on', x===c); x.parentNode.classList.toggle('on', x===c); });
     HERO.look = c.dataset.hero;
-    document.getElementById('name-msg').textContent = '';
+    const msg = document.getElementById('name-msg'); msg.classList.remove('warn');
+    msg.textContent = (HERO_LOOKS[HERO.look] || {}).story || '';
   });
 });
 function makeHero(){
   const msg = document.getElementById('name-msg');
-  const name = document.getElementById('name-input').value.trim();
-  const len = Array.from(name).length;
-  if (!HERO.look){ msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
-  if (len < 2 || len > 5){ msg.textContent = '이름은 2자 이상 5자 이하로 입력해주세요'; return; }
-  if (/\s/.test(name)){ msg.textContent = '이름에는 띄어쓰기를 쓸 수 없습니다'; return; }
-  HERO.name = name; HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
+  if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
+  HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
   HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = 0; delete HERO.train;
   resetParty();
   PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0;
-  document.getElementById('name-input').blur();
   startStory();
 }
 document.getElementById('name-make').addEventListener('click', makeHero);
-document.getElementById('name-input').addEventListener('keydown', e=>{ if (e.key==='Enter') makeHero(); });
 
 
 /* ================= 저장 / 불러오기 (5칸 × 3페이지 = 15칸) ================= */
@@ -5298,6 +5315,7 @@ function renameOldItems(){
 function applySnapshot(s){
   closeSettings(); stopBattle();
   Object.assign(HERO, { level:1, exp:0, job:HERO_DEFAULT.job }, s.hero);
+  HERO.name = heroNameOf(HERO.look, HERO.name);              // 이름은 모습에 따라 고정 (예전 저장의 직접 지은 이름도 바꿈)
   // 경지 : 새 저장(rv 2)은 저장된 경지 그대로, 예전 저장은 새 레벨표로 다시 계산
   const keepRealm = (r, lv)=> (s.rv >= 2 && REALMS.includes(r)) ? r : realmOfLevel(lv||1);
   HERO.realm = keepRealm(s.hero.realm, HERO.level);
@@ -5385,7 +5403,7 @@ function renderSaveList(){
     if (sv){
       const face = asset('face.'+(sv.hero.look==='f' ? 'hero_f' : 'hero_m'));
       row.innerHTML = '<span class="sv-no">'+no+'</span><img class="sv-face" src="'+face+'">'+
-        '<div class="sv-main">'+sv.hero.name+' Lv'+(sv.hero.level||1)+' · '+sv.hero.job+' '+((sv.rv>=2 && sv.hero.realm) || realmOfLevel(sv.hero.level||1))+
+        '<div class="sv-main">'+heroNameOf(sv.hero.look, sv.hero.name)+' Lv'+(sv.hero.level||1)+' · '+sv.hero.job+' '+((sv.rv>=2 && sv.hero.realm) || realmOfLevel(sv.hero.level||1))+
         '<small>'+sv.chapter+' · '+sv.place+' · 금 '+Number(sv.player.gold).toLocaleString()+playTag(sv)+'</small></div>'+
         '<span class="sv-time">'+fmtTime(sv.time)+'</span>';
     } else {
@@ -5566,7 +5584,7 @@ function renderBagDetail(){
   if (!bagSel){ box.innerHTML = '<div class="bd-none">물건을 눌러<br>정보를 확인하세요</div>'; return; }
   const n = bagSel, it = ITEM_DB[n] || {};
   const curTxt = isEquip(n) ? PARTY.map(id=> nameOf(id)+' '+(memberState(id).equip[it.type]||'없음')).join(' · ') : '';
-  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(ITEM_TYPE_NAME[it.type]||'')+(isEquip(n) && it.type!=='accessory' ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
+  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(ITEM_TYPE_NAME[it.type]||'')+(isNamed(n) ? ' · 명품' : isEquip(n) && it.type!=='accessory' ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
     (it.stat ? '<div class="bd-st">'+statText(it.stat)+'</div>' : '')+
     (it.heal ? '<div class="bd-st">체력 회복 +'+it.heal+'</div>' : '')+
     '<div class="bd-ds">'+(it.desc||'')+'</div>'+
@@ -5831,7 +5849,8 @@ function ensureSavedItems(){
   Object.keys(PLAYER.inv || {}).forEach(ensureItem);
   [HERO.equip].concat(Object.keys(MEMBERS).map(id=>MEMBERS[id].equip)).forEach(eq=>{ if (eq) Object.values(eq).forEach(n=>{ if (n) ensureItem(n); }); });
 }
-function gradeCls(name){ const g = itemParse(name).grade; return g ? ' grade-' + g : ''; }
+function isNamed(name){ const p = itemParse(name), b = ITEM_DB[p.base] || ITEM_DB[name]; return !!(b && b.named); }   // 명품 (data/items.js 의 named)
+function gradeCls(name){ const g = itemParse(name).grade; return (g ? ' grade-' + g : '') + (isNamed(name) ? ' named' : ''); }
 function enhCost(lv){ return { stone:ENHANCE.stone[lv]||0, gold:ENHANCE.gold[lv]||0 }; }   // lv → lv+1
 function promCost(g){ return { stone:PROMOTE.stone[g]||0, gold:PROMOTE.gold[g]||0 }; }      // g → g+1
 function costText(c, stone){ return stone + ' ' + c.stone + '<br>금 ' + c.gold.toLocaleString(); }
@@ -5856,14 +5875,15 @@ function renderForge(mode){
   if (!T.length){ const e = document.createElement('div'); e.className = 'shop-empty'; e.textContent = '올릴 무기 · 방어구가 없습니다'; list.appendChild(e); }
   T.forEach(t=>{
     const p = itemParse(t.name), it = ITEM_DB[t.name];
-    const max = enh ? p.lv >= ENHANCE.max : p.grade >= gradeNames().length - 1;
+    const named = !enh && isNamed(t.name);                 // 명품은 승급 안 됨
+    const max = enh ? p.lv >= ENHANCE.max : (named || p.grade >= gradeNames().length - 1);
     const where = t.owner ? nameOf(t.owner) + ' 장착' : '배낭 ' + PLAYER.inv[t.name] + '개';
     const nx = max ? null : (enh ? itemStatOf(p.base, p.grade, p.lv + 1) : itemStatOf(p.base, p.grade + 1, p.lv));
-    const stTxt = (enh ? '' : gradeNames()[p.grade] + (max ? '' : '→' + gradeNames()[p.grade+1]) + ' · ') +
+    const stTxt = (enh ? '' : (named ? '명품' : gradeNames()[p.grade] + (max ? '' : '→' + gradeNames()[p.grade+1])) + ' · ') +
                   Object.keys(it.stat || {}).map(k=> STAT_NAME[k] + ' ' + it.stat[k] + (nx ? '→' + nx[k] : '')).join(' · ');
     const c = enh ? enhCost(p.lv) : promCost(p.grade);
     const label = enh ? '강화' : '승급';
-    const row = makeRow(t.name, where + ' · ' + stTxt, max ? (enh ? '최대' : '최고 등급') : costText(c, stone), max ? '완료' : label, ()=> doForge(t, mode));
+    const row = makeRow(t.name, where + ' · ' + stTxt, max ? (enh ? '최대' : named ? '명품은 승급할 수 없음' : '최고 등급') : costText(c, stone), max ? (named ? '명품' : '완료') : label, ()=> doForge(t, mode));
     row.classList.add('enh');
     const nm = row.querySelector('.nm'); if (nm) nm.className += gradeCls(t.name);
     const btn = row.querySelector('.top-btn'); if (max || !canPay(c, stone)) btn.classList.add('off');
@@ -5874,7 +5894,7 @@ function renderForge(mode){
 function renderEnhance(){ renderForge('enh'); }
 function doForge(t, mode){
   const enh = mode==='enh', stone = enh ? '강화석' : '승급석', p = itemParse(t.name);
-  if (enh ? p.lv >= ENHANCE.max : p.grade >= gradeNames().length - 1) return;
+  if (enh ? p.lv >= ENHANCE.max : (isNamed(t.name) || p.grade >= gradeNames().length - 1)) return;
   const c = enh ? enhCost(p.lv) : promCost(p.grade);
   if ((PLAYER.inv[stone]||0) < c.stone){ showToast(stone + '이 부족합니다 (필요 ' + c.stone + ')'); return; }
   if (PLAYER.gold < c.gold){ showToast('금이 부족합니다 (필요 ' + c.gold.toLocaleString() + ')'); return; }
@@ -5965,7 +5985,7 @@ function renderAutoRow(){
   const face = asset('face.' + (a.hero.look==='f' ? 'hero_f' : 'hero_m'));
   box.style.display = '';
   box.innerHTML = '<div class="sv-slot auto"><span class="sv-no">자동</span><img class="sv-face" src="' + face + '">' +
-    '<div class="sv-main">' + a.hero.name + ' Lv' + (a.hero.level||1) + ' · ' + a.hero.job + ' ' + (a.hero.realm || realmOfLevel(a.hero.level||1)) +
+    '<div class="sv-main">' + heroNameOf(a.hero.look, a.hero.name) + ' Lv' + (a.hero.level||1) + ' · ' + a.hero.job + ' ' + (a.hero.realm || realmOfLevel(a.hero.level||1)) +
     '<small>' + a.chapter + ' · ' + a.place + (a.pos==='battle' ? ' · 전투 중' : '') + ' · 금 ' + Number(a.player.gold).toLocaleString() + playTag(a) + '</small></div>' +
     '<span class="sv-time">' + fmtTime(a.time) + '</span></div>';
   box.firstChild.onclick = ()=> askConfirm('자동 저장으로 이어서 하시겠습니까?', ()=>{ saveCtx = null; closeSaveModal(); applySnapshot(a); showToast('자동 저장 불러오기 완료'); });
