@@ -2756,7 +2756,7 @@ const SCENES = {
       { who:'galyeong',  text:'그리고 구후란 자는 며칠 전에 이미 배를 타고 떠났다 하오.' },
       { who:'cheolmyeong', text:'…놈이 이미 떠났다고? 또 한발 늦었단 말이오.' },
       { who:'hero',      text:'그렇다면 지금 지부를 지키는 건 사도결뿐이겠군요.' },
-      { who:'noyugak',   text:'놈이 숨을 고르기 전에 치는 게 좋겠네. 분타의 제자들도 데려가게.' },
+      { who:'noyugak',   text:'놈이 숨을 고르기 전에 치는 게 좋겠네. 석운이와 소연이를 데려가게. 나머지 제자들은 분타를 지켜야 하니.' },
       { cast:['wangi','noyugak','hero','cheonghwa','cheolmyeong'],
         who:'wangi',     text:'포구 뒷길은 이 왕이가 훤하지요. 길잡이는 맡겨 주십쇼!' },
       { who:'cheolmyeong', text:'좋소. 구후가 없다면 그 오른팔부터 꺾어 놓겠소. 놈도 언제까지 숨어 있지는 못할 테니.' },
@@ -2789,16 +2789,49 @@ const SCENES = {
     sortie: 'sapa_branch_raid',
   },
 
-  // 지부 안마당 (전투 뒤) : 사도결이 무릎을 꿇음 — '대계' (임시 — 다음 이야기 흐름을 받으면 이어 쓰기)
+  // 지부 안마당 (전투 뒤) : 사도결을 사로잡음 → 분타로 데려가 심문
   sapa_branch_after: {
     chapter:'제2장', place:'사파 연합 절강 지부',
-    bg:'sapa_branch_yard', cast:['sado_gyeol','hero','cheonghwa','cheolmyeong','seokun'],
+    bg:'sapa_branch_yard', cast:['sado_gyeol','seokun','jinsoyeon','hero','cheolmyeong'],
     script: [
       { who:'narr',       text:'사도결이 무릎을 꿇자, 남은 천교 무인들은 무기를 내던졌다.' },
+      { who:'seokun',     text:'이번엔 못 도망가지. 소연아, 포승줄!' },
+      { who:'jinsoyeon',  text:'혈도부터 짚어 둘게요. 내공을 못 쓰게요.' },
       { who:'hero',       text:'대계라니, 무슨 말이오?' },
       { who:'sado_gyeol', text:'흐흐… 곧 알게 될 거다. 양양도, 절강도… 그저 시작일 뿐이니.' },
+      { cast:['cheolmyeong','sado_gyeol','cheonghwa','hero','seokun'],
+        who:'cheolmyeong', shake:true, text:'시작이라고? 화원파를 쓸어버린 것도 네놈들에겐 시작에 불과했단 말이냐!' },
+      { who:'cheonghwa',  text:'철명 소협, 참으십시오. 여기서 해치우면 아무것도 알아낼 수 없습니다.' },
+      { who:'hero',       text:'분타로 데려갑시다. 장로님 앞에서 제대로 묻겠습니다.' },
     ],
-    end: { bg:'sapa_branch_yard', cast:['hero','cheonghwa','cheolmyeong'] },
+    next: 'gaebang_interrogation',
+  },
+
+  // 개방 분타 안 (그날 밤) : 사도결 심문 → 남궁세가 모임을 아는 눈치 → 개방이 안휘 남궁세가로 호송 (임시 끝 — 다음 이야기 흐름을 받으면 이어 쓰기)
+  gaebang_interrogation: {
+    chapter:'제2장', place:'절강 개방 분타',
+    bg:'gaebang_branch', cast:['noyugak','sado_gyeol','hero','cheonghwa','cheolmyeong'],
+    script: [
+      { who:'narr',       text:'그날 밤, 개방 분타. 사도결은 기둥에 묶인 채 노유각 앞에 꿇어앉았다.' },
+      { who:'noyugak',    text:'흑건도, 구후는 어디로 갔나?' },
+      { who:'sado_gyeol', text:'본교로 가셨지. 어디인지는 알아도 말해 줄 생각은 없다.' },
+      { who:'noyugak',    text:'황 방주의 물건은 왜 노렸나?' },
+      { who:'sado_gyeol', text:'나는 명을 따랐을 뿐. 그게 무엇인지는 구후 님만 아신다.' },
+      { who:'hero',       text:'대계란 무엇이오? 양양과 절강이 시작이라 했소.' },
+      { who:'sado_gyeol', text:'흐흐… 정파 놈들이 한자리에 모인다지? 그날을 기다리는 게 너희만은 아니다.' },
+      { who:'cheonghwa', shake:true, text:'…남궁세가의 모임을 알고 있단 말입니까?' },
+      { who:'narr',       text:'사도결은 히죽 웃을 뿐, 그 뒤로는 입을 굳게 다물었다.' },
+      { cast:['jinsoyeon','seokun','noyugak','sado_gyeol','hero'],
+        who:'jinsoyeon',  text:'더는 입을 열 것 같지 않네요.' },
+      { who:'noyugak',    text:'이자는 안휘의 남궁세가로 보내야겠네. 곧 정파의 어른들이 그곳에 모이시니, 그분들 앞에서 다시 캐물어야지.' },
+      { who:'noyugak',    text:'석운, 소연. 너희가 마대호와 함께 이자를 남궁세가까지 데려가거라. 방주님께도 오늘 일을 직접 아뢰고.' },
+      { who:'seokun',     text:'맡겨만 주십쇼. 이번엔 털끝 하나 못 빠져나가게 하겠습니다.' },
+      { cast:['cheolmyeong','noyugak','seokun','jinsoyeon','hero'],
+        who:'cheolmyeong', text:'…놈들이 그 모임을 노린다면, 남궁세가도 안전하지만은 않겠구려.' },
+      { bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'],
+        who:'narr',       text:'이튿날 새벽, 석운과 진소연은 사도결을 끌고 안휘로 길을 떠났다.' },
+    ],
+    end: { bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [],
     sortie: null,    // 다음 전투는 아직 없음
   },
@@ -3352,15 +3385,12 @@ const BATTLES = {
     turnLimit: 22,
     goal: '승리: 사도결 제압 · 패배: 주인공이 쓰러짐',
     loseIfDown: ['hero'],
-    allies: [                                   // 남쪽 다리 위
+    allies: [                                   // 남쪽 다리 위 (개방은 석운 · 진소연 둘만)
       { id:'hero',        x:10, y:11 },
       { id:'cheonghwa',   x:9,  y:11 },
       { id:'cheolmyeong', x:8,  y:12 },
       { id:'seokun',      x:11, y:11, level:'hero+1' },
       { id:'jinsoyeon',   x:9,  y:12, level:'hero' },
-      { id:'madaeho',     x:7,  y:12, level:'hero-1' },
-      { id:'galyeong',    x:7,  y:13, level:'hero' },
-      { id:'wangi',       x:8,  y:13, level:'hero-2' },
     ],
     enemies: [
       { id:'sado_gyeol', x:14, y:5, level:'hero+3', hold:4, holdRange:4 },                               // e1 사도결 : 본당 계단 앞, 4턴까지 지켜봄
@@ -3373,24 +3403,18 @@ const BATTLES = {
       { id:'sapa_musa', name:'천교 무인', x:17, y:9,  level:'hero-1', skills:['천교 도법'], hold:2 },
       { id:'sapa_musa', name:'천교 무인', x:12, y:6,  level:'hero-1', skills:['천교 도법'], hold:3 },   // 본당 앞 : 3턴부터
       { id:'sapa_musa', name:'천교 무인', x:16, y:6,  level:'hero-1', skills:['천교 도법'], hold:3 },
-      { id:'sapa_musa', name:'천교 무인', x:13, y:5,  level:'hero-1', skills:['천교 도법'], hold:4 },
-      { id:'sapa_musa', name:'천교 무인', x:7,  y:7,  level:'hero-1', skills:['천교 도법'], hold:3 },   // 왼쪽 · 오른쪽 끝
-      { id:'sapa_musa', name:'천교 무인', x:18, y:7,  level:'hero-1', skills:['천교 도법'], hold:3 },
       { id:'cheongyo_archer', x:8,  y:5, level:'hero-1', hold:2 },                                      // 궁수 : 망루 아래
       { id:'cheongyo_archer', x:17, y:6, level:'hero-1', hold:2 },
-      { id:'cheongyo_archer', x:7,  y:8, level:'hero-1', hold:2 },
       { id:'cheongyo_archer', x:19, y:9, level:'hero-1', hold:2 },
     ],
     intro: [],            // 지부 앞 대화(장면 sapa_branch_front)에서 바로 이어짐
     events: [
       // 2턴 : 왼쪽 부두에 배가 닿음
       { turn:2, spawn:[ { id:'sapa_musa', name:'천교 무인', x:3, y:9, level:'hero-1', skills:['천교 도법'] },
-                        { id:'sapa_musa', name:'천교 무인', x:4, y:9, level:'hero-1', skills:['천교 도법'] },
-                        { id:'sapa_musa', name:'천교 무인', x:5, y:9, level:'hero-1', skills:['천교 도법'] } ] },
+                        { id:'sapa_musa', name:'천교 무인', x:4, y:9, level:'hero-1', skills:['천교 도법'] } ] },
       // 5턴 : 다리 아래 배에서 뒤를 침
       { turn:5, spawn:[ { id:'sapa_musa', name:'천교 무인', x:5, y:14, level:'hero-1', skills:['천교 도법'] },
-                        { id:'sapa_musa', name:'천교 무인', x:6, y:14, level:'hero-1', skills:['천교 도법'] },
-                        { id:'sapa_musa', name:'천교 무인', x:6, y:13, level:'hero-1', skills:['천교 도법'] } ] },
+                        { id:'sapa_musa', name:'천교 무인', x:6, y:14, level:'hero-1', skills:['천교 도법'] } ] },
     ],
     victory: {
       bossDown: 'e1',
@@ -3591,21 +3615,26 @@ const CODEX = {
     { id:'noyugak', face:'noyugak', name:'노유각', tag:'개방',
       notes: [
         { from:'zhejiang_branch', text:'개방의 장로. 절강 분타를 맡고 있다. 황용의 물건을 받아 분타 안에서 지켰다.' },
+        { from:'gaebang_interrogation', text:'사로잡은 사도결을 심문한 뒤, 정파의 어른들 앞에서 다시 캐묻도록 남궁세가로 보냈다.' },
       ] },
     { id:'seokun', face:'seokun', name:'석운', tag:'개방',
       notes: [
         { from:'zhejiang_branch', text:'별호는 소걸개. 황용의 수제자로, 개방의 다음 방주감으로 꼽힌다. 넉살 좋고 장난스럽지만 봉을 잡으면 달라진다.' },
         { from:'zhejiang_branch', text:'물건이 무사히 닿는지 보라는 황용의 명으로 사매 진소연과 함께 먼저 절강에 와 있었다.' },
+        { from:'gaebang_interrogation', text:'진소연 · 마대호와 함께 사도결을 남궁세가까지 데려가는 일을 맡았다.' },
       ] },
     { id:'jinsoyeon', face:'jinsoyeon', name:'진소연', tag:'개방',
       notes: [
         { from:'zhejiang_branch', text:'황용의 수제자이자 석운의 사매. 사부를 닮아 눈치 빠르고 말이 야무지다. 도화도의 탄지신통을 쓴다.' },
+        { from:'gaebang_interrogation', text:'사형 석운과 함께 사도결을 남궁세가로 데려갔다.' },
       ] },
     { id:'sado_gyeol', face:'sado_gyeol', name:'사도결', tag:'천교',
       notes: [
         { from:'cheongyo_meeting', text:'별호는 흑건도. 구후의 오른팔로, 구후가 본교에 간 사이 절강 지부를 맡았다. {name} 일행을 죽이라는 명을 받았다.' },
         { from:'gaebang_after',     text:'직접 무리를 이끌고 개방 절강 분타를 습격했다가, 패하고 포구의 지부로 달아났다.' },
-        { from:'sapa_branch_after', text:'사파 연합 절강 지부에서 {name} 일행에게 무릎을 꿇었다. \'대계는 이미 움직이기 시작했다\'는 말을 남겼다.' },
+        { from:'sapa_branch_after', text:'사파 연합 절강 지부에서 {name} 일행에게 사로잡혔다. \'대계는 이미 움직이기 시작했다\'는 말을 남겼다.' },
+        { from:'gaebang_interrogation', text:'개방 분타에서 심문을 받았지만, 구후의 행방도 물건의 정체도 털어놓지 않았다. 정파가 남궁세가에 모이는 일을 알고 있는 눈치였다.' },
+        { from:'gaebang_interrogation', text:'석운 · 진소연에게 끌려 안휘의 남궁세가로 보내졌다.' },
       ] },
     { id:'jeokryong_chief', face:'jeokryong_chief', name:'적룡채주', tag:'녹림 · 적룡채',
       notes: [
@@ -3637,6 +3666,7 @@ const CODEX = {
         { from:'yangyang_errand',  text:'절강성에 분타가 있다. 황용이 그곳에 전할 물건을 {name} 일행에게 맡겼다.' },
         { from:'zhejiang_branch',  text:'절강 분타에 황용의 물건을 전했다. 분타주가 구후 무리의 소식을 알려 주었다.' },
         { from:'gaebang_after',    text:'절강 분타가 사도결의 습격을 받았지만, {name} 일행과 석운 · 진소연이 막아 냈다.' },
+        { from:'gaebang_interrogation', text:'사로잡은 사도결을 석운 · 진소연 · 마대호가 안휘의 남궁세가로 호송했다.' },
       ] },
     { id:'cheolgeom', icon:'鐵', name:'철검문',
       notes: [
@@ -3667,6 +3697,7 @@ const CODEX = {
         { from:'yangyang_guo_inn',    text:'\'사해용왕\'이라 불리는 자와 백타산의 후인이 있고, 해남파까지 합류했다고 한다.' },
         { from:'cheongyo_meeting',    text:'절강에 지부가 있다. 겉으로는 \'사파 연합 절강 지부\'를 내걸었지만, 안에는 천교의 깃발이 걸려 있다.' },
         { from:'sapa_branch_after',   text:'절강 지부가 {name} 일행과 개방에 무너졌다. 사도결은 \'대계\'가 이미 움직이기 시작했다고 했다.' },
+        { from:'gaebang_interrogation', text:'사로잡힌 사도결의 말로 보아, 정파가 남궁세가에 모이는 일을 이미 알고 있는 듯하다.' },
       ] },
     { id:'baektasan', icon:'駝', name:'백타산',
       notes: [
@@ -3680,6 +3711,7 @@ const CODEX = {
       notes: [
         { from:'wudang_after',     text:'안휘의 세가. 정파가 한 달 뒤 이곳에 모이기로 했다.' },
         { from:'yangyang_guo_inn', text:'곽정이 천교의 일을 알리기로 했다.' },
+        { from:'gaebang_interrogation', text:'개방이 사로잡은 사도결을 이곳으로 보냈다. 천교가 이곳의 모임을 노리고 있을지도 모른다.' },
       ] },
     { id:'nokrim', icon:'林', name:'녹림 · 적룡채',
       notes: [
