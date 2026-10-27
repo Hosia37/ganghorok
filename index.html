@@ -1395,7 +1395,10 @@ const EXP_GAIN = { hit:10, counter:7, kill:30, heal:10 };   // heal : 회복 무
 const LEVELUP_HEAL = 0.3;
 
 // 반격 : 일반 공격을 받고 살아남으면 바로 한 번 되받아침 (무공에는 반격하지 않음)
-const COUNTER = { on:true, power:1.0 };   // power : 반격 위력 (1.0 = 일반 공격과 같음)
+const COUNTER = { on:true, power:1.0 };
+
+// 적 능력치 보정 : 모든 적 (side 'enemy')의 레벨 능력치에 곱함 — 우군 · 아군은 그대로. (예: atk:0.9 = 공격 10% 낮춤)
+const ENEMY_STAT = { mult:{ atk:0.9 } };   // power : 반격 위력 (1.0 = 일반 공격과 같음)
 
 </script>
 <script>
@@ -4543,10 +4546,11 @@ function computeStats(level, equip, extra, realm, mods){
            maxHp:s.hp+b.hp+a.hp, maxMp:s.mp+b.mp+a.mp, bonus:b };
 }
 // 인물 특성 · 대장 등급 보정 목록 (computeStats 의 mods)
-function statMods(id, rank){
+function statMods(id, rank, side){
   const d = UNITS[id] || {}, out = [];
   if (d.trait) out.push(d.trait);
   if (rank && typeof UNIT_RANKS !== 'undefined' && UNIT_RANKS[rank]) out.push(UNIT_RANKS[rank]);
+  if (side==='enemy' && typeof ENEMY_STAT !== 'undefined') out.push(ENEMY_STAT);       // 적 공통 보정 (data/growth.js)
   return out;
 }
 // 특성 이름 (주인공은 모습에 따라)
@@ -6573,7 +6577,7 @@ function buildGrid(){
 let units = {};
 // 유닛 능력치 = 레벨(data/growth.js) + 장비
 function applyUnitStats(cfg){
-  Object.assign(cfg, computeStats(cfg.level||1, cfg.equip, cfg.treeBonus, cfg.realmFixed, statMods(cfg.id, cfg.rank)));
+  Object.assign(cfg, computeStats(cfg.level||1, cfg.equip, cfg.treeBonus, cfg.realmFixed, statMods(cfg.id, cfg.rank, cfg.side)));
   cfg.hp = cfg.maxHp; cfg.mp = cfg.maxMp;
   return cfg;
 }
@@ -7203,7 +7207,7 @@ function doBattleAscend(u){
 }
 // 레벨이 오른 유닛의 능력치 다시 계산 — 늘어난 최대치만큼 더하고, 체력은 LEVELUP_HEAL(최대 체력의 30%)만큼 더 회복
 function levelUpUnit(u, ups){
-  const s = computeStats(u.level, u.equip, u.treeBonus, u.realmFixed, statMods(u.id, u.rank));
+  const s = computeStats(u.level, u.equip, u.treeBonus, u.realmFixed, statMods(u.id, u.rank, u.side));
   const gain = { hp:s.maxHp-u.maxHp, mp:s.maxMp-u.maxMp, atk:s.atk-u.atk, def:s.def-u.def };
   Object.assign(u, { realm:s.realm, atk:s.atk, def:s.def, hit:s.hit, eva:s.eva, maxHp:s.maxHp, maxMp:s.maxMp });
   const hp0 = Math.min(u.maxHp, u.hp + gain.hp);
