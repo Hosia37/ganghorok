@@ -125,6 +125,14 @@
   #snpc-close { position:absolute; right:12px; bottom:8px; font-size:11px; color:#c9b98a; }
   #story-screen.ended .story-card, #story-screen.ended #story-box { opacity:0; pointer-events:none; transition:opacity .6s ease; }
   #hub-open-wrap { position:absolute; left:0; right:0; bottom:7%; display:flex; justify-content:center; z-index:20; }
+  /* 끝 화면 : 다른 곳 들르기 (장면의 go · places) — 오른쪽 아래 이동 버튼 · 왼쪽 위 지금 있는 곳 */
+  #place-wrap { position:absolute; right:3%; bottom:7%; display:none; flex-direction:column; align-items:flex-end; gap:10px; z-index:21; }
+  #story-screen.ended #place-wrap { display:flex; }
+  .place-btn { padding:clamp(8px,calc(2.6 * var(--vh)),14px) clamp(14px,calc(4 * var(--vh)),26px); font-size:clamp(13px,calc(3.2 * var(--vh)),18px); letter-spacing:2px; }
+  #place-name { position:absolute; left:3%; top:4%; display:none; z-index:20; padding:6px 16px; color:#ffd88a; font-size:clamp(13px,calc(3 * var(--vh)),17px); letter-spacing:2px;
+    background:rgba(12,9,6,.72); border-left:3px solid #d8a24a; border-radius:2px; pointer-events:none; }
+  #story-screen.ended #place-name { display:block; }
+  #snpc-box.hero img { border-color:#4a90d9; }
   .hub-open { padding:16px 70px; font-size:22px; letter-spacing:10px; }
   #hub-screen { position:absolute; inset:0; display:none; background:#000; overflow:hidden; }
   #hub-stage { position:absolute; left:50%; top:50%; width:max(calc(100 * var(--vw)), calc(calc(100 * var(--vh)) * 1672 / 941)); aspect-ratio:1672/941;
@@ -1063,6 +1071,8 @@
     </div>
     <div id="hub-open-wrap" class="hidden"><div class="top-btn hub-open" id="btn-hub">거점</div></div>
     <div id="story-npcs"></div>
+    <div id="place-name" class="hidden"></div>
+    <div id="place-wrap" class="hidden"></div>
     <div id="snpc-box"><img id="snpc-face" alt=""><div><div id="snpc-name"></div><div id="snpc-text"></div></div><span id="snpc-close">눌러서 닫기</span></div>
   </div>
 
@@ -1562,6 +1572,7 @@ const SKILLS = {
   '연환봉':            { range:2, area:'line2',  power:1.3, mp:12, desc:'직진 2칸 · 봉을 잇달아 내지름 (갈 영감)' },
   // 출정 전 대화로 배우는 무공 (data/scenes.js 의 끝 화면 인물 give.skill)
   '일운검법 · 초식':   { range:1, area:'sweep3', power:1.3, mp:22, desc:'앞쪽 가로 3칸 베기 · 철검문 검법의 첫 초식 (철검문주에게 배움)' },
+  '낙영신검장 · 기초': { range:2, area:'line2', power:1.4, mp:14, desc:'직진 2칸 · 꽃잎이 흩날리듯 겹쳐 밀려가는 도화도의 장법 (황용에게 배움)' },
   '탄지신통 · 기초':   { range:3, minRange:2, area:'single', power:1.1, mp:10, desc:'2~3칸 원거리 단일 · 손가락으로 기를 튕기는 요령 (진소연에게 배움)' },
   // 석운 (아군 — 수련도)
   '타구봉법 · 전자결': { range:1, area:'sweep3', power:1.4, mp:22, desc:'앞쪽 가로 3칸 · 봉을 휘감아 돌리는 타구봉법의 결 (석운)' },
@@ -2753,6 +2764,67 @@ const SCENES = {
         line:'구후가 뱀독을 쓴다지 않았소. 산에서 쓰던 해독제요. 넉넉히 챙겨 가시오.',
         after:'절강까지는 산을 몇 개 넘어야 하오. 화살은 넉넉히 챙겨 두었소.' },
     ],
+    // 떠나기 전 들르기 : 장원 → 양양성 성주실 (성주 · 곽정) → 철검문 문주전 (문주 · 대사형) → 취현객잔 (황용 : 낙영신검장) → 장원
+    go: ['lord'], homeBtn:'장원으로',
+    places: {
+      lord: { name:'양양성 성주실', btn:'양양성으로', bg:'yangyang_lord_hall', go:['cheolgeom', 'home'],
+        npcs: [
+          { id:'yangyang_lord', x:31, y:54,
+            talk: [
+              { who:'yangyang_lord', text:'절강까지 간다고? 허허, 사고뭉치가 이제는 개방 심부름까지 하는구나.' },
+              { who:'hero',          text:'황 방주님의 부탁입니다. 금방 다녀오겠습니다.' },
+              { who:'yangyang_lord', text:'장원은 걱정 말거라. 네가 없는 동안 내가 살펴 두마.' },
+              { who:'yangyang_lord', text:'그리고… 이번엔 꼭 살아서 돌아오너라. 십 년을 기다린 식솔들이 있다는 걸 잊지 말고.' },
+            ],
+            line:'장원은 걱정 말거라. 네가 없는 동안 내가 살펴 두마.',
+            after:'영패는 곽 대협께 드렸으니, 상단 일은 그분께 맡기고 너는 네 길을 가거라.' },
+          { id:'guo', x:69, y:56,
+            talk: [
+              { who:'guo',  text:'왔구려, {name} {소협|소저}. 용아의 부탁을 들어주었다지.' },
+              { who:'guo',  text:'한수상단은 아직 꼬리를 잡지 못했소. 드나드는 짐은 많은데 장부는 깨끗하더군. 누군가 미리 손을 써 둔 게요.' },
+              { who:'hero', text:'천교의 손길이 거기까지 닿아 있는 걸까요.' },
+              { who:'guo',  text:'그럴지도 모르오. 양양은 내가 지킬 테니, {소협은|소저는} 길 위의 일만 생각하시오.' },
+            ],
+            line:'양양은 내가 지킬 테니, 길 위의 일만 생각하시오.',
+            after:'사파는 앞보다 뒤를 노리오. 쉴 때일수록 등 뒤를 살피시오.' },
+        ] },
+      cheolgeom: { name:'철검문 문주전', btn:'철검문으로', bg:'cheolgeom_hall', go:['inn', 'home'],
+        npcs: [
+          { id:'cheolgeom_munju', x:31, y:54,
+            talk: [
+              { who:'cheolgeom_munju', text:'{명우|명화}야, 먼 길을 떠난다고 들었다.' },
+              { who:'hero',            text:'예, 절강까지 다녀오려 합니다.' },
+              { who:'cheolgeom_munju', text:'내가 연합에 몸담았을 적에, 양양 간부와 절강 쪽이 서신을 자주 주고받는다는 말을 들었다. 가는 길목마다 놈들의 눈이 있을 게다.' },
+              { who:'cheolgeom_munju', text:'철검문은 정비를 서두르마. 네가 돌아올 즈음엔 다시 검을 들 수 있게 해 두겠다.' },
+            ],
+            line:'철검문은 정비를 서두르마.',
+            after:'몸조심하거라. 선대 가주께 두 번 죄를 지을 수는 없다.' },
+          { id:'cheolgeom_sahyeong', x:69, y:57,
+            talk: [
+              { who:'cheolgeom_sahyeong', text:'천 {소협|소저}. 저잣거리에서 처음 칼을 맞댄 게 엊그제 같은데… 그때 일은 지금 생각해도 낯이 뜨겁소.' },
+              { who:'hero',               text:'지난 일입니다. 지금은 같은 편 아닙니까.' },
+              { who:'cheolgeom_sahyeong', text:'하하, 그리 말해 주니 고맙소. 요즘 새로 들어온 문도들을 가르치고 있소. 다시는 연합 따위에 흔들리지 않게.' },
+              { who:'cheolgeom_sahyeong', text:'돌아오면 한 수 겨뤄 주시오. 이번엔 쉽게 지지 않을 테니.' },
+            ],
+            line:'돌아오면 한 수 겨뤄 주시오.',
+            after:'문도들이 천씨의 검 이야기를 하도 물어서, 요즘 내가 진땀을 빼고 있소.' },
+        ] },
+      inn: { name:'양양 취현객잔', btn:'객잔으로', bg:'yangyang_inn', go:['home'],
+        npcs: [
+          { id:'huang', x:33, y:56, give:{ skill:'낙영신검장 · 기초' },
+            talk: [
+              { who:'huang', text:'어머, 여기까지 찾아왔네요. 떠나기 전에 한 번 더 보고 싶었는데 잘됐어요.' },
+              { who:'hero',  text:'방주님, 아까 그 물건 말입니다만…' },
+              { who:'huang', text:'역시 궁금했죠? 미안해요. 다 말해 줄 수는 없어요.' },
+              { who:'huang', text:'이것만 알아 둬요. 그건 원래 천교가 쥐고 있던 걸 개방이 빼낸 물건이에요. 놈들은 무슨 수를 써서라도 되찾으려 할 거예요.' },
+              { who:'huang', text:'그리고 절대 열어 보지 말아요. 열어 본 사람을 천교가 그냥 두지 않을 테니까.' },
+              { who:'huang', text:'길에서 누가 보따리를 노리면… 물건보다 {소협|소저} 목숨이 먼저예요. 물건은 다시 찾으면 되지만 사람은 그렇지 않으니까.' },
+              { who:'huang', text:'빈손으로 보내긴 섭섭하니 하나 가르쳐 줄게요. 도화도의 장법, 낙영신검장. 기초뿐이지만 {소협이라면|소저라면} 금방 익힐 거예요.', give:true },
+            ],
+            line:'물건보다 {소협|소저} 목숨이 먼저예요.',
+            after:'절강 분타의 노 장로에게 안부 전해 줘요. 고집은 세도 믿을 만한 분이에요.' },
+        ] },
+    },
     sortie: 'mountain_bandits',        // 출정 → 아래 산길 장면 → 대화가 끝나면 바로 전투
     sortieScene: 'mountain_path',
   },
@@ -4647,6 +4719,7 @@ function resetStoryScreen(sc){
   document.getElementById('hub-open-wrap').classList.add('hidden');
   document.getElementById('snpc-box').style.display = 'none';
   document.getElementById('story-npcs').innerHTML = '';
+  curPlace = null; buildPlaceButtons();
   document.getElementById('story-box').style.cursor = 'pointer';
 }
 function startScene(name, fromLoad){
@@ -5244,42 +5317,92 @@ document.addEventListener('pointerdown', lockLandscape, { once:true });
 
 /* ================= 대화 후 객잔 앞 인물 ================= */
 let snpcTimer = null;
+/* ---------- 끝 화면 : 다른 곳 들르기 (장면의 go · places) ----------
+   sc.go = ['lord']  — 끝 화면 처음 자리에 보일 이동 버튼 (places 의 이름)
+   sc.places = { lord:{ name:'양양성 성주실', btn:'양양성으로', bg:'yangyang_lord_hall', npcs:[…], go:['cheolgeom'] }, … }
+   go 의 'home' = 처음 자리로 (버튼 글 = sc.homeBtn, 없으면 '돌아가기'). 출정 · 거점은 어디서든 누를 수 있음. 불러오면 처음 자리 */
+let curPlace = null;
+function placeOf(sc){ return sc && curPlace && sc.places && sc.places[curPlace] ? sc.places[curPlace] : null; }
+function curNpcs(){ const sc = SCENES[curScene], p = placeOf(sc); return ((p ? p.npcs : sc.npcs) || []); }
+function buildPlaceButtons(){
+  const sc = SCENES[curScene], p = placeOf(sc), wrap = document.getElementById('place-wrap'), nm = document.getElementById('place-name');
+  const go = ((p ? p.go : sc && sc.go) || []).filter(k=> k==='home' || (sc.places && sc.places[k]));
+  wrap.innerHTML = '';
+  go.forEach(k=>{
+    const t = k==='home' ? null : sc.places[k];
+    const b = document.createElement('div'); b.className = 'top-btn place-btn'; b.dataset.place = k;
+    b.textContent = (t ? (t.btn || t.name) : (sc.homeBtn || '돌아가기')) + ' ▶';
+    b.addEventListener('click', e=>{ e.stopPropagation(); goPlace(t ? k : null); });
+    wrap.appendChild(b);
+  });
+  wrap.classList.toggle('hidden', !go.length);
+  nm.textContent = p ? p.name : ''; nm.classList.toggle('hidden', !p);
+}
+function goPlace(k){
+  const sc = SCENES[curScene];
+  document.getElementById('snpc-box').style.display = 'none';
+  clearInterval(snpcTimer);
+  fadeSwap(()=>{
+    curPlace = k;
+    const p = placeOf(sc), end = sc.end || { bg:sc.bg };
+    setStoryBg(p ? p.bg : end.bg);
+    buildStoryNpcs();
+  });
+}
+function npcKey(n){ return curScene+':'+(curPlace ? curPlace+'/' : '')+n.id; }      // 받기 · 말 건 표시 (처음 자리는 예전 저장과 같은 이름)
 function buildStoryNpcs(){
   const wrap = document.getElementById('story-npcs'); wrap.innerHTML = '';
-  (SCENES[curScene].npcs || []).forEach(n=>{
+  curNpcs().forEach(n=>{
     const d = document.createElement('div'); d.className = 'snpc' + (isParty(n.id) ? ' ally' : '');
     d.style.left = n.x+'%'; d.style.top = n.y+'%';
-    const gift = n.give && !PLAYER.flags['give:'+curScene+':'+n.id];      // 받을 것이 있으면 선물 표시
-    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span><div class="mark'+(gift ? ' gift' : '')+'">'+(gift ? '贈' : '!')+'</div>';
+    const k = npcKey(n), gift = n.give && !PLAYER.flags['give:'+k], fresh = !PLAYER.flags['talk:'+k];   // 받을 것이 있으면 선물 표시 · 아직 말을 안 걸었으면 !
+    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span>'+(gift || fresh ? '<div class="mark'+(gift ? ' gift' : '')+'">'+(gift ? '贈' : '!')+'</div>' : '');
     d.addEventListener('click', e=>{ e.stopPropagation(); talkStoryNpc(n, d); });
     wrap.appendChild(d);
   });
+  buildPlaceButtons();
 }
+/* 말 걸기
+   - line (+ give · after) : 한 마디. give 는 처음 말을 걸 때 한 번, 받은 뒤에는 after
+   - talk:[{ who:'hero' | 인물 id, text, textM/textF, only, give:true }, …] : 처음 말을 걸 때 주고받는 대화 (주인공 대사도 섞임)
+       give:true 를 적은 줄에서 n.give 를 받음 (적은 줄이 없으면 대화를 시작할 때). 다시 말을 걸면 after (없으면 line) */
 function talkStoryNpc(n, el){
-  const box = document.getElementById('snpc-box');
-  document.getElementById('snpc-face').src = faceOf(n.id);
-  document.getElementById('snpc-name').textContent = nameOf(n.id);
-  const t = document.getElementById('snpc-text'); t.textContent = '';
-  box.style.display = 'flex';
+  const box = document.getElementById('snpc-box'), t = document.getElementById('snpc-text'), close = document.getElementById('snpc-close');
   if (el){ const m = el.querySelector('.mark'); if (m) m.remove(); }
   clearInterval(snpcTimer);
-  const gk ='give:'+curScene+':'+n.id, given = n.give && PLAYER.flags[gk];
-  if (n.give && !given){                             // 처음 말을 걸 때만
+  const k = npcKey(n), gk = 'give:'+k, tk = 'talk:'+k, first = !PLAYER.flags[tk];
+  PLAYER.flags[tk] = true;
+  const giveNow = ()=>{
+    if (!n.give || PLAYER.flags[gk]) return;
     PLAYER.flags[gk] = true;
     const got = applyGive(n.give);
     if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 400);
     setTimeout(()=>autoSave('end'), 900);            // 받은 것까지 저장
-  }
-  const pages = dlgPages(fillName(given && n.after ? n.after : n.line), t, dlgWidth(t), dlgRows('npc'));
-  let pg = 0, busy = false;
-  const close = document.getElementById('snpc-close');
-  const show = ()=>{ busy = true; clearInterval(snpcTimer); close.textContent = pg < pages.length - 1 ? '▶ 눌러서 계속' : '눌러서 닫기';
+  };
+  let lines;
+  if (n.talk && first) lines = n.talk.filter(sexOk);
+  else lines = [{ who:n.id, text: (n.talk || (n.give && PLAYER.flags[gk])) && n.after ? n.after : n.line }];
+  if (!lines.some(L=>L.give)) giveNow();             // 받는 줄을 따로 적지 않았으면 처음 말을 걸 때
+  box.style.display = 'flex';
+  let li = -1, pages = [], pg = 0, busy = false;
+  const nextLine = ()=>{
+    li++; if (li >= lines.length){ box.style.display = 'none'; return; }
+    const L = lines[li], who = L.who || n.id;
+    document.getElementById('snpc-face').src = faceOf(who);
+    document.getElementById('snpc-name').textContent = L.name || nameOf(who);
+    box.classList.toggle('hero', who==='hero');
+    if (L.give) giveNow();
+    t.textContent = '';
+    pages = dlgPages(lineText(L), t, dlgWidth(t), dlgRows('npc')); pg = 0; show();
+  };
+  const show = ()=>{ busy = true; clearInterval(snpcTimer);
+                     close.textContent = (pg < pages.length - 1 || li < lines.length - 1) ? '▶ 눌러서 계속' : '눌러서 닫기';
                      snpcTimer = typeText(t, pages[pg], 35, ()=>{ busy = false; }); };
-  show();
+  nextLine();
   box.onclick = ()=>{
     if (busy){ clearInterval(snpcTimer); t.textContent = pages[pg]; busy = false; return; }
     if (pg < pages.length - 1){ pg++; show(); return; }                 // 긴 말 : 다음 창
-    box.style.display = 'none';
+    nextLine();                                                         // 대화 : 다음 줄 (끝이면 닫힘)
   };
 }
 
@@ -5603,7 +5726,7 @@ function goStoryEnd(scene){
   ss.style.display = ''; ss.classList.add('ended');
   const end = sc.end || { bg:sc.bg, cast:sc.cast };
   setStoryBg(end.bg); setCast(end.cast);
-  buildStoryNpcs(); document.getElementById('snpc-box').style.display = 'none';
+  curPlace = null; buildStoryNpcs(); document.getElementById('snpc-box').style.display = 'none';
   scriptIdx = curScript().length; clearInterval(typeTimer); typing = false;
   document.getElementById('story-box').style.cursor = 'default';
   document.getElementById('top-menu-wrap').classList.remove('hidden');
