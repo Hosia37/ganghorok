@@ -612,8 +612,9 @@
   @keyframes ciFlash { 0%{opacity:0} 25%{opacity:.7} 100%{opacity:0} }
   @keyframes ciText  { 0%{ transform:translateX(-60px) scale(1.25); opacity:0 } 100%{ transform:none; opacity:1 } }
   @keyframes ciOut   { to{ opacity:0; transform:translateX(-5%) } }
-  #hud-top { position:absolute; top:10px; left:10px; color:#fff; z-index:30; font-size:14px;
-    background:rgba(12,9,6,.82); border:1px solid rgba(138,119,82,.8); border-radius:3px; padding:6px 12px; }
+  /* 턴 수 · 승리 조건 · 임무 : 화면 위 가운데 */
+  #hud-top { position:absolute; top:10px; left:50%; transform:translateX(-50%); color:#fff; z-index:30; font-size:14px; text-align:center;
+    max-width:min(440px, 46%); background:rgba(12,9,6,.82); border:1px solid rgba(138,119,82,.8); border-radius:3px; padding:6px 12px; }
   #hud-top b { color:#ffd88a; }
 
   /* 명령 메뉴 : 지도 위, 인물 오른쪽에 한 칸 띄워서 */
@@ -805,9 +806,9 @@
   #box-modal .bx-ds { font-size:12px; color:#e8dcc0; line-height:1.5; margin-top:6px; }
   #box-modal .row { display:flex; gap:12px; justify-content:center; margin-top:12px; }
   #pyo-body .of-rw .bag-ico, #pyo-body .of-rw img { width:16px; height:16px; vertical-align:-3px; }
-  /* 알림 : 화면 오른쪽 위에 쌓이는 쪽지 (누르면 닫힘) */
-  #notice-stack { position:absolute; right:12px; top:calc(4% + 48px); z-index:90; display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-    width:min(320px, 48%); pointer-events:none; }
+  /* 알림 : 화면 가운데에 쌓이는 쪽지 (누르면 닫힘) */
+  #notice-stack { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:90; display:flex; flex-direction:column; align-items:center; gap:6px;
+    width:min(360px, 60%); pointer-events:none; }
   .notice { pointer-events:auto; cursor:pointer; width:100%; box-sizing:border-box; background:rgba(14,10,6,.95); color:#f3ead9;
     border:1px solid #8a7752; border-left:4px solid #d8a24a; border-radius:4px; padding:7px 11px; font-size:clamp(11px,calc(2.4 * var(--vh)),13px);
     line-height:1.5; box-shadow:0 4px 16px rgba(0,0,0,.55); animation:noticeIn .35s cubic-bezier(.2,.9,.3,1) both; }
@@ -815,8 +816,8 @@
   .notice.mission { border-left-color:#5aa0d8; } .notice.mission b { color:#a9d4ff; }
   .notice.up { border-left-color:#5fbf80; } .notice.up b { color:#a8f0c0; }
   .notice.out { animation:noticeOut .3s ease-in both; }
-  @keyframes noticeIn  { from{ transform:translateX(40px); opacity:0 } to{ transform:none; opacity:1 } }
-  @keyframes noticeOut { to{ transform:translateX(40px); opacity:0 } }
+  @keyframes noticeIn  { from{ transform:scale(.92); opacity:0 } to{ transform:none; opacity:1 } }
+  @keyframes noticeOut { to{ transform:scale(.96); opacity:0 } }
   #of-box { width:min(560px,92%); max-height:92%; display:flex; flex-direction:column; gap:8px; padding:12px 16px; }
   .of-head { display:flex; align-items:baseline; justify-content:space-between; }
   #of-gold { font-size:12px; color:#c9b98a; }
@@ -1571,7 +1572,8 @@ const ITEM_DB = {
   // ---- 표국 행렬이 가져오는 물건 (data/pyoguk.js) ----
   '강화석': { type:'material', icon:'強', price:100, desc:'무기와 방어구를 단단하게 벼리는 돌. 대장간 "강화"에 쓴다.' },
   '승급석': { type:'material', icon:'昇', price:300, desc:'물건의 격을 끌어올리는 귀한 돌. 대장간 "승급"으로 무기 · 방어구의 등급을 올린다 (흔함 → 일반 → 희귀 → 보구).' },
-  '보물상자': { type:'material', icon:'箱', price:400, desc:'표국 행렬이 사례로 받아 온 상자. 열면 장신구나 심법 서책이 하나 나온다.' },
+  '보물상자': { type:'material', icon:'箱', price:400, desc:'표국 행렬이 사례로 받아 오거나 전투에서 거둔 상자. 열면 장신구나 심법 서책이 하나 나온다.' },
+  '금전상자': { type:'material', icon:'錢', price:300, desc:'전투에서 거둔 돈궤. 배낭에서 "열기"하면 금이 나온다 (장이 오를수록 많이).' },
   '영약':   { type:'material', icon:'丹', img:'pills', price:500, desc:'기운을 북돋는 귀한 약. 배낭에서 "복용"하면 최대 체력 · 내력이 영구히 오른다 (인물마다 5개까지).' },
   // ---- 명품 (전투 보상 — 제2장부터 한 전투에 하나씩) ----
   '야명주': { type:'accessory', icon:'珠', named:true, price:3000, stat:{ hit:4, mp:6 },  desc:'어둠 속에서도 달빛처럼 빛나는 구슬. 지니면 눈이 밝아지고 기가 맑아진다.' },
@@ -1625,6 +1627,12 @@ const TREASURE_BOX = {
     // { item:'새 장신구',   weight:3, chapter:2 },
     // { item:'새 심법 서책', weight:1, chapter:2 },
   ],
+};
+
+// 금전상자 : 배낭에서 '열기' → 금. gold = 장마다 [최소, 최대] (서장 · 제1장, 제2장, 제3장, 제4장 …, 모자라면 마지막 것)
+const GOLD_BOX = {
+  item: '금전상자',
+  gold: [ [200, 500], [400, 800], [600, 1200], [800, 1600] ],
 };
 
 // 잡화점에서 파는 물건 (가격은 ITEM_DB)
@@ -3196,6 +3204,10 @@ const SCENES = {
    배치에 더 적을 수 있는 것 (아군 · 우군 · 적) : name(이름) · skills(무공) · passive(심법 { mpRegen }) · focus(먼저 노리는 인물 id 목록, 적만)
      같은 우군을 여럿 배치하면 cheolgeom, cheolgeom_2, cheolgeom_3 … 으로 불림
    ===================================================================== */
+// 모든 전투의 승리 보상에 덧붙는 전리품 (각 전투의 victory.loot 앞에). 지는 전투(lossOk)에는 붙지 않음
+//   전투 하나만 빼려면 그 전투의 victory 에 noCommonLoot:true
+const BATTLE_COMMON_LOOT = ['금전상자', '보물상자', { item:'금창약', n:2 }];
+
 const BATTLES = {
   prologue: {
     name: '서장 · 무한성 앞',
@@ -3883,7 +3895,7 @@ const MISSIONS = {
    표국 (거점 → 표국)
    ---------------------------------------------------------------------
    - 의뢰는 늘 같은 5가지. 그중 골라서 행렬을 보내면, 다음 이야기의 대화가 다 끝나고 출정하기 전에 돌아와 물건을 가져옴
-     (화면 오른쪽 위에 '표국 행렬이 돌아왔습니다' 알림)
+     (화면 가운데에 '표국 행렬이 돌아왔습니다' 알림)
    - 한 번에 보낼 수 있는 행렬 : 1등급 2곳, 등급이 오를 때마다 +1 (의뢰 수까지)
      길을 떠난 의뢰는 돌아올 때까지 다시 보낼 수 없음
    - 등급 : 장이 넘어갈 때마다 한 단계씩 오름 (제1장 = 1등급, 제2장 = 2등급 …)
@@ -3914,7 +3926,7 @@ const PYOGUK = {
        from : 이 장면이 끝나면 (또는 다음 장면으로 넘어가면) 보임 — data/scenes.js 의 장면 이름
        text : 기록 내용 ({name} = 주인공 이름)
        name : (선택) 이 쪽지부터 이름이 바뀜 (예: '사파 간부' → '구후')
-   - 새로 보이는 쪽지가 생기면 화면 오른쪽 위에 '기록이 갱신되었습니다' 알림, 집무실에 ! 표시
+   - 새로 보이는 쪽지가 생기면 화면 가운데에 '기록이 갱신되었습니다' 알림, 집무실에 ! 표시
    - 인물 : face = 얼굴 그림 (data/units.js 의 인물 id, 주인공은 'hero')
    - 세력 : icon = 동그라미 안 글자
    - 새 인물 · 세력을 넣거나 쪽지를 덧붙이면 그대로 반영됨 (순서 = 목록 순서)
@@ -4463,16 +4475,26 @@ function fadeSwap(mid, after){
   setTimeout(()=>{ if (mid) mid(); setTimeout(()=>{ f.classList.remove('on'); setTimeout(()=>{ if (after) after(); }, 460); }, 150); }, 460);
 }
 let storyBusy = false;
+/* 받기 (대사 한 줄의 give · 끝 화면 인물의 give 공통)
+   { gold:700, suryeon:300, item:'금창약', n:7, items:[ '옥패', { item:'해독제', n:2 } ], skill:'일운 찌르기', to:'hero' }
+   — 적은 것만 받음. skill = 무공을 배움 (to = 배우는 아군, 적지 않으면 주인공) */
+function applyGive(g){
+  const got = [];
+  if (g.gold){ PLAYER.gold += g.gold; got.push('금 '+g.gold.toLocaleString()); }
+  if (g.suryeon){ PLAYER.suryeon = (PLAYER.suryeon||0) + g.suryeon; got.push('수련치 '+g.suryeon.toLocaleString()); }
+  [].concat(g.item ? [{ item:g.item, n:g.n||1 }] : [], (g.items||[]).map(x=> typeof x==='string' ? { item:x, n:1 } : { item:x.item, n:x.n||1 }))
+    .forEach(o=>{ for (let k=0;k<o.n;k++) addToBag(o.item); got.push(o.item+(o.n>1 ? ' '+o.n+'개' : '')); });
+  if (g.skill && SKILLS[g.skill]){
+    const id = g.to || 'hero', st = memberState(id);
+    if (st){ st.learned = st.learned || []; if (!st.learned.includes(g.skill)) st.learned.push(g.skill);
+             got.push(nameOf(id)+josa(nameOf(id),'이','가')+' 무공 「'+g.skill+'」'+josa(g.skill,'을','를')+' 익힘'); }
+  }
+  return got;
+}
 function advanceTo(i){
   const line = curScript()[i];
   if (line.join) joinParty(line.join);
-  if (line.give){                                   // { gold:700, item:'금창약', n:7 } — 금 · 물건 (둘 중 하나만 적어도 됨)
-    const g = line.give, n = g.n||1, got = [];
-    if (g.gold){ PLAYER.gold += g.gold; got.push('금 '+g.gold.toLocaleString()); }
-    if (g.suryeon){ PLAYER.suryeon = (PLAYER.suryeon||0) + g.suryeon; got.push('수련치 '+g.suryeon.toLocaleString()); }
-    if (g.item){ for (let k=0;k<n;k++) addToBag(g.item); got.push(g.item+' '+n+'개'); }
-    if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 300);
-  }
+  if (line.give){ const got = applyGive(line.give); if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 300); }
   if (line.bg){
     storyBusy = true;
     fadeSwap(()=>{ setStoryBg(line.bg); if (line.cast) setCast(line.cast); }, ()=>{ storyBusy = false; showLine(i); });
@@ -4757,7 +4779,7 @@ document.getElementById('btn-hub').addEventListener('click', ()=>{
   refreshMissionBadges();
 });
 
-/* ================= 알림 (화면 오른쪽 위에 쌓이는 쪽지) =================
+/* ================= 알림 (화면 가운데에 쌓이는 쪽지) =================
    notify(제목, 내용, 종류) — 종류 : 'pyo'(표국) · 'mission'(임무) · 'up'(승급). 몇 초 뒤 사라지고, 누르면 바로 닫힘 */
 function notify(title, body, kind){
   const st = document.getElementById('notice-stack'); if (!st) return;
@@ -4862,13 +4884,34 @@ function boxRoll(){
   for (const x of L){ r -= (x.weight||1); if (r <= 0) return x.item; }
   return L[L.length-1].item;
 }
-function askOpenBox(){
-  const B = TREASURE_BOX.item, n = PLAYER.inv[B] || 0; if (!n) return;
+let boxKind = 'treasure';                                  // 'treasure' 보물상자 · 'gold' 금전상자
+function askOpenBox(kind){
+  boxKind = kind || 'treasure';
+  const B = boxKind==='gold' ? GOLD_BOX.item : TREASURE_BOX.item, n = PLAYER.inv[B] || 0; if (!n) return;
   askConfirm(B + '를 여시겠습니까?' + (n > 1 ? '\n(남은 상자 ' + n + '개)' : ''), openBox, null, '연다', '그만둔다');
 }
+// 금전상자에서 나올 수 있는 금 [최소, 최대] — 지금 장에 따라
+function goldBoxRange(){ const R = GOLD_BOX.gold, i = Math.max(0, boxChapter() - 1); return R[Math.min(i, R.length - 1)]; }
+function openGoldBox(){
+  const B = GOLD_BOX.item;
+  if (!takeFromBag(B)) return;
+  const [lo, hi] = goldBoxRange(), g = Math.round((lo + Math.random() * (hi - lo)) / 10) * 10;
+  PLAYER.gold += g; sfx('levelup');
+  document.querySelector('#box-modal .bx-title').textContent = B + '를 열었습니다';
+  document.getElementById('bx-ic').innerHTML = itemIcon(B);
+  document.getElementById('bx-nm').textContent = '금 ' + g.toLocaleString();
+  document.getElementById('bx-st').textContent = '보유 금 ' + PLAYER.gold.toLocaleString();
+  document.getElementById('bx-ds').textContent = '';
+  const more = document.getElementById('bx-more'), left = PLAYER.inv[B] || 0;
+  more.style.display = left ? '' : 'none'; more.textContent = '하나 더 열기 (' + left + ')';
+  const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
+  bagSel = left ? B : null; renderBag();
+}
 function openBox(){
+  if (boxKind==='gold'){ openGoldBox(); return; }
   const B = TREASURE_BOX.item;
   if (!takeFromBag(B)) return;
+  document.querySelector('#box-modal .bx-title').textContent = B + '를 열었습니다';
   const got = boxRoll();
   if (!addToBag(got)){ PLAYER.inv[B] = (PLAYER.inv[B] || 0) + 1; showToast('배낭이 가득 찼습니다 — 물건을 정리한 뒤 여세요'); renderBag(); return; }
   const it = ITEM_DB[got] || {};
@@ -5082,10 +5125,9 @@ function talkStoryNpc(n, el){
   const gk ='give:'+curScene+':'+n.id, given = n.give && PLAYER.flags[gk];
   if (n.give && !given){                             // 처음 말을 걸 때만
     PLAYER.flags[gk] = true;
-    const g = n.give, k = g.n || 1, got = [];
-    if (g.gold){ PLAYER.gold += g.gold; got.push('금 '+g.gold.toLocaleString()); }
-    if (g.item){ for (let i=0;i<k;i++) addToBag(g.item); got.push(g.item+' '+k+'개'); }
-    setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 400);
+    const got = applyGive(n.give);
+    if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 400);
+    setTimeout(()=>autoSave('end'), 900);            // 받은 것까지 저장
   }
   const pages = dlgPages(fillName(given && n.after ? n.after : n.line), t, dlgWidth(t), dlgRows('npc'));
   let pg = 0, busy = false;
@@ -5647,6 +5689,7 @@ function renderBagDetail(){
     (it.heal ? '<div class="bd-st">체력 회복 +'+it.heal+'</div>' : '')+
     '<div class="bd-ds">'+(it.desc||'')+'</div>'+
     (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item ? '<div class="bd-cur">나올 수 있는 것 : '+boxLoot().map(x=>x.item).join(' · ')+'</div>' : '')+
+    (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="bd-cur">나올 수 있는 것 : 금 '+goldBoxRange().map(x=>x.toLocaleString()).join(' ~ ')+'</div>' : '')+
     (isEquip(n) ? '<div class="bd-cur">현재 '+ITEM_TYPE_NAME[it.type]+' : '+curTxt+'</div>' : '')+
     '<div class="bd-pr">판매가 '+Math.floor(itemPrice(n)*SELL_RATE)+' 금</div>'+
     '<div class="bd-btns">'+
@@ -5654,11 +5697,13 @@ function renderBagDetail(){
       (it.type==='consumable' ? '<div class="top-btn" id="bd-use">사용</div>' : '')+
       (typeof ELIXIR !== 'undefined' && n===ELIXIR.item ? '<div class="top-btn" id="bd-eat">복용</div>' : '')+
       (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item ? '<div class="top-btn" id="bd-open">열기</div>' : '')+
+      (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="top-btn" id="bd-open-gold">열기</div>' : '')+
     '</div>';
   const eb = document.getElementById('bd-equip');  if (eb) eb.onclick = ()=> openEquipPick(n);
   const ub = document.getElementById('bd-use');   if (ub) ub.onclick = ()=> showToast('소모품은 전투 중 도구로 사용합니다 (준비 중)');
   const xb = document.getElementById('bd-eat');   if (xb) xb.onclick = openElixirPick;
-  const ob = document.getElementById('bd-open');  if (ob) ob.onclick = askOpenBox;
+  const ob = document.getElementById('bd-open');  if (ob) ob.onclick = ()=> askOpenBox('treasure');
+  const og = document.getElementById('bd-open-gold'); if (og) og.onclick = ()=> askOpenBox('gold');
 }
 // 장착하기 → 아군 목록 (누구에게 낄지 고르기). 줄마다 지금 낀 물건과 바뀌는 능력치를 보여 줌
 const EQ_DIFF_KEYS = [['maxHp','hp'], ['maxMp','mp'], ['atk','atk'], ['def','def'], ['hit','hit'], ['eva','eva']];
@@ -7438,8 +7483,13 @@ function showBattleSummary(){
   if (v.gold) PLAYER.gold += v.gold;
   if (v.suryeon) PLAYER.suryeon = (PLAYER.suryeon||0) + v.suryeon;
   PLAYER.trainCnt = {};                                  // 새 정비 : 인물마다 수련 횟수가 다시 채워짐
-  // 전리품 : '목검' 또는 { item:'금창약', n:3 }
-  const loot = (v.loot || []).map(L=> typeof L==='string' ? { item:L, n:1 } : { item:L.item, n:L.n||1 }), lost = [];
+  // 전리품 : '목검' 또는 { item:'금창약', n:3 } — 모든 전투 공통 전리품(data/battles.js 의 BATTLE_COMMON_LOOT)을 앞에
+  const common = (typeof BATTLE_COMMON_LOOT !== 'undefined' && !curBattle.lossOk && !v.noCommonLoot) ? BATTLE_COMMON_LOOT : [];
+  const loot = [], lost = [];
+  common.concat(v.loot || []).forEach(L=>{                   // 같은 물건은 하나로 합침 (금창약 2 + 3 → 금창약 ×5)
+    const o = typeof L==='string' ? { item:L, n:1 } : { item:L.item, n:L.n||1 };
+    const same = loot.find(x=>x.item===o.item); if (same) same.n += o.n; else loot.push(o);
+  });
   loot.forEach(L=>{ for (let k=0;k<L.n;k++) if (!addToBag(L.item)){ lost.push(L.item); break; } });
   document.getElementById('bs-kills').innerHTML = kills+'명'+(fled ? '<small>퇴각 '+fled+'명</small>' : '');
   document.getElementById('bs-exp').innerHTML = expRows.join('<br>') || '0';
@@ -7820,11 +7870,9 @@ function toast(msg, ms, avoid){
   toast._t = setTimeout(()=> el.style.display='none', ms||1300);
 }
 
-// 대상을 고를 때의 안내 : 화면 위쪽에 (가운데 범위를 가리지 않게)
+// 대상을 고를 때의 안내 · 임무 알림 : 화면 가운데 (고른 인물을 가리면 그 위 · 아래로 비킴)
 function hint(msg, ms){
-  const el = document.getElementById('b-toast');
-  toast(msg, ms || 1800);
-  el.classList.remove('low'); el.style.top = '12px'; el.style.transform = 'translateX(-50%)';
+  toast(msg, ms || 1800, bState && bState.selected ? [bState.selected] : null);
 }
 function toastAvoid(el, us){
   const host = el.offsetParent; if (!host) return;
