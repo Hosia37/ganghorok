@@ -612,9 +612,12 @@
   @keyframes ciFlash { 0%{opacity:0} 25%{opacity:.7} 100%{opacity:0} }
   @keyframes ciText  { 0%{ transform:translateX(-60px) scale(1.25); opacity:0 } 100%{ transform:none; opacity:1 } }
   @keyframes ciOut   { to{ opacity:0; transform:translateX(-5%) } }
-  /* 턴 수 · 승리 조건 · 임무 : 화면 위 가운데 */
+  /* 턴 수 · 승리 조건 · 임무 : 화면 위 가운데. 누를 것이 없는 창이라 눌러도 아래 칸 · 인물이 그대로 눌림 */
   #hud-top { position:absolute; top:10px; left:50%; transform:translateX(-50%); color:#fff; z-index:30; font-size:14px; text-align:center;
-    max-width:min(440px, 46%); background:rgba(12,9,6,.82); border:1px solid rgba(138,119,82,.8); border-radius:3px; padding:6px 12px; }
+    max-width:min(440px, 46%); background:rgba(12,9,6,.82); border:1px solid rgba(138,119,82,.8); border-radius:3px; padding:6px 12px;
+    pointer-events:none; transition:background .2s ease, border-color .2s ease; }
+  /* 인물을 고른 동안 (이동 · 공격 · 무공 대상 고르기) : 반투명 — 아래 칸이 비쳐 보임. 선택이 풀리면 (행동 끝 · 취소) 원래대로 */
+  #hud-top.ghost { background:rgba(12,9,6,.3); border-color:rgba(138,119,82,.4); text-shadow:0 1px 2px #000, 0 0 4px #000; }
   #hud-top b { color:#ffd88a; }
 
   /* 명령 메뉴 : 지도 위, 인물 오른쪽에 한 칸 띄워서 */
@@ -6566,7 +6569,13 @@ function newBattleState(o){
   const prevPhase = (bState && bState.phase) || 0; clearTimeout(bState && bState.endTimer);
   bState = Object.assign({ turn:'ally', turnCount:1, selected:null, moveMode:false, attackMode:false, moving:false, over:false, phase:prevPhase+1, endTimer:null,
                            expBy:{}, fired:[], enemySeq:curBattle.enemies.length, mission:{} }, o || {});
+  // 고른 인물 (selected) 이 바뀔 때마다 위 가운데 전투 정보창을 반투명 / 원래대로
+  let sel = bState.selected || null;
+  Object.defineProperty(bState, 'selected', { configurable:true, enumerable:true, get(){ return sel; }, set(v){ sel = v || null; syncHudGhost(); } });
+  syncHudGhost();
 }
+// 인물을 고른 동안 (이동 · 공격 · 무공 대상 고르기) 전투 정보창은 반투명 + 눌러도 아래 칸이 눌림. 선택이 풀리면 (행동 끝 · 취소) 원래대로
+function syncHudGhost(){ const h = document.getElementById('hud-top'); if (h) h.classList.toggle('ghost', !!(bState && bState.selected)); }
 function battleHudReset(){
   document.getElementById('b-turn').textContent = bState.turnCount;
   document.getElementById('b-turn-max').textContent = curBattle.turnLimit;
@@ -6837,7 +6846,13 @@ function placeBeside(el, u, want){
   el.style.top = top+'px';
   let mr = el.getBoundingClientRect();
   if (mr.bottom > S.bottom - 6){ top -= (mr.bottom - (S.bottom - 6)) / (cam.s || 1); top = Math.max(4, top); el.style.top = top+'px'; mr = el.getBoundingClientRect(); }
-  if (mr.top < S.top + 6){ top += ((S.top + 6) - mr.top) / (cam.s || 1); el.style.top = top+'px'; }
+  if (mr.top < S.top + 6){ top += ((S.top + 6) - mr.top) / (cam.s || 1); el.style.top = top+'px'; mr = el.getBoundingClientRect(); }
+  // 위 가운데 전투 정보창과 겹치면 그 아래로 (화면 아래로 넘치지 않을 때만)
+  const hud = document.getElementById('hud-top'), hr = hud && hud.offsetParent ? hud.getBoundingClientRect() : null;
+  if (hr && mr.left < hr.right && mr.right > hr.left && mr.top < hr.bottom + 4){
+    const dy = (hr.bottom + 4 - mr.top);
+    if (mr.bottom + dy <= S.bottom - 6){ top += dy / (cam.s || 1); el.style.top = top+'px'; }
+  }
   el.classList.toggle('on-left', side==='l');
   return side;
 }
