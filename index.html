@@ -113,6 +113,7 @@
   .snpc:hover img { transform:scale(1.08); }
   .snpc.ally img { border-color:#4a90d9; }
   .snpc span { font-size:clamp(11px, calc(2.2 * var(--vh)), 14px); color:#111; font-weight:bold; text-shadow:0 0 2px #fff, 0 0 4px #fff, 0 0 6px rgba(255,255,255,.9); }
+  .snpc .mark.gift { background:#7ad08a !important; color:#0e3a16 !important; font-size:11px; }   /* 받을 것이 있는 인물 */
   .snpc .mark { position:absolute; top:-6px; right:-4px; width:20px; height:20px; border-radius:50%; background:#ffd24a; color:#4a2a00;
     font-weight:bold; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.6); }
   @keyframes snpcBob { 0%,100%{ margin-top:0 } 50%{ margin-top:-4px } }
@@ -1532,6 +1533,9 @@ const SKILLS = {
   '탄지신통':          { range:3, minRange:2, area:'single', power:1.4, mp:12, desc:'2~3칸 원거리 단일 · 손가락으로 기를 튕겨 날리는 도화도의 절기 (진소연)' },
   '취팔선봉':          { range:1, area:'single', power:1.5, mp:10, desc:'1칸 단일 · 술 취한 듯 흔들리는 봉법 (마대호)' },
   '연환봉':            { range:2, area:'line2',  power:1.3, mp:12, desc:'직진 2칸 · 봉을 잇달아 내지름 (갈 영감)' },
+  // 출정 전 대화로 배우는 무공 (data/scenes.js 의 끝 화면 인물 give.skill)
+  '일운검법 · 초식':   { range:1, area:'sweep3', power:1.3, mp:22, desc:'앞쪽 가로 3칸 베기 · 철검문 검법의 첫 초식 (철검문주에게 배움)' },
+  '탄지신통 · 기초':   { range:3, minRange:2, area:'single', power:1.1, mp:10, desc:'2~3칸 원거리 단일 · 손가락으로 기를 튕기는 요령 (진소연에게 배움)' },
   // 석운 (아군 — 수련도)
   '타구봉법 · 전자결': { range:1, area:'sweep3', power:1.4, mp:22, desc:'앞쪽 가로 3칸 · 봉을 휘감아 돌리는 타구봉법의 결 (석운)' },
   '타구봉법 · 봉자결': { range:0, area:'self', guard:{ def:12 }, mp:8, desc:'자신 · 다음 턴까지 방어 +12 — 봉으로 길을 막는 결' },
@@ -1570,6 +1574,8 @@ const ITEM_DB = {
   '부적':   { type:'accessory',  icon:'符', price:200, stat:{ eva:3 }, desc:'액운을 막아 준다는 부적. 몸에 지니면 몸놀림이 가벼워진다.' },
   '옥패':   { type:'accessory',  icon:'玉', price:200, stat:{ def:3 }, desc:'맑은 옥을 깎아 만든 패. 몸에 지니면 마음이 가라앉아 몸이 단단해진다.' },
   '은가락지': { type:'accessory', icon:'環', price:200, stat:{ hit:3 }, desc:'가는 은실을 엮어 만든 가락지. 손끝이 정확해진다.' },
+  '무당 호신부': { type:'accessory', icon:'護', price:250, stat:{ def:2, eva:2 }, desc:'장삼봉이 손수 그려 준 무당의 호신부. 몸에 지니면 몸이 가볍고 단단해진다.' },
+  '매깃 노리개': { type:'accessory', icon:'羽', price:250, stat:{ hit:3, eva:1 }, desc:'철명이 사냥할 때 늘 지니던 매 깃 노리개. 지니면 눈이 밝아진다고 한다.' },
   '전뢰심법': { type:'accessory', icon:'書', img:'book', price:300, stat:{ mp:7 }, desc:'번개처럼 기를 몰아치는 심법을 적은 서책. 몸에 지니면 내력이 오른다.' },
   '토납법 서책': { type:'accessory', icon:'書', img:'book', price:150, stat:{ mp:3 }, desc:'숨을 고르고 기를 다스리는 법을 적은 서책. 몸에 지니면 내력이 조금 는다.' },
   // ---- 표국 행렬이 가져오는 물건 (data/pyoguk.js) ----
@@ -1632,10 +1638,11 @@ const TREASURE_BOX = {
   ],
 };
 
-// 금전상자 : 배낭에서 '열기' → 금. gold = 장마다 [최소, 최대] (서장 · 제1장, 제2장, 제3장, 제4장 …, 모자라면 마지막 것)
+// 금전상자 : 배낭에서 '열기' (한 개씩) 또는 '모두 열기' → 금. gold = 장마다 한 상자의 [최소, 최대] (서장 · 제1장, 제2장, 제3장, 제4장 …, 모자라면 마지막 것)
+//   전투마다 받는 개수는 data/battles.js 의 BATTLE_COMMON_LOOT ('order' = 몇 번째 전투인지 — 첫 전투 1개, 두 번째 2개 …)
 const GOLD_BOX = {
   item: '금전상자',
-  gold: [ [200, 500], [400, 800], [600, 1200], [800, 1600] ],
+  gold: [ [100, 300], [200, 400], [300, 600], [400, 800] ],
 };
 
 // 잡화점에서 파는 물건 (가격은 ITEM_DB)
@@ -1995,7 +2002,9 @@ const SCENES = {
     ],
     end: { bg:'wudang_gate', cast:['hero','cheonghwa'] },
     npcs: [
-      { id:'cheonghwa', x:53, y:62, line:'사파 무리가 산문 계단 아래까지 올라왔습니다. 채비가 되면 출정하시지요.' },
+      { id:'cheonghwa', x:53, y:62, give:{ item:'무당 호신부' },
+        line:'사조님께서 손수 그려 주신 호신부입니다. 산문을 지키는 동안 몸에 지니십시오.',
+        after:'사파 무리가 산문 계단 아래까지 올라왔습니다. 채비가 되면 출정하시지요.' },
     ],
     sortie: 'wudang_defense',
   },
@@ -2295,7 +2304,9 @@ const SCENES = {
     ],
     end: { bg:'cheolgeom_court', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [
-      { id:'cheolgeom_munju', x:30, y:66, line:'간부는 절정의 고수요. 정면으로 맞서지 말고 버티시오. 놈은 내가 상대하겠소.' },
+      { id:'cheolgeom_munju', x:30, y:66, give:{ skill:'일운검법 · 초식' },
+        line:'천 가주께 입은 은혜를 이렇게라도 갚게 해 주게. 철검문 검법의 첫 초식이오. 천씨의 검과 결이 비슷하니 금방 손에 붙을 거요.',
+        after:'간부는 절정의 고수요. 정면으로 맞서지 말고 버티시오. 놈은 내가 상대하겠소.' },
       { id:'cheonghwa',       x:70, y:64, line:'간부를 쓰러뜨리지 못해도 열 턴만 버티면 됩니다. 문도들부터 막지요.' },
     ],
     sortie: 'cheolgeom_coup',   // 철검문 안마당 — 사파 간부 · 배신한 문원
@@ -2567,7 +2578,9 @@ const SCENES = {
     end: { bg:'yangyang_market', cast:['cheolgeom_traitor','hero','cheonghwa','cheolmyeong'] },
     npcs: [
       { id:'cheonghwa',   x:70, y:64, line:'배신자들이 흩어지기 전에 막아야 합니다. 거점에서 채비를 단단히 하고 나서지요.' },
-      { id:'cheolmyeong', x:30, y:66, line:'놈들을 쓰러뜨리면 구후의 행방도 캐낼 수 있을 거요.' },
+      { id:'cheolmyeong', x:30, y:66, give:{ item:'매깃 노리개' },
+        line:'사냥할 때 늘 지니던 매 깃 노리개요. 눈이 밝아진다는 말이 있지. 가져가시오.',
+        after:'놈들을 쓰러뜨리면 구후의 행방도 캐낼 수 있을 거요.' },
     ],
     sortie: 'yangyang_traitors',   // 양양 저잣거리 — 철검문 배신자들의 습격
   },
@@ -2691,7 +2704,9 @@ const SCENES = {
     end: { bg:'yangyang_manor', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [
       { id:'cheonghwa',   x:74, y:60, line:'먼 길입니다. 거점에서 채비를 단단히 하고 나서지요.' },
-      { id:'cheolmyeong', x:26, y:62, line:'절강까지는 산을 몇 개 넘어야 하오. 화살은 넉넉히 챙겨 두었소.' },
+      { id:'cheolmyeong', x:26, y:62, give:{ item:'해독제', n:2 },
+        line:'구후가 뱀독을 쓴다지 않았소. 산에서 쓰던 해독제요. 넉넉히 챙겨 가시오.',
+        after:'절강까지는 산을 몇 개 넘어야 하오. 화살은 넉넉히 챙겨 두었소.' },
     ],
     sortie: 'mountain_bandits',        // 출정 → 아래 산길 장면 → 대화가 끝나면 바로 전투
     sortieScene: 'mountain_path',
@@ -2859,7 +2874,9 @@ const SCENES = {
     end: { bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [
       { id:'seokun',    x:72, y:66, line:'다리 쪽 놈들은 내가 맡지. 왼쪽 부두로도 배가 들어올 거요. 채비는 서두르쇼!' },
-      { id:'jinsoyeon', x:28, y:68, line:'저는 뒤에서 탄지신통으로 거들게요. 두 칸 떨어진 적까지 닿아요.' },
+      { id:'jinsoyeon', x:28, y:68, give:{ skill:'탄지신통 · 기초' },
+        line:'사부님께 배운 탄지신통의 요령이에요. 손가락으로 기를 튕기는 법만 살짝 알려 드릴게요. 사형한테는 비밀이에요!',
+        after:'저는 뒤에서 탄지신통으로 거들게요. 두 칸 떨어진 적까지 닿아요.' },
     ],
     sortie: 'gaebang_defense',      // 개방 분타 습격 (지도 007) → 승리 뒤 gaebang_after
   },
@@ -2889,8 +2906,12 @@ const SCENES = {
     ],
     end: { bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [
-      { id:'galyeong', x:72, y:66, line:'지부 앞은 다리 하나로만 이어져 있소. 망루에 활 든 놈들이 있으니 다리 위에서 오래 머물지 마시오.' },
-      { id:'wangi',    x:28, y:68, line:'왼쪽 부두랑 다리 밑에도 배가 숨어 있을 거요. 뒤도 조심하쇼!' },
+      { id:'galyeong', x:72, y:66, give:{ item:'영약' },
+        line:'포구 약재상에게서 얻은 귀한 약이오. 늙은이보다는 젊은 사람이 먹어야지.',
+        after:'지부 앞은 다리 하나로만 이어져 있소. 망루에 활 든 놈들이 있으니 다리 위에서 오래 머물지 마시오.' },
+      { id:'wangi',    x:28, y:68, give:{ item:'금창약', n:2 },
+        line:'길잡이 몫이오! 다리 위에서 다치면 이거라도 바르쇼.',
+        after:'왼쪽 부두랑 다리 밑에도 배가 숨어 있을 거요. 뒤도 조심하쇼!' },
     ],
     sortie: 'sapa_branch_raid',        // 출정 → 아래 지부 앞 장면 → 대화가 끝나면 바로 전투
     sortieScene: 'sapa_branch_front',
@@ -3208,8 +3229,9 @@ const SCENES = {
      같은 우군을 여럿 배치하면 cheolgeom, cheolgeom_2, cheolgeom_3 … 으로 불림
    ===================================================================== */
 // 모든 전투의 승리 보상에 덧붙는 전리품 (각 전투의 victory.loot 앞에). 지는 전투(lossOk)에는 붙지 않음
+//   n:'order' = 이야기 순서로 몇 번째 전투인지 (첫 전투 1개, 두 번째 2개, 세 번째 3개 … — 지는 전투는 세지 않음)
 //   전투 하나만 빼려면 그 전투의 victory 에 noCommonLoot:true
-const BATTLE_COMMON_LOOT = ['금전상자', '보물상자', { item:'금창약', n:2 }];
+const BATTLE_COMMON_LOOT = [{ item:'금전상자', n:'order' }, '보물상자', { item:'금창약', n:2 }];
 
 const BATTLES = {
   prologue: {
@@ -4910,6 +4932,21 @@ function openGoldBox(){
   const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
   bagSel = left ? B : null; renderBag();
 }
+// 금전상자 모두 열기 → 합계
+function openAllGoldBoxes(){
+  const B = GOLD_BOX.item, n = PLAYER.inv[B] || 0; if (!n) return;
+  const [lo, hi] = goldBoxRange(); let sum = 0, k = 0;
+  for (let i=0;i<n;i++){ if (!takeFromBag(B)) break; k++; sum += Math.round((lo + Math.random() * (hi - lo)) / 10) * 10; }
+  PLAYER.gold += sum; sfx('levelup');
+  document.querySelector('#box-modal .bx-title').textContent = B + ' ' + k + '개를 열었습니다';
+  document.getElementById('bx-ic').innerHTML = itemIcon(B);
+  document.getElementById('bx-nm').textContent = '금 ' + sum.toLocaleString();
+  document.getElementById('bx-st').textContent = '보유 금 ' + PLAYER.gold.toLocaleString();
+  document.getElementById('bx-ds').textContent = '';
+  document.getElementById('bx-more').style.display = 'none';
+  const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
+  bagSel = null; renderBag();
+}
 function openBox(){
   if (boxKind==='gold'){ openGoldBox(); return; }
   const B = TREASURE_BOX.item;
@@ -5112,7 +5149,8 @@ function buildStoryNpcs(){
   (SCENES[curScene].npcs || []).forEach(n=>{
     const d = document.createElement('div'); d.className = 'snpc' + (isParty(n.id) ? ' ally' : '');
     d.style.left = n.x+'%'; d.style.top = n.y+'%';
-    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span><div class="mark">!</div>';
+    const gift = n.give && !PLAYER.flags['give:'+curScene+':'+n.id];      // 받을 것이 있으면 선물 표시
+    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span><div class="mark'+(gift ? ' gift' : '')+'">'+(gift ? '贈' : '!')+'</div>';
     d.addEventListener('click', e=>{ e.stopPropagation(); talkStoryNpc(n, d); });
     wrap.appendChild(d);
   });
@@ -5692,7 +5730,7 @@ function renderBagDetail(){
     (it.heal ? '<div class="bd-st">체력 회복 +'+it.heal+'</div>' : '')+
     '<div class="bd-ds">'+(it.desc||'')+'</div>'+
     (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item ? '<div class="bd-cur">나올 수 있는 것 : '+boxLoot().map(x=>x.item).join(' · ')+'</div>' : '')+
-    (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="bd-cur">나올 수 있는 것 : 금 '+goldBoxRange().map(x=>x.toLocaleString()).join(' ~ ')+'</div>' : '')+
+    (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="bd-cur">나올 수 있는 것 : 한 상자에 금 '+goldBoxRange().map(x=>x.toLocaleString()).join(' ~ ')+'</div>' : '')+
     (isEquip(n) ? '<div class="bd-cur">현재 '+ITEM_TYPE_NAME[it.type]+' : '+curTxt+'</div>' : '')+
     '<div class="bd-pr">판매가 '+Math.floor(itemPrice(n)*SELL_RATE)+' 금</div>'+
     '<div class="bd-btns">'+
@@ -5700,13 +5738,14 @@ function renderBagDetail(){
       (it.type==='consumable' ? '<div class="top-btn" id="bd-use">사용</div>' : '')+
       (typeof ELIXIR !== 'undefined' && n===ELIXIR.item ? '<div class="top-btn" id="bd-eat">복용</div>' : '')+
       (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item ? '<div class="top-btn" id="bd-open">열기</div>' : '')+
-      (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="top-btn" id="bd-open-gold">열기</div>' : '')+
+      (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="top-btn" id="bd-open-gold">열기</div>'+(PLAYER.inv[n] > 1 ? '<div class="top-btn" id="bd-open-gold-all">모두 열기</div>' : '') : '')+
     '</div>';
   const eb = document.getElementById('bd-equip');  if (eb) eb.onclick = ()=> openEquipPick(n);
   const ub = document.getElementById('bd-use');   if (ub) ub.onclick = ()=> showToast('소모품은 전투 중 도구로 사용합니다 (준비 중)');
   const xb = document.getElementById('bd-eat');   if (xb) xb.onclick = openElixirPick;
   const ob = document.getElementById('bd-open');  if (ob) ob.onclick = ()=> askOpenBox('treasure');
   const og = document.getElementById('bd-open-gold'); if (og) og.onclick = ()=> askOpenBox('gold');
+  const oa = document.getElementById('bd-open-gold-all'); if (oa) oa.onclick = ()=> askConfirm(GOLD_BOX.item+' '+(PLAYER.inv[GOLD_BOX.item]||0)+'개를 모두 여시겠습니까?', openAllGoldBoxes, null, '모두 연다', '그만둔다');
 }
 // 장착하기 → 아군 목록 (누구에게 낄지 고르기). 줄마다 지금 낀 물건과 바뀌는 능력치를 보여 줌
 const EQ_DIFF_KEYS = [['maxHp','hp'], ['maxMp','mp'], ['atk','atk'], ['def','def'], ['hit','hit'], ['eva','eva']];
@@ -7419,6 +7458,11 @@ function checkEnd(){
   }
 }
 function unitKey(u){ return Object.keys(units).find(k=>units[k]===u); }
+// 이야기 순서로 몇 번째 전투인지 (1부터, 지는 전투 lossOk 는 세지 않음) — 금전상자 개수
+function battleOrderNo(id){
+  const list = storyOrder().filter(k=>k.startsWith('battle:')).map(k=>k.slice(7)).filter(b=> BATTLES[b] && !BATTLES[b].lossOk);
+  const i = list.indexOf(id); return i >= 0 ? i + 1 : 1;
+}
 function startVictorySeq(last){
   closeMenu(true); hideTerrainInfo(); clearTimeout(bState.endTimer);
   document.getElementById('b-end-turn').classList.add('hidden');
@@ -7502,7 +7546,7 @@ function showBattleSummary(){
   const common = (typeof BATTLE_COMMON_LOOT !== 'undefined' && !curBattle.lossOk && !v.noCommonLoot) ? BATTLE_COMMON_LOOT : [];
   const loot = [], lost = [];
   common.concat(v.loot || []).forEach(L=>{                   // 같은 물건은 하나로 합침 (금창약 2 + 3 → 금창약 ×5)
-    const o = typeof L==='string' ? { item:L, n:1 } : { item:L.item, n:L.n||1 };
+    const o = typeof L==='string' ? { item:L, n:1 } : { item:L.item, n: L.n==='order' ? battleOrderNo(curBattleId) : (L.n||1) };
     const same = loot.find(x=>x.item===o.item); if (same) same.n += o.n; else loot.push(o);
   });
   loot.forEach(L=>{ for (let k=0;k<L.n;k++) if (!addToBag(L.item)){ lost.push(L.item); break; } });
