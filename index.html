@@ -626,15 +626,20 @@
   #um-info .lv { color:#fff; margin-left:5px; font-size:11px; }
   #um-info .realm { color:#9fd8c8; margin-left:6px; }
   #um-info .gap { display:inline-block; width:8px; }
-  /* 이름 패널을 누르면 메뉴가 인물 반대쪽으로 — 화살표가 옮겨갈 방향 */
-  #um-info { position:relative; padding-right:22px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-  #um-info:hover, #um-info:active { border-color:#e0c98a; }
-  .um-flip { position:absolute; right:5px; top:4px; font-size:10px; color:#e0c98a; opacity:.8; pointer-events:none; }
-  .um-flip::before { content:'◀'; }
-  #unit-menu.on-left .um-flip::before { content:'▶'; }
+  #um-info { -webkit-tap-highlight-color:transparent; }
   #unit-menu.show { display:flex; }
+  /* 이동할 파란 칸이 보이는 동안 (ghost) : 메뉴를 반투명하게 — 아래 칸이 비쳐 보임
+     버튼 이름(글자 알약) 부분은 버튼, 그 밖의 반투명한 곳을 누르면 그 아래 파란 칸으로 이동 */
+  .um-lb { position:relative; display:inline-block; padding:1px 12px; border-radius:10px; border:1px solid transparent; }
+  .um-lb::after { content:''; position:absolute; inset:-6px -8px; }            /* 누르는 자리를 조금 넉넉하게 */
+  #unit-menu.ghost:not(.skills) #um-info { background:rgba(12,9,6,.66); border-color:rgba(138,119,82,.6); text-shadow:0 1px 2px #000; }
+  #unit-menu.ghost:not(.skills) .um-btn { background:rgba(30,24,16,.3); border-color:rgba(138,119,82,.45); text-shadow:0 1px 2px #000, 0 0 4px #000; }
+  #unit-menu.ghost:not(.skills) .um-lb { background:rgba(24,19,12,.9); border-color:rgba(160,138,92,.85); }
+  #unit-menu.ghost:not(.skills) .um-btn.atk .um-lb { border-color:#a24; }
+  #unit-menu.ghost:not(.skills) .um-btn.asc .um-lb { border-color:#d8a24a; }
+  #unit-menu.ghost:not(.skills) .um-btn.talk .um-lb { border-color:#3f8a68; }
   /* 정보 창 (적 · 우군 · 행동을 마친 아군) — 명령 메뉴의 이름 패널과 같은 모양 */
-  #peek-info { position:absolute; z-index:36; display:none; width:max-content; max-width:260px; padding:5px 22px 6px 10px; text-align:left;
+  #peek-info { position:absolute; z-index:36; display:none; width:max-content; max-width:260px; padding:5px 10px 6px 10px; text-align:left;
     color:#f3ead9; font-size:11px; line-height:1.55; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent;
     background:rgba(12,9,6,.92); border:1px solid #8a7752; border-radius:3px; box-shadow:0 3px 12px rgba(0,0,0,.5); }
   #peek-info.show { display:block; }
@@ -649,8 +654,7 @@
   #peek-info .gap { display:inline-block; width:8px; }
   #peek-info .done { color:#9a9484; margin-left:6px; }
   #peek-info .sk { white-space:normal; color:#e8dcc0; }
-  #peek-info .um-flip::before { content:'◀'; }
-  #peek-info.on-left .um-flip::before { content:'▶'; }
+  #peek-info.ghost { background:rgba(12,9,6,.6); }                              /* 파란 칸 위 : 반투명 (누르면 닫히고, 아래가 파란 칸이면 그리로 이동) */
   .um-btn { padding:7px 0; text-align:center; font-size:12px; color:#e8dcc0; cursor:pointer;
     background:linear-gradient(180deg, rgba(60,50,35,.94), rgba(20,16,10,.96)); border:1px solid #8a7752; border-radius:3px; }
   .um-btn:hover { color:#fff6dd; border-color:#e0c98a; }
@@ -1081,16 +1085,17 @@
   <div id="battle-screen">
     <div id="b-scaler"><div id="b-stage">
       <div id="b-grid"></div>
-      <!-- 명령 메뉴 : 인물 오른쪽에 한 칸 띄워서 (바로 옆 칸은 누를 수 있게) -->
+      <!-- 명령 메뉴 : 인물 오른쪽에 한 칸 띄워서 (바로 옆 칸은 누를 수 있게)
+           이동할 파란 칸이 보이는 동안은 반투명 — 버튼 이름(글자) 부분만 버튼, 나머지를 누르면 그 아래 칸으로 -->
       <div id="unit-menu">
         <div id="um-info"></div>
-        <div class="um-btn atk" data-a="attack" id="um-attack">공격</div>
-        <div class="um-btn talk" data-a="talk" id="um-talk">대화</div>
-        <div class="um-btn asc" data-a="ascend" id="um-ascend">승급</div>
-        <div class="um-btn" data-a="tactic">무공</div>
-        <div class="um-btn" data-a="item">도구</div>
-        <div class="um-btn" data-a="wait">대기</div>
-        <div class="um-btn" data-a="cancel">취소</div>
+        <div class="um-btn atk" data-a="attack" id="um-attack"><span class="um-lb">공격</span></div>
+        <div class="um-btn talk" data-a="talk" id="um-talk"><span class="um-lb">대화</span></div>
+        <div class="um-btn asc" data-a="ascend" id="um-ascend"><span class="um-lb">승급</span></div>
+        <div class="um-btn" data-a="tactic"><span class="um-lb">무공</span></div>
+        <div class="um-btn" data-a="item"><span class="um-lb">도구</span></div>
+        <div class="um-btn" data-a="wait"><span class="um-lb">대기</span></div>
+        <div class="um-btn" data-a="cancel"><span class="um-lb">취소</span></div>
         <div id="um-skills"></div>
       </div>
       <!-- 적 · 우군 · 행동을 마친 아군을 누르면 : 명령 메뉴의 이름 패널과 같은 모양의 정보 창 -->
@@ -6037,7 +6042,7 @@ let memTips = {};
 const TIPS = {
   battle: [
     { t:'아군 움직이기', d:'파란 테두리의 아군을 누르면 갈 수 있는 칸이 밝게 보입니다. 가고 싶은 칸을 누르면 이동합니다.<br>제자리에서 행동하려면 아군을 누른 뒤 메뉴를 고르면 됩니다.' },
-    { t:'행동 메뉴', d:'<b>공격</b> 바로 옆 적(활은 한 칸 띄운 적) · <b>무공</b> 내공을 써서 강한 공격 · <b>도구</b> 금창약 등 · <b>대기</b> 행동 끝<br>메뉴 위 이름 패널을 누르면 메뉴가 반대쪽으로 옮겨 갑니다.' },
+    { t:'행동 메뉴', d:'<b>공격</b> 바로 옆 적(활은 한 칸 띄운 적) · <b>무공</b> 내공을 써서 강한 공격 · <b>도구</b> 금창약 등 · <b>대기</b> 행동 끝<br>이동할 파란 칸이 보이는 동안 메뉴는 반투명해집니다. 버튼 이름(글자)을 누르면 버튼, 그 밖의 반투명한 곳을 누르면 그 아래 칸으로 이동합니다.' },
     { t:'반격', d:'공격이나 무공을 맞고 살아남은 상대는 사거리가 닿으면 한 번 되받아칩니다.<br>멀리서 쏘는 활 · 원거리 무공은 근접 적의 반격을 받지 않습니다.' },
     { t:'정보 보기', d:'적을 누르면 정보 창(체력 · 내공 · 공격 · 방어 · 이동 · 무공)이, 빈 칸을 누르면 지형(이동 소모)이 보입니다. 다시 누르면 닫힙니다.<br>오른쪽 위 <b>확대</b> 버튼으로 지도를 크게 볼 수 있습니다.' },
     { t:'턴 넘기기 · 저장', d:'모두 행동하면 자동으로 적 턴이 됩니다. 일찍 넘기려면 <b>턴 종료</b>.<br>아군 턴이 시작될 때마다 <b>자동 저장</b>되고, ⚙ 설정에서 직접 저장할 수도 있습니다.' },
@@ -6342,6 +6347,7 @@ function buildGrid(){
     const c = document.createElement('div');
     c.className = 'cell';
     c.style.left = ((x-1)*B_TILE)+'px'; c.style.top = ((y-1)*B_TILE)+'px';
+    c.dataset.x = x; c.dataset.y = y;
     c.addEventListener('click', ()=>onCellClick(x,y));
     bGridEl.appendChild(c);
     bCells[x+','+y] = c;
@@ -6680,8 +6686,7 @@ function peekHtml(u){
          (u.poison ? '<span class="psn">중독 '+u.poison.turns+'턴</span>' : '')+'<br>'+
          '<span class="lbl">체력</span> '+u.hp+'/'+u.maxHp+'<span class="gap"></span><span class="lbl">내공</span> '+(u.mp||0)+'/'+(u.maxMp||0)+'<br>'+
          '<span class="lbl">공격</span> '+u.atk+'<span class="gap"></span><span class="lbl">방어</span> '+u.def+'<span class="gap"></span><span class="lbl">이동</span> '+(u.move||0)+
-         (sk.length ? '<div class="sk"><span class="lbl">무공</span> '+sk.join(', ')+'</div>' : '')+
-         '<span class="um-flip"></span>';
+         (sk.length ? '<div class="sk"><span class="lbl">무공</span> '+sk.join(', ')+'</div>' : '');
 }
 function showPeek(u){
   peekUnit = u;
@@ -6690,15 +6695,24 @@ function showPeek(u){
   peekEl.classList.add('show');
   const sel = bState.selected;                        // 명령 메뉴가 열려 있으면 그 반대쪽으로
   placeBeside(peekEl, u, sel && sel !== u && sel.x > u.x ? 'l' : 'r');
+  peekEl.classList.toggle('ghost', !!bState.moveMode);
 }
 function hidePeek(){ peekEl.classList.remove('show'); peekUnit = null; }
 function togglePeek(u){ if (peekUnit === u && peekEl.classList.contains('show')) hidePeek(); else { hideTerrainInfo(); showPeek(u); } }
+// 정보 창을 누르면 닫힘. 창 아래가 이동할 파란 칸이면 그 칸으로 이동
 peekEl.addEventListener('click', ev=>{
   ev.stopPropagation();
-  const u = peekUnit; if (!u) return;
-  const want = peekEl.classList.contains('on-left') ? 'r' : 'l';
-  if (placeBeside(peekEl, u, want) !== want) hint('반대쪽에는 창을 둘 자리가 없습니다', 1300);
+  const c = reachableUnder(ev.clientX, ev.clientY);
+  hidePeek();
+  if (c) onCellClick(c.x, c.y);
 });
+// 화면의 한 점 아래에 있는 이동 가능한(파란) 칸 — 메뉴 · 정보 창에 가려져 있어도 찾음
+function reachableUnder(cx, cy){
+  if (!bState.moveMode || !bState.selected) return null;
+  const el = document.elementsFromPoint(cx, cy).find(e=> e.classList && e.classList.contains('cell'));
+  if (!el || !el.classList.contains('reachable')) return null;
+  return { x:+el.dataset.x, y:+el.dataset.y };
+}
 
 function openMenu(u){
   clearHi(); hideTerrainInfo(); hidePeek();
@@ -6714,9 +6728,25 @@ function openMenu(u){
   umAttack.classList.toggle('show', adjacent);
   document.getElementById('um-talk').classList.toggle('show', talkTargets(u).length>0);   // 임무 : 대화할 상대가 바로 옆에 있을 때
   document.getElementById('um-ascend').classList.toggle('show', canBattleAscend(u));       // 수련도를 다 채우고 다음 경지 레벨이 됐을 때
-  document.getElementById('um-info').innerHTML = unitInfoHtml(u) + '<span class="um-flip"></span>';
+  document.getElementById('um-info').innerHTML = unitInfoHtml(u);
   unitMenu.classList.add('show');
-  placeMenu(u, 'r');                                  // 처음엔 늘 오른쪽 (자리가 없으면 왼쪽)
+  unitMenu.classList.toggle('ghost', !!bState.moveMode);   // 이동할 칸이 보이는 동안은 반투명
+  placeMenuSmart(u);
+}
+// 오른쪽 · 왼쪽 중 파란 칸을 덜 가리는 쪽에 (같으면 오른쪽)
+function placeMenuSmart(u){
+  const covered = ()=>{
+    const L = unitMenu.offsetLeft, T = unitMenu.offsetTop, W = unitMenu.offsetWidth, H = unitMenu.offsetHeight; let n = 0;
+    Object.keys(bCells).forEach(k=>{
+      if (!bCells[k].classList.contains('reachable')) return;
+      const [x, y] = k.split(',').map(Number), cx = (x-1)*B_TILE, cy = (y-1)*B_TILE;
+      if (cx < L + W && cx + B_TILE > L && cy < T + H && cy + B_TILE > T) n++;
+    });
+    return n;
+  };
+  const r = placeMenu(u, 'r'), nr = covered(); if (!nr) return;
+  const l = placeMenu(u, r==='r' ? 'l' : 'r'); if (l === r) return;
+  if (covered() >= nr) placeMenu(u, r);
 }
 /* 메뉴 자리 — 인물 오른쪽('r') 또는 왼쪽('l')에 한 칸 띄워서 (바로 옆 칸은 누를 수 있게)
    원하는 쪽이 지도 · 화면 밖으로 나가면 반대쪽에 둠. 실제로 놓인 쪽을 돌려줌 */
@@ -6750,13 +6780,15 @@ function placeBeside(el, u, want){
   el.classList.toggle('on-left', side==='l');
   return side;
 }
-// 이름 패널을 누르면 (마우스 클릭 · 터치) 메뉴가 인물 반대쪽으로 옮겨감 — 가려진 칸을 누를 수 있게
-document.getElementById('um-info').addEventListener('click', ev=>{
-  ev.stopPropagation();
-  const u = bState.selected; if (!u || !unitMenu.classList.contains('show')) return;
-  const want = menuSide==='r' ? 'l' : 'r';
-  if (placeMenu(u, want) !== want) hint('반대쪽에는 메뉴를 둘 자리가 없습니다', 1300);
-});
+// 반투명한 메뉴 : 버튼 이름(글자) 밖을 눌렀는데 그 아래가 파란 칸이면 그 칸으로 이동 (가려진 칸도 누를 수 있게)
+unitMenu.addEventListener('click', ev=>{
+  if (!unitMenu.classList.contains('ghost') || unitMenu.classList.contains('skills')) return;
+  if (ev.target.closest('.um-lb')) return;                     // 글자 = 버튼
+  const c = reachableUnder(ev.clientX, ev.clientY); if (!c) return;
+  ev.stopPropagation(); ev.preventDefault();
+  onCellClick(c.x, c.y);
+}, true);
+document.getElementById('um-info').addEventListener('click', ev=> ev.stopPropagation());
 function unitInfoHtml(u){
   const rg = ((u.range||1) > 1 || (u.minRange||1) > 1) ? '<span class="job">사거리 '+((u.minRange||1)===(u.range||1) ? u.range : (u.minRange||1)+'~'+u.range)+'</span>' : '';
   return '<b>'+u.name+'</b>'+(u.side==='ally'?'<span class="lv">Lv'+(u.level||1)+'</span>':'')+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
