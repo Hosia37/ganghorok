@@ -300,8 +300,12 @@
   .eq-slot .ic { font-family:"Noto Serif CJK KR",serif; font-size:clamp(14px,calc(5 * var(--vh)),34px); color:#ffd88a; line-height:1; display:flex; align-items:center; justify-content:center; width:72%; height:72%; }
   .eq-slot .ic img { width:100%; height:100%; object-fit:contain; }
   .eq-slot .tag { position:absolute; left:-1px; top:-1px; font-size:9px; line-height:1; padding:2px 3px; background:#2a2016; color:#c9b98a; border-radius:2px 0 2px 0; }
-  .eq-slot.named { border-color:#b07ae0; box-shadow:0 0 0 1px rgba(176,122,224,.35) inset; }
-  .eq-slot.named .ic { color:#d9b3ff; }
+  .eq-slot.named { border-color:#e0b43a; box-shadow:0 0 0 1px rgba(240,200,80,.4) inset; }
+  .eq-slot.named .ic { color:#ffd24a; }
+  /* 고정 장비 칸 테두리 = 등급 색 (상급 파랑 · 희귀 보라 · 보구 주황 · 전용 빨강) */
+  .eq-slot.g1 { border-color:#5aa2f0; } .eq-slot.g2 { border-color:#a874e8; } .eq-slot.g3 { border-color:#f0943a; }
+  .eq-slot.g4 { border-color:#ff5a4a; box-shadow:0 0 0 1px rgba(255,90,74,.4) inset, 0 0 6px rgba(255,90,74,.35); }
+  .eq-slot .lv { position:absolute; right:1px; bottom:0; font-size:9px; line-height:1.1; color:#fff; text-shadow:0 1px 1px #000, 0 0 2px #000; }
   .eq-slot.sel { outline:2px solid #ffd88a; outline-offset:1px; }
   #sd-portrait { flex:1; min-width:0; height:100%; object-fit:cover; object-position:center 15%; border:2px solid #4a90d9; border-radius:3px; }
   #sd-portrait.friend { border-color:#f08c1e; }
@@ -357,7 +361,7 @@
   .sbag-it .ic img { height:100%; object-fit:contain; }
   .sbag-it .nm { font-size:9px; color:#d9c9a0; max-width:96%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
   .sbag-it .ct { position:absolute; right:2px; top:0; font-size:10px; color:#fff; text-shadow:0 1px 1px #000; }
-  .sbag-it.named { border-color:#b07ae0; } .sbag-it.named .ic { color:#d9b3ff; }
+  .sbag-it.named { border-color:#e0b43a; } .sbag-it.named .ic { color:#ffd24a; }
   .sbag-it.sel { outline:2px solid #ffd88a; outline-offset:1px; }
   .sbag-it.fit { box-shadow:0 0 0 2px #7ad08a inset; }
   .sbag-empty { color:#9a8a68; padding:8px 2px; }
@@ -365,7 +369,7 @@
   .sbag-det .dic { flex:none; width:clamp(30px,calc(8 * var(--vh)),44px); height:clamp(30px,calc(8 * var(--vh)),44px); display:flex; align-items:center; justify-content:center; font-family:"Noto Serif CJK KR",serif; font-size:clamp(16px,calc(4.4 * var(--vh)),26px); color:#ffd88a; border:1px solid #6d5d3f; border-radius:3px; background:rgba(20,15,9,.85); }
   .sbag-det .dic img { width:80%; height:80%; object-fit:contain; }
   .sbag-det .tx { flex:1; min-width:0; }
-  .sbag-det b { color:#ffd88a; } .sbag-det b.named { color:#d9b3ff; }
+  .sbag-det b { color:#f3e4c0; } .sbag-det b.named { color:#ffd24a; }
   .sbag-det small { display:block; color:#b9a982; font-size:11px; } .sbag-det small.ty { display:inline; color:#9a8a68; }
   .sbag-det .st { color:#7ad08a; font-size:11px; }
   .sbag-det .diff { color:#c9b98a; font-size:11px; } .sbag-det .diff .up { color:#7ad08a; } .sbag-det .diff .down { color:#e07a6a; }
@@ -846,9 +850,10 @@
   .enh-head b { color:#ffd88a; font-weight:normal; } .enh-head .item-img { width:16px; height:16px; vertical-align:-3px; }
   .enh-head small { display:block; color:#b9a982; font-size:11px; margin-top:2px; }
   #shop-list .top-btn.off { opacity:.4; }
-  /* 장비 등급 색 : 일반 · 희귀 · 보구 */
-  .grade-1 { color:#8fe0a8 !important; } .grade-2 { color:#8cc4ff !important; } .grade-3 { color:#ffb85c !important; }
-  .named { color:#e2a8ff !important; text-shadow:0 0 6px rgba(200,140,255,.35); }   /* 명품 */
+  /* 장비 등급 색 : 흔함(기본) · 상급 파랑 · 희귀 보라 · 보구 주황 · 전용 빨강 */
+  .grade-1 { color:#6fb6ff !important; } .grade-2 { color:#c38cff !important; } .grade-3 { color:#ffa64d !important; }
+  .grade-4 { color:#ff6a58 !important; text-shadow:0 0 6px rgba(255,90,70,.4); }
+  .named { color:#ffd24a !important; text-shadow:0 0 6px rgba(255,200,60,.4); }   /* 명품 (금빛) */
   #shop-panel.enh #shop-list { max-height:min(calc(66 * var(--vh)),440px); gap:4px; }
   .shop-row.enh { padding:5px 8px; gap:8px; }
   .shop-row.enh .nm { font-size:clamp(12px,calc(2.6 * var(--vh)),15px); }
@@ -1564,7 +1569,9 @@ const ENEMY_STAT = { mult:{ atk:0.9 } };   // power : 반격 위력 (1.0 = 일�
    ===================================================================== */
 
 // 주인공 기본값
-const HERO_DEFAULT = { job:'무인', move:4, skills:[] };
+const HERO_DEFAULT = { job:'무인', move:4, skills:[], gear:{ weapon:'철검', armor:'천옷' } };
+// gear : 인물마다 정해진 무기 · 방어구 (바꿔 끼지 않고 대장간에서 강화 · 승급 · 제작). 합류할 때 저절로 장착
+//   합류 때 등급 : gearGrade 를 적으면 그 등급, 없으면 제2장부터 합류하는 아군은 상급(파랑) — data/items.js 의 PROMOTE
 // 주인공은 이름이 정해져 있음 — 시작할 때 고른 모습(m 남 / f 여)에 따라
 //   stat : 처음부터 붙는 능력치 (atk 공격, mp 내력 …)   story : 고르는 화면에 보이는 짧은 사연
 const HERO_LOOKS = {
@@ -1603,10 +1610,10 @@ const UNIT_FACTION = { sapa_musa:'천교', sapa_gosu:'천교', guhu:'천교', sa
 
 const UNITS = {
   // ---- 아군 (합류 인물) ----
-  cheonghwa: { name:'청화', job:'무당파 2대제자', title:'대사형', level:3, move:4, skills:[], face:'cheonghwa', card:'cheonghwa', attrRec:[1,2,1], party:true,  // 삼류
+  cheonghwa: { name:'청화', job:'무당파 2대제자', title:'대사형', level:3, move:4, skills:[], face:'cheonghwa', card:'cheonghwa', attrRec:[1,2,1], gear:{ weapon:'철검', armor:'천옷' }, party:true,  // 삼류
                trait:{ name:'방어형 · 앞을 막음', mult:{ hp:1.1, def:1.1, atk:0.95 } } },
   // 철명 — 화원파(화산파 속가) 문주. 문파가 멸문한 뒤 산에서 사냥꾼으로 지냄. 일반 공격은 활(한 칸 띄운 적만), 무공은 화산파 기초 무공(육합권법 등 — 붙은 적)
-  cheolmyeong: { name:'철명', job:'화원파 문주', title:'사냥꾼', level:'hero+2', move:5, range:2, minRange:2, weapon:'bow', skills:[], face:'hunter', card:'hunter', attrRec:[2,0,2], party:true,
+  cheolmyeong: { name:'철명', job:'화원파 문주', title:'사냥꾼', level:'hero+2', move:5, range:2, minRange:2, weapon:'bow', skills:[], face:'hunter', card:'hunter', attrRec:[2,0,2], gear:{ weapon:'활', armor:'가죽갑옷' }, party:true,
                  trait:{ name:'궁수 · 멀리서', mult:{ atk:1.05, hp:0.9, def:0.9 }, add:{ hit:5 } },
                  startTree:['a1','a2'] },   // 합류할 때 육합권법은 이미 익힘
 
@@ -1634,7 +1641,7 @@ const UNITS = {
   noyugak:   { name:'노유각', job:'개방 장로', title:'절강 분타주', level:60, move:4, face:'noyugak', card:'noyugak' },   // 원작의 개방 장로. 이번에는 분타 안에서 물건을 지킴
   // 석운 — 절강 분타 전투 두 번은 우군(data/battles.js 에 friend:true), 사도결 심문 뒤 아군으로 합류 (이류 · 주인공 +1, Lv10 ~ 20)
   //   합류할 때 삼류 수련도(data/training.js 의 seokun)는 모두 익힌 채 → 이류 판부터
-  seokun:    { name:'석운',   job:'개방 후개', title:'소걸개', level:'hero+1', joinRealm:'이류', move:5, skills:['타구봉법 · 반자결'], face:'seokun', card:'seokun', attrRec:[1,1,2], party:true,
+  seokun:    { name:'석운',   job:'개방 후개', title:'소걸개', level:'hero+1', joinRealm:'이류', move:5, skills:['타구봉법 · 반자결'], face:'seokun', card:'seokun', attrRec:[1,1,2], gear:{ weapon:'봉', armor:'천옷' }, gearGrade:1, party:true,
                trait:{ name:'기동형 · 날렵함', mult:{ def:0.95 }, add:{ eva:5 } },
                startTree:['a1','a2','a3','a4','a5','d1','d2','d3','d4','d5','n1','n2','n3','n4','n5'] },     // 황용의 수제자 · 다음 방주감
   jinsoyeon: { name:'진소연', job:'황 방주의 제자', level:1, move:5, skills:['탄지신통'], face:'jinsoyeon', card:'jinsoyeon' },                 // 황용의 수제자 · 석운의 사매
@@ -1769,49 +1776,104 @@ const SKILLS = {
 //   img  : 그림 (data/assets.js 의 item 이름) — 있으면 글자 대신 그림
 //   stat : 장착 시 능력치 보너스 (atk 공격, def 방어, hit 명중, eva 회피, hp 체력, mp 내력)
 //   kind : (무기만) 'bow' = 활 — 활을 쓰는 인물(data/units.js 의 weapon:'bow')만 장착. 적지 않으면 검 · 도 등 (활 쓰는 인물은 못 씀)
-//   named : true = 명품 (이름난 보물). 이름이 금빛으로 보이고, 대장간 '승급'은 안 됨 ('강화'는 됨). 제2장부터 전투 보상으로 하나씩
+//   named : true = 명품 (이름난 보물 — 야명주 · 화씨벽 · 간장 · 막야 · 태아검). 이름이 금빛으로 보이고 보물 칸(4번째)에 낌. 제2장부터 전투 보상으로 하나씩
+//   excl  : true = 전용 장비 (owner 의 무기 · 방어구). 대장간 '제작'으로만 얻음. 이름이 붉게 보임
 const ITEM_DB = {
-  '목검':   { type:'weapon',     icon:'劍', img:'wood_sword', price:60,  stat:{ atk:5 }, desc:'나무로 깎은 연습용 검. 가볍고 손에 익히기 좋다.' },
+  // ---- 무기 · 방어구 : 인물마다 정해진 고정 장비 (data/units.js 의 gear) — 바꿔 끼지 않고 대장간에서 강화 · 승급 · 제작 ----
+  '목검':   { type:'weapon',     icon:'劍', img:'wood_sword', price:60,  stat:{ atk:5 }, desc:'나무로 깎은 연습용 검.' },
   '철검':   { type:'weapon',     icon:'劍', img:'sword', price:80,  stat:{ atk:8 }, desc:'무쇠를 두드려 만든 검. 투박하지만 날이 단단하다.' },
-  '활':     { type:'weapon',     icon:'弓', img:'bow', price:80,  stat:{ atk:8 }, kind:'bow', desc:'사냥꾼들이 즐겨 쓰는 활. 활을 쓰는 인물만 장착할 수 있다.' },
+  '활':     { type:'weapon',     icon:'弓', img:'bow', price:80,  stat:{ atk:8 }, kind:'bow', desc:'사냥꾼들이 즐겨 쓰는 활.' },
+  '봉':     { type:'weapon',     icon:'棒', price:80,  stat:{ atk:7, eva:1 }, desc:'단단한 대나무를 깎은 봉. 개방 제자들이 즐겨 쓴다.' },
   '천옷':   { type:'armor',      icon:'衣', img:'cloth', price:100, stat:{ def:3, eva:3 }, desc:'평범한 천으로 지은 옷. 가벼워 몸놀림이 편하다.' },
   '가죽갑옷': { type:'armor',    icon:'甲', img:'leather', price:100, stat:{ def:6 }, desc:'질긴 가죽을 덧대 만든 갑옷. 무겁지만 단단하다.' },
-  '금창약': { type:'consumable', icon:'藥', img:'salve', price:50,  heal:50,        desc:'상처에 바르는 금창약. 전투 중 "도구"로 쓰면 체력을 50 회복한다.' },
-  '해독제': { type:'consumable', icon:'解', img:'bottle', price:80, cure:'poison',   desc:'독을 푸는 약. 전투 중 "도구"로 쓰면 중독이 풀린다.' },
+  // ---- 전용 장비 : 보구(주황) +5 장비 + 전용 재료 → 대장간 '제작'. 강화 +7 까지 (from = 원래 장비, owner = 그 인물) ----
+  '천씨 가전검': { type:'weapon', icon:'劍', excl:true, from:'철검',     owner:'hero',        price:9000, desc:'천씨세가에 대대로 전해지던 검을 다시 벼려 낸 것. 천씨의 검결이 그대로 실린다.' },
+  '천씨 호신의': { type:'armor',  icon:'衣', excl:true, from:'천옷',     owner:'hero',        price:9000, desc:'천잠사를 덧대 지은 천씨세가의 호신 무복.' },
+  '진무검':     { type:'weapon', icon:'劍', excl:true, from:'철검',     owner:'cheonghwa',   price:9000, desc:'진무대제의 이름을 딴 무당의 검. 현철로 다시 벼렸다.' },
+  '태극 도포':  { type:'armor',  icon:'衣', excl:true, from:'천옷',     owner:'cheonghwa',   price:9000, desc:'태극 문양을 수놓은 무당의 도포. 칼날이 미끄러진다.' },
+  '낙일궁':     { type:'weapon', icon:'弓', excl:true, from:'활', kind:'bow', owner:'cheolmyeong', price:9000, desc:'지는 해도 떨어뜨린다는 강궁. 현철로 활채를 덧댔다.' },
+  '화원 사냥복': { type:'armor', icon:'甲', excl:true, from:'가죽갑옷', owner:'cheolmyeong', price:9000, desc:'화원파의 이름을 새긴 사냥꾼의 가죽옷.' },
+  '녹죽봉':     { type:'weapon', icon:'棒', excl:true, from:'봉',       owner:'seokun',      price:9000, desc:'푸른 대나무 빛이 도는 봉. 현철 심을 박아 넣었다.' },
+  '백결의':     { type:'armor',  icon:'衣', excl:true, from:'천옷',     owner:'seokun',      price:9000, desc:'백 번을 기운 개방의 옷. 천잠사로 기워 칼이 들지 않는다.' },
+  '현철':   { type:'material', icon:'玄', price:3000, desc:'검은 빛이 도는 귀한 쇠. 전용 무기 제작 재료 (대장간 → 제작).' },
+  '천잠사': { type:'material', icon:'蠶', price:3000, desc:'하늘누에가 뽑은 실. 전용 방어구 제작 재료 (대장간 → 제작).' },
+  // ---- 도구 (잡화점) ----
+  '금창약': { type:'consumable', icon:'藥', img:'salve', price:50,  heal:50,  desc:'상처에 바르는 금창약. 전투 중 "도구"로 쓰면 체력을 50 회복한다.' },
+  '금창고': { type:'consumable', icon:'膏', price:100, heal:80,  desc:'금창약을 졸여 굳힌 고약. 전투 중 "도구"로 쓰면 체력을 80 회복한다. (제2장부터 잡화점)' },
+  '해독제': { type:'consumable', icon:'解', img:'bottle', price:80, cure:'poison', desc:'독을 푸는 약. 전투 중 "도구"로 쓰면 중독이 풀린다.' },
+  '청심환': { type:'consumable', icon:'丸', price:150, cure:'all', heal:30, desc:'마음을 맑게 하는 환약. 전투 중 "도구"로 쓰면 모든 상태 이상이 풀리고 체력을 30 회복한다. (제2장부터 잡화점)' },
   '철광석': { type:'material',   icon:'鐵', price:120,                 desc:'대장간 재료 (샘플)' },
   '가죽끈': { type:'material',   icon:'繩', price:30,                  desc:'잡다한 재료 (샘플)' },
-  '부적':   { type:'accessory',  icon:'符', price:200, stat:{ eva:3 }, desc:'액운을 막아 준다는 부적. 몸에 지니면 몸놀림이 가벼워진다.' },
-  '옥패':   { type:'accessory',  icon:'玉', price:200, stat:{ def:3 }, desc:'맑은 옥을 깎아 만든 패. 몸에 지니면 마음이 가라앉아 몸이 단단해진다.' },
-  '은가락지': { type:'accessory', icon:'環', price:200, stat:{ hit:3 }, desc:'가는 은실을 엮어 만든 가락지. 손끝이 정확해진다.' },
+
+  // ---- 장신구 (셋째 칸) — 23가지 : tier = 나오는 장 (보물상자) ----
+  // 제1장
+  '부적':       { type:'accessory', icon:'符', price:200, stat:{ eva:3 }, desc:'액운을 막아 준다는 부적. 몸에 지니면 몸놀림이 가벼워진다.' },
+  '옥패':       { type:'accessory', icon:'玉', price:200, stat:{ def:3 }, desc:'맑은 옥을 깎아 만든 패. 몸에 지니면 마음이 가라앉아 몸이 단단해진다.' },
+  '은가락지':   { type:'accessory', icon:'環', price:200, stat:{ hit:3 }, desc:'가는 은실을 엮어 만든 가락지. 손끝이 정확해진다.' },
+  '구리 팔찌':  { type:'accessory', icon:'鐲', price:200, stat:{ atk:2, hit:1 }, desc:'두툼한 구리 팔찌. 손목을 받쳐 칼끝이 흔들리지 않는다.' },
+  '수놓은 향낭': { type:'accessory', icon:'囊', price:200, stat:{ hp:15 }, desc:'약초를 넣어 수놓은 향주머니. 지니면 기운이 돈다.' },
   '무당 호신부': { type:'accessory', icon:'護', price:250, stat:{ def:2, eva:2 }, desc:'장삼봉이 손수 그려 준 무당의 호신부. 몸에 지니면 몸이 가볍고 단단해진다.' },
   '매깃 노리개': { type:'accessory', icon:'羽', price:250, stat:{ hit:3, eva:1 }, desc:'철명이 사냥할 때 늘 지니던 매 깃 노리개. 지니면 눈이 밝아진다고 한다.' },
-  // ---- 보물상자 (제2장부터) ----
+  // 제2장
   '비취 가락지': { type:'accessory', icon:'翠', price:400, stat:{ hit:5, eva:2 }, desc:'맑은 비취를 깎아 만든 가락지. 손끝이 정확해지고 몸놀림이 가벼워진다.' },
   '호심경':     { type:'accessory', icon:'鏡', price:400, stat:{ def:5 },        desc:'가슴에 대는 둥근 구리 거울. 급소를 지켜 준다.' },
   '금사 요대':  { type:'accessory', icon:'帶', price:400, stat:{ hp:30 },        desc:'금실을 엮어 짠 허리띠. 허리를 단단히 받쳐 오래 버티게 한다.' },
-  '소주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:450, stat:{ mp:10 }, desc:'기를 몸 안에서 작게 한 바퀴 돌리는 요령을 적은 서책. 지니면 내력이 는다.' },
-  // ---- 보물상자 (제3장부터) ----
+  '청동 잠':    { type:'accessory', icon:'簪', price:400, stat:{ mp:6, eva:2 },  desc:'청동으로 만든 비녀. 머리가 맑아지고 몸이 가볍다.' },
+  '호피 요대':  { type:'accessory', icon:'虎', price:450, stat:{ atk:3, hp:20 }, desc:'범 가죽으로 만든 허리띠. 지니면 기세가 오른다.' },
+  '산호 귀걸이': { type:'accessory', icon:'珊', price:450, stat:{ hit:4, mp:5 }, desc:'붉은 산호를 깎은 귀걸이. 귀가 밝아지고 기가 고요해진다.' },
+  // 제3장
   '팔괘 옥패':  { type:'accessory', icon:'卦', price:600, stat:{ def:4, eva:4 }, desc:'팔괘를 새긴 옥패. 지니면 몸이 단단해지고 발이 가벼워진다.' },
   '묵옥 반지':  { type:'accessory', icon:'墨', price:600, stat:{ atk:6 },        desc:'먹빛 옥을 깎아 만든 반지. 지니면 손에 힘이 붙는다.' },
   '백옥 잠':    { type:'accessory', icon:'簪', price:600, stat:{ mp:12 },        desc:'흰 옥으로 만든 비녀. 머리를 맑게 해 기를 모으기 쉽다.' },
-  '대주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:700, stat:{ mp:15 }, desc:'기를 온몸으로 크게 돌리는 요령을 적은 서책. 지니면 내력이 크게 는다.' },
-  '전뢰심법': { type:'treasure', sub:'심법', icon:'書', img:'book', price:300, stat:{ mp:7 }, desc:'번개처럼 기를 몰아치는 심법을 적은 서책. 몸에 지니면 내력이 오른다.' },
-  '토납법 서책': { type:'treasure', sub:'심법', icon:'書', img:'book', price:150, stat:{ mp:3 }, desc:'숨을 고르고 기를 다스리는 법을 적은 서책. 몸에 지니면 내력이 조금 는다.' },
-  // ---- 표국 행렬이 가져오는 물건 (data/pyoguk.js) ----
-  '강화석': { type:'material', icon:'強', price:100, desc:'무기와 방어구를 단단하게 벼리는 돌. 대장간 "강화"에 쓴다.' },
-  '승급석': { type:'material', icon:'昇', price:300, desc:'물건의 격을 끌어올리는 귀한 돌. 대장간 "승급"으로 무기 · 방어구의 등급을 올린다 (흔함 → 일반 → 희귀 → 보구).' },
-  '보물상자': { type:'material', icon:'箱', price:400, desc:'표국 행렬이 사례로 받아 오거나 전투에서 거둔 상자. 열면 장신구나 심법 서책이 하나 나온다.' },
-  '금전상자': { type:'material', icon:'錢', price:300, desc:'전투에서 거둔 돈궤. 배낭에서 "열기"하면 금이 나온다 (장이 오를수록 많이).' },
-  '영약':   { type:'material', icon:'丹', img:'pills', price:500, desc:'기운을 북돋는 귀한 약. 배낭에서 "복용"하면 최대 체력 · 내력이 영구히 오른다 (인물마다 5개까지).' },
-  // ---- 명품 (전투 보상 — 제2장부터 한 전투에 하나씩) ----
+  '금강 팔찌':  { type:'accessory', icon:'剛', price:650, stat:{ def:6, hp:20 }, desc:'금강석 가루를 입힌 팔찌. 몸이 쇠처럼 단단해진다.' },
+  '자수정 노리개': { type:'accessory', icon:'紫', price:650, stat:{ eva:6, hit:3 }, desc:'자수정을 꿴 노리개. 지니면 발놀림이 날래진다.' },
+  '용문 요대':  { type:'accessory', icon:'龍', price:650, stat:{ atk:5, hp:30 }, desc:'용 무늬를 새긴 허리띠. 기세와 기력이 함께 오른다.' },
+  // 제4장
+  '천잠 장갑':  { type:'accessory', icon:'掌', price:900, stat:{ atk:8, hit:4 }, desc:'천잠사로 짠 장갑. 칼날을 맨손으로 잡아도 베이지 않는다.' },
+  '봉황 비녀':  { type:'accessory', icon:'鳳', price:900, stat:{ mp:18, eva:3 }, desc:'봉황을 새긴 비녀. 기가 맑게 차오른다.' },
+  '현무 호심경': { type:'accessory', icon:'玄', price:900, stat:{ def:9, hp:30 }, desc:'거북 등껍질 무늬를 새긴 호심경. 급소를 단단히 지킨다.' },
+  '청룡 옥패':  { type:'accessory', icon:'靑', price:900, stat:{ atk:6, def:4, hit:3 }, desc:'청룡을 새긴 옥패. 지니면 기세가 넘친다.' },
+
+  // ---- 보물 (넷째 칸) — 23가지 : 심법(서책) · 보패 · 보검 ----
+  // 제1장
+  '토납법 서책': { type:'treasure', sub:'심법', icon:'書', img:'book', price:150, stat:{ mp:3 }, desc:'숨을 고르고 기를 다스리는 법을 적은 서책. 지니면 내공이 조금 는다.' },
+  '전뢰심법':   { type:'treasure', sub:'심법', icon:'書', img:'book', price:300, stat:{ mp:7 }, desc:'번개처럼 기를 몰아치는 심법을 적은 서책. 지니면 내공이 오른다.' },
+  '팔단금 서책': { type:'treasure', sub:'심법', icon:'書', img:'book', price:200, stat:{ hp:20 }, desc:'여덟 가지 동작으로 몸을 다스리는 법을 적은 서책. 지니면 몸이 튼튼해진다.' },
+  '호박 구슬':  { type:'treasure', sub:'보패', icon:'珀', price:200, stat:{ hit:2, mp:4 }, desc:'벌레가 든 호박 구슬. 들여다보면 마음이 가라앉는다.' },
+  '은장도':     { type:'treasure', sub:'보검', icon:'刀', price:200, stat:{ atk:3, eva:2 }, desc:'은으로 장식한 작은 칼. 몸에 지니는 호신용 칼.' },
+  // 제2장
+  '소주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:450, stat:{ mp:10 }, desc:'기를 몸 안에서 작게 한 바퀴 돌리는 요령을 적은 서책. 지니면 내공이 는다.' },
+  '육자결 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:450, stat:{ mp:6, def:3 }, desc:'여섯 가지 소리로 숨을 고르는 법을 적은 서책. 몸과 기를 함께 다스린다.' },
+  '청옥 인장':  { type:'treasure', sub:'보패', icon:'印', price:450, stat:{ def:3, mp:6 }, desc:'청옥을 깎아 만든 도장. 지니면 마음이 굳건해진다.' },
+  '산호수':     { type:'treasure', sub:'보패', icon:'珊', price:450, stat:{ hp:25, mp:5 }, desc:'나뭇가지 모양의 붉은 산호. 기혈을 돋운다고 한다.' },
+  '호신 비수':  { type:'treasure', sub:'보검', icon:'匕', price:450, stat:{ atk:5, hit:2 }, desc:'소매에 숨기는 날카로운 비수.' },
+  // 제3장
+  '대주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:700, stat:{ mp:15 }, desc:'기를 온몸으로 크게 돌리는 요령을 적은 서책. 지니면 내공이 크게 는다.' },
+  '역근경 초본': { type:'treasure', sub:'심법', icon:'書', img:'book', price:700, stat:{ def:6, hp:30 }, desc:'힘줄을 바꾼다는 공부의 앞부분만 베낀 초본. 지니면 몸이 단단해진다.' },
+  '혼원공 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:700, stat:{ mp:12, def:4 }, desc:'기를 하나로 뭉쳐 두르는 법을 적은 서책.' },
+  '자금 향로':  { type:'treasure', sub:'보패', icon:'爐', price:700, stat:{ mp:8, hp:20 }, desc:'자줏빛 금으로 빚은 작은 향로. 향을 피우면 기가 고요해진다.' },
+  '수정 구슬':  { type:'treasure', sub:'보패', icon:'晶', price:700, stat:{ hit:5, eva:3 }, desc:'티 없이 맑은 수정 구슬. 눈이 밝아진다.' },
+  '칠성 비수':  { type:'treasure', sub:'보검', icon:'匕', price:750, stat:{ atk:8, hit:3 }, desc:'북두칠성을 새긴 비수. 던지면 빗나가지 않는다고 한다.' },
+  // 제4장
+  '태청 심법':  { type:'treasure', sub:'심법', icon:'書', img:'book', price:1000, stat:{ mp:20, hit:3 }, desc:'맑고 높은 기운을 다스리는 도가의 심법을 적은 서책.' },
+  '태허 심결':  { type:'treasure', sub:'심법', icon:'書', img:'book', price:1000, stat:{ mp:18, def:5 }, desc:'텅 빈 데서 기를 길어 올리는 비결을 적은 서책.' },
+  // 명품 (전투 보상 — 제2장부터 한 전투에 하나씩)
   '야명주': { type:'treasure', sub:'보패', icon:'珠', named:true, price:3000, stat:{ hit:4, mp:6 },  desc:'어둠 속에서도 달빛처럼 빛나는 구슬. 지니면 눈이 밝아지고 기가 맑아진다.' },
-  '간장':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:15, hit:3 }, desc:'오나라의 명장 간장이 아내 막야와 함께 벼려 낸 한 쌍의 명검 중 웅검(雄劍). 묵직하고 곧다.' },
-  '막야':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:13, eva:4 }, desc:'간장과 한 쌍을 이루는 자검(雌劍). 아내 막야의 이름을 땄다. 가볍고 날래다.' },
-  '태아검': { type:'weapon',    icon:'劍', named:true, price:4500, stat:{ atk:16, hit:2 }, desc:'구야자와 간장이 함께 벼렸다는 세 자루 명검 가운데 하나. 위엄의 검이라 불린다.' },
   '화씨벽': { type:'treasure', sub:'보패', icon:'璧', named:true, price:5000, stat:{ def:4, hp:20 }, desc:'초나라 사람 변화가 두 번이나 발이 잘리면서도 바친 천하의 보옥. 지니면 몸이 굳건해진다.' },
+  '간장':   { type:'treasure', sub:'보검', icon:'劍', named:true, price:4000, stat:{ atk:15, hit:3 }, desc:'오나라의 명장 간장이 아내 막야와 함께 벼려 낸 한 쌍의 명검 중 웅검(雄劍). 묵직하고 곧다.' },
+  '막야':   { type:'treasure', sub:'보검', icon:'劍', named:true, price:4000, stat:{ atk:13, eva:4 }, desc:'간장과 한 쌍을 이루는 자검(雌劍). 아내 막야의 이름을 땄다. 가볍고 날래다.' },
+  '태아검': { type:'treasure', sub:'보검', icon:'劍', named:true, price:4500, stat:{ atk:16, hit:2 }, desc:'구야자와 간장이 함께 벼렸다는 세 자루 명검 가운데 하나. 위엄의 검이라 불린다.' },
+
+  // ---- 표국 · 보물상자 · 전투 보상 ----
+  '강화석': { type:'material', icon:'強', price:100, desc:'무기와 방어구를 단단하게 벼리는 돌. 대장간 "강화"에 쓴다.' },
+  '승급석': { type:'material', icon:'昇', price:300, desc:'물건의 격을 끌어올리는 귀한 돌. 대장간 "승급"으로 무기 · 방어구의 등급을 올린다 (흔함 → 상급 → 희귀 → 보구).' },
+  '보물상자': { type:'material', icon:'箱', price:400, desc:'표국 행렬이 사례로 받아 오거나 전투에서 거둔 상자. 열면 강화석과 장신구 · 보물 하나가 나온다.' },
+  '금전상자': { type:'material', icon:'錢', price:300, desc:'전투에서 거둔 돈궤. 열면 금이 나온다 (장이 오를수록 많이).' },
+  '초급 영약': { type:'material', icon:'丹', img:'pills', price:500,  desc:'기운을 북돋는 약. 복용하면 최대 체력 · 내공이 영구히 +10 (인물마다 5개까지).' },
+  '중급 영약': { type:'material', icon:'丹', img:'pills', price:1200, desc:'귀한 약재를 달여 빚은 영약. 복용하면 최대 체력 · 내공이 영구히 +25 (인물마다 5개까지).' },
 };
 // 이름을 바꾼 물건 (예전 저장을 불러올 때 새 이름으로 바꿔 줌)  옛 이름 : 새 이름
-const ITEM_RENAMED = { '토나법 서책':'토납법 서책', '보물':'보물상자' };
+const ITEM_RENAMED = { '토나법 서책':'토납법 서책', '보물':'보물상자', '영약':'초급 영약' };
 
 const ITEM_TYPE_NAME = { weapon:'무기', armor:'방어구', accessory:'장신구', treasure:'보물', consumable:'소모품', material:'재료' };
 const EQUIP_SLOTS = [['weapon','무기'], ['armor','방어구'], ['accessory','장신구'], ['treasure','보물']];
@@ -1822,49 +1884,61 @@ const STAT_NAME = { atk:'공격', def:'방어', hit:'명중', eva:'회피', hp:'
 const BAG_SIZE = 30;          // 배낭 칸 수 (같은 물건은 한 칸에 겹쳐 보관)
 const START_GOLD = 0;         // 새 게임 시작 금 (금 = 잡화점 · 대장간. 훈련장은 수련치)
 
-// 대장간 강화 (무기 · 방어구) — 강화하면 이름 뒤에 +1 … +7 이 붙음 (예: 철검 +3)
-//   stone / gold : +1 ~ +7 로 올릴 때 드는 강화석 · 금 (차례대로)
-//   perLevel : 한 단계마다 (등급까지 반영한) 기본 능력치의 25% 씩 오름 (최소 1). 철검 공격 8 → +1 마다 +2
+// 대장간 (무기 · 방어구 — 인물마다 정해진 고정 장비)
+//   이름 = [등급 ]원래 이름[ +강화]  예) 철검 · 철검 +3 · 상급 철검 +2 · 보구 천옷 +5 · 천씨 가전검 +7 (전용)
+//   능력치 = 원래 능력치 × (등급 배수 statMult + 강화 단계 × perLevel)   — 철검 공격 8 : 흔함 +3 = 14 · 상급 +0 = 16 …
+// 강화 : 등급마다 최대 단계 (cap) 까지. stone / gold = +1 ~ +7 로 올릴 때 드는 강화석 · 금
 const ENHANCE = {
-  max: 7,
+  cap:   [3, 4, 5, 5, 7],                 // 흔함 +3 · 상급 +4 · 희귀 +5 · 보구 +5 · 전용 +7
   stone: [1, 1, 2, 2, 3, 3, 4],
   gold:  [50, 80, 120, 160, 200, 300, 400],
   perLevel: 0.25,
 };
-// 대장간 승급 (무기 · 방어구 등급) — 흔함 → 일반 → 희귀 → 보구. 승급하면 이름 앞에 등급이 붙음 (예: 희귀 철검 +3)
-//   stone / gold : 다음 등급으로 올릴 때 드는 승급석 · 금 (단계마다 3배)
-//   statMult : 등급마다 기본 능력치 배수 (강화 수치는 그대로 유지되고, 오른 기본치에 맞춰 같이 커짐)
-//   보구 다음은 '전용 장비' (대장간 제작 — 준비 중)
+// 승급 : 그 등급의 최대 강화 (need) + 승급석 · 금 → 다음 등급, 강화는 0 단계부터
+//   흔함 → 상급(파랑) : +3 · 승급석 1 / 상급 → 희귀(보라) : +4 · 승급석 2 / 희귀 → 보구(주황) : +5 · 승급석 4
+//   보구 +5 → 전용 (대장간 '제작' — 전용 재료 : 무기 현철 · 방어구 천잠사)
 const PROMOTE = {
-  names:    ['흔함', '일반', '희귀', '보구'],
-  stone:    [5, 15, 45],
+  names:    ['흔함', '상급', '희귀', '보구', '전용'],
+  need:     [3, 4, 5],
+  stone:    [1, 2, 4],
   gold:     [3000, 8000, 20000],
-  statMult: [1, 1.5, 2, 3],
+  statMult: [1, 2, 3.25, 4.75, 7],
 };
-// 영약 : 배낭에서 '복용' → 고른 인물의 최대 체력 · 내력이 영구히 오름 (인물마다 max 개까지)
-const ELIXIR = { item:'영약', stat:{ hp:10, mp:10 }, max:5 };
+// 전용 장비 제작 : 보구 +5 + 재료 → 전용 (강화 0 단계, +7 까지)
+const CRAFT = { needGrade:3, needLv:5, gold:30000, material:{ weapon:'현철', armor:'천잠사' } };
+// 영약 : 상태보기 → 배낭에서 '복용' → 그 인물의 최대 체력 · 내공이 영구히 오름 (종류마다 인물당 max 개까지)
+const ELIXIRS = [
+  { item:'초급 영약', stat:{ hp:10, mp:10 }, max:5 },
+  { item:'중급 영약', stat:{ hp:25, mp:25 }, max:5 },
+];
 // 보물상자 : 배낭에서 '열기' → '보물상자를 여시겠습니까?' → 강화석(꼭) + loot 중 하나
 //   stone : 꼭 함께 나오는 강화석 개수 — 장마다 (서장 · 제1장, 제2장, 제3장 …, 모자라면 마지막 값)
 //   loot  : w = 장마다 나올 무게 [서장·1장, 2장, 3장 …] (모자라면 마지막 값, 0 = 그 장에서는 안 나옴). 클수록 잘 나옴
 //   상자를 '여는' 때의 장을 따름 (모아 뒀다가 다음 장에서 열면 새 물건이 나올 수 있음). 표국이 가져오는 상자도 같음
 const TREASURE_BOX = {
   item: '보물상자',
-  stone: [2, 5, 8],
+  stone: [2, 5, 8, 11],
   loot: [
-    { item:'부적',        w:[3, 1, 0] },   // 장신구 · 회피 +3
-    { item:'옥패',        w:[3, 1, 0] },   // 장신구 · 방어 +3
-    { item:'은가락지',    w:[3, 1, 0] },   // 장신구 · 명중 +3
-    { item:'토납법 서책', w:[3, 1, 0] },   // 심법 서책 · 내력 +3
-    { item:'전뢰심법',    w:[1, 1, 0] },   // 심법 서책 · 내력 +7
-    { item:'비취 가락지', w:[0, 2, 1] },   // 장신구 · 명중 +5 · 회피 +2
-    { item:'호심경',      w:[0, 2, 1] },   // 장신구 · 방어 +5
-    { item:'금사 요대',   w:[0, 2, 1] },   // 장신구 · 체력 +30
-    { item:'소주천 요결', w:[0, 1, 1] },   // 심법 서책 · 내력 +10
-    { item:'팔괘 옥패',   w:[0, 0, 2] },   // 장신구 · 방어 +4 · 회피 +4
-    { item:'묵옥 반지',   w:[0, 0, 2] },   // 장신구 · 공격 +6
-    { item:'백옥 잠',     w:[0, 0, 2] },   // 장신구 · 내력 +12
-    { item:'대주천 요결', w:[0, 0, 1] },   // 심법 서책 · 내력 +15
-    { item:'승급석',      w:[0, 0, 1] },   // 재료 · 대장간 승급
+    // 제1장 (장신구 · 보물)
+    { item:'부적',        w:[3, 1, 0, 0] }, { item:'옥패',        w:[3, 1, 0, 0] }, { item:'은가락지',    w:[3, 1, 0, 0] },
+    { item:'구리 팔찌',   w:[3, 1, 0, 0] }, { item:'수놓은 향낭', w:[3, 1, 0, 0] },
+    { item:'토납법 서책', w:[3, 1, 0, 0] }, { item:'전뢰심법',    w:[1, 1, 0, 0] }, { item:'팔단금 서책', w:[2, 1, 0, 0] },
+    { item:'호박 구슬',   w:[2, 1, 0, 0] }, { item:'은장도',      w:[2, 1, 0, 0] },
+    // 제2장
+    { item:'비취 가락지', w:[0, 2, 1, 0] }, { item:'호심경',      w:[0, 2, 1, 0] }, { item:'금사 요대',   w:[0, 2, 1, 0] },
+    { item:'청동 잠',     w:[0, 2, 1, 0] }, { item:'호피 요대',   w:[0, 2, 1, 0] }, { item:'산호 귀걸이', w:[0, 2, 1, 0] },
+    { item:'소주천 요결', w:[0, 1, 1, 0] }, { item:'육자결 요결', w:[0, 2, 1, 0] }, { item:'청옥 인장',   w:[0, 2, 1, 0] },
+    { item:'산호수',      w:[0, 2, 1, 0] }, { item:'호신 비수',   w:[0, 2, 1, 0] },
+    // 제3장
+    { item:'팔괘 옥패',   w:[0, 0, 2, 1] }, { item:'묵옥 반지',   w:[0, 0, 2, 1] }, { item:'백옥 잠',     w:[0, 0, 2, 1] },
+    { item:'금강 팔찌',   w:[0, 0, 2, 1] }, { item:'자수정 노리개', w:[0, 0, 2, 1] }, { item:'용문 요대', w:[0, 0, 2, 1] },
+    { item:'대주천 요결', w:[0, 0, 1, 1] }, { item:'역근경 초본', w:[0, 0, 2, 1] }, { item:'혼원공 요결', w:[0, 0, 2, 1] },
+    { item:'자금 향로',   w:[0, 0, 2, 1] }, { item:'수정 구슬',   w:[0, 0, 2, 1] }, { item:'칠성 비수',   w:[0, 0, 2, 1] },
+    { item:'승급석',      w:[0, 0, 1, 1] },
+    // 제4장
+    { item:'천잠 장갑',   w:[0, 0, 0, 2] }, { item:'봉황 비녀',   w:[0, 0, 0, 2] }, { item:'현무 호심경', w:[0, 0, 0, 2] },
+    { item:'청룡 옥패',   w:[0, 0, 0, 2] }, { item:'태청 심법',   w:[0, 0, 0, 2] }, { item:'태허 심결',   w:[0, 0, 0, 2] },
+    { item:'현철',        w:[0, 0, 0, 1] }, { item:'천잠사',      w:[0, 0, 0, 1] },
   ],
 };
 
@@ -1876,7 +1950,11 @@ const GOLD_BOX = {
 };
 
 // 잡화점에서 파는 물건 (가격은 ITEM_DB)
-const SHOP_ITEMS = ['금창약', '해독제', '철검', '활', '천옷', '가죽갑옷'];
+// 장마다 [제1장(서장 포함), 제2장, 제3장 …] — 모자라면 마지막 것. 무기 · 방어구는 팔지 않음 (인물마다 고정 장비)
+const SHOP_STOCK = [
+  ['금창약', '해독제'],
+  ['금창약', '금창고', '해독제', '청심환'],
+];
 const SELL_RATE = 0.5;        // 판매가 = 가격 × 0.5
 
 // 거점 상인
@@ -3197,7 +3275,7 @@ const SCENES = {
     ],
     end: { bg:'gaebang_branch_out', cast:['hero','cheonghwa','cheolmyeong'] },
     npcs: [
-      { id:'galyeong', x:72, y:66, give:{ item:'영약' },
+      { id:'galyeong', x:72, y:66, give:{ item:'초급 영약' },
         line:'포구 약재상에게서 얻은 귀한 약이오. 늙은이보다는 젊은 사람이 먹어야지.',
         after:'지부 앞은 다리 하나로만 이어져 있소. 망루에 활 든 놈들이 있으니 다리 위에서 오래 머물지 마시오.' },
       { id:'wangi',    x:28, y:68, give:{ item:'금창약', n:2 },
@@ -3823,7 +3901,7 @@ const BATTLES = {
         { who:'huang', text:'놈들이 순순히 물러날 것 같지는 않아요. 무당산이 멀지 않으니 장진인께 이 일을 알리러 가요.' },
         { who:'hero',  text:'마침 저도 무당파로 가던 길이었습니다. 함께 모시겠습니다.' },
       ],
-      loot: ['목검', '천옷'],
+      loot: [{ item:'금창약', n:2 }],       // (무기 · 방어구는 인물마다 고정 — 주인공은 처음부터 철검 · 천옷)
       gold: 200,
       suryeon: 300,
       next: 'wudang',
@@ -4226,7 +4304,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 내가 졌다.', all:true, msg:'산적들이 무기를 내려놓습니다.' },   // 채주가 먼저 말하고 → 남은 산적들이 무기를 내려놓음
-      loot: ['보물상자', '영약', '야명주'],      // 제2장부터 : 영약 + 명품 하나
+      loot: ['보물상자', '초급 영약', '야명주'],      // 제2장부터 : 영약 + 명품 하나
       gold: 800,
       suryeon: 1150,
       exp: 30,
@@ -4280,7 +4358,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 거지들이 이 정도일 줄이야. 물러난다!', all:true, msg:'남은 무리가 포구 쪽으로 달아납니다.' },
-      loot: ['영약', '간장'],
+      loot: ['초급 영약', '간장'],
       gold: 900,
       suryeon: 1250,
       exp: 30,
@@ -4330,7 +4408,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 구후 님… 대계는… 이미 움직이기 시작했다…', all:true, msg:'남은 천교 무인들이 무기를 내던집니다.' },
-      loot: ['영약', '막야'],
+      loot: ['초급 영약', '막야'],
       gold: 1000,
       suryeon: 1350,
       exp: 30,
@@ -4378,7 +4456,7 @@ const BATTLES = {
     victory: {
       bossDown: 'e1',
       retreat: { who:'e1', line:'크윽… 그, 그만! 항복이오, 항복!', all:true, msg:'남은 녹림도들이 무기를 내던집니다.' },
-      loot: ['영약', '화씨벽'],
+      loot: ['초급 영약', '화씨벽'],
       gold: 1000,
       suryeon: 1400,
       exp: 30,
@@ -4418,7 +4496,7 @@ const BATTLES = {
     ],
     victory: {
       enemiesLeft: 0,
-      loot: ['영약', '태아검'],
+      loot: ['중급 영약', '태아검'],
       gold: 1100,
       suryeon: 1500,
       exp: 30,
@@ -4514,25 +4592,28 @@ const MISSIONS = {
 /* =====================================================================
    표국 (거점 → 표국)
    ---------------------------------------------------------------------
-   - 의뢰는 늘 같은 5가지. 그중 골라서 행렬을 보내면, 다음 이야기의 대화가 다 끝나고 출정하기 전에 돌아와 물건을 가져옴
+   - 의뢰는 늘 같은 5가지. 그중 골라서 행렬을 보내면, 다음 이야기의 대화가 다 끝나고 출발하기 전에 돌아와 물건을 가져옴
      (화면 가운데에 '표국 행렬이 돌아왔습니다' 알림)
    - 한 번에 보낼 수 있는 행렬 : 1등급 2곳, 등급이 오를 때마다 +1 (의뢰 수까지)
      길을 떠난 의뢰는 돌아올 때까지 다시 보낼 수 없음
    - 등급 : 장이 넘어갈 때마다 한 단계씩 오름 (제1장 = 1등급, 제2장 = 2등급 …)
-   - 보물상자는 배낭에서 '열기' → 장신구나 심법 서책 하나 (data/items.js 의 TREASURE_BOX)
+   - 보물상자는 상태보기 → 배낭에서 '열기' → 강화석 + 장신구 · 보물 하나 (data/items.js 의 TREASURE_BOX)
+   - 가져오는 것은 '보낸 때의 장'에 따라 (제2장 : 강화석 20 · 승급석 2 · 초급 영약 1 + 중급 영약 1 …)
    ===================================================================== */
 const PYOGUK = {
   picksBase: 2,                 // 1등급 때 한 번에 보낼 수 있는 행렬 수
   // 등급 이름 (모자라면 'n등급' 으로만 표시)
   gradeNames: ['신생 표국', '이름난 표국', '중견 표국', '대표국', '천하제일 표국'],
 
-  // 의뢰 (늘 이 순서로 보임) — reward : 가져오는 물건 (data/items.js 의 이름) · n : 개수 / gold : 금전
+  // 의뢰 (늘 이 순서로 보임) — 보낼 때의 장에 따라 가져오는 것이 달라짐
+  //   items : 장마다 [제1장(서장 포함), 제2장, 제3장, 제4장 …] (모자라면 마지막 것) — 한 장에 [['물건', 개수], …]
+  //   gold  : 장마다 금
   jobs: [
-    { id:'stone',  title:'철광석 운송',       route:'양양 → 남양 철산', reward:'강화석',   n:10 },
-    { id:'seal',   title:'관부 문서 호송',     route:'양양 → 임안',     reward:'승급석',   n:1 },
-    { id:'box',    title:'골동품 상단 호위',   route:'양양 → 개봉',     reward:'보물상자', n:1 },
-    { id:'elixir', title:'약재 상단 호위',     route:'양양 → 무당산',   reward:'영약',     n:1 },
-    { id:'gold',   title:'비단 상단 호위',     route:'양양 → 성도',     gold:1000 },
+    { id:'stone',  title:'철광석 운송',     route:'양양 → 남양 철산', items:[ [['강화석',10]], [['강화석',20]], [['강화석',30]], [['강화석',40]] ] },
+    { id:'seal',   title:'관부 문서 호송',   route:'양양 → 임안',     items:[ [['승급석',1]],  [['승급석',2]],  [['승급석',3]],  [['승급석',4]] ] },
+    { id:'box',    title:'골동품 상단 호위', route:'양양 → 개봉',     items:[ [['보물상자',1]], [['보물상자',1]], [['보물상자',1]], [['보물상자',1]] ] },
+    { id:'elixir', title:'약재 상단 호위',   route:'양양 → 무당산',   items:[ [['초급 영약',1]], [['초급 영약',1],['중급 영약',1]], [['초급 영약',2],['중급 영약',2]], [['초급 영약',3],['중급 영약',3]] ] },
+    { id:'gold',   title:'비단 상단 호위',   route:'양양 → 성도',     gold:[1000, 2000, 3000, 4000] },
   ],
 };
 
@@ -5100,8 +5181,8 @@ function treeBonus(id){
 }
 // 성장 보너스 = 수련도 + 영약 (능력치 계산에 들어감)
 function growthBonus(id){
-  const b = treeBonus(id), st = memberState(id) || {}, n = st.elixir || 0;
-  if (n && typeof ELIXIR !== 'undefined') for (const k in ELIXIR.stat) b[k] = (b[k]||0) + ELIXIR.stat[k] * n;
+  const b = treeBonus(id), st = memberState(id) || {};
+  elixirList().forEach(e=>{ const n = elixirCount(st, e.item); if (n) for (const k in e.stat) b[k] = (b[k]||0) + e.stat[k] * n; });
   if (id==='hero' && typeof HERO_LOOKS !== 'undefined'){ const L = HERO_LOOKS[HERO.look==='f' ? 'f' : 'm']; if (L && L.stat) for (const k in L.stat) b[k] = (b[k]||0) + L.stat[k]; }   // 남 : 공격 +8 · 여 : 내력 +8
   return b;
 }
@@ -5128,6 +5209,15 @@ function attrRecommend(id, total){
   const raw = rec.map(r=> total * r / sum), out = raw.map(Math.floor); let left = total - out.reduce((a,b)=>a+b, 0);
   raw.map((r,i)=>[r - out[i], rec[i], i]).sort((a,b)=> b[0]-a[0] || b[1]-a[1]).forEach(([,,i])=>{ if (left > 0){ out[i]++; left--; } });
   const o = {}; keys.forEach((k,i)=> o[k] = out[i]); return o;
+}
+
+/* ---------- 영약 (data/items.js 의 ELIXIRS) : 종류마다 인물당 max 개 — st.elixir = { '초급 영약':n, … } (예전 저장은 숫자 = 초급) ---------- */
+function elixirList(){ return typeof ELIXIRS !== 'undefined' ? ELIXIRS : []; }
+function elixirDef(name){ return elixirList().find(e=> e.item===name) || null; }
+function elixirCount(st, name){
+  if (!st) return 0;
+  if (typeof st.elixir === 'number'){ const n = st.elixir; st.elixir = {}; if (n) st.elixir[(elixirList()[0]||{}).item || '초급 영약'] = n; }
+  return (st.elixir || {})[name] || 0;
 }
 
 // 해금한 심법(패시브)들의 효과 합
@@ -5442,6 +5532,7 @@ function joinParty(id, silent){
     lv = Math.max(lo, Math.min(hi, lv)); realm = d.joinRealm;
   }
   MEMBERS[id] = { level:lv, exp:0, realm, equip:emptyEquip(), tree:(d.startTree||[]).slice(), learned:[], attr:{ mu:0, ne:0, sin:0 } };
+  equipFixedGear(id, d.gearGrade != null ? d.gearGrade : (chapterNo((SCENES[curScene] || {}).chapter) >= 2 ? 1 : 0));   // 제2장부터 합류 : 상급(파랑)
   if (!silent) showToast(d.name+josa(d.name,'이','가')+' 아군으로 합류했습니다');
 }
 function resetParty(){ PARTY = ['hero']; MEMBERS = {}; }
@@ -5567,7 +5658,8 @@ function noticeMissions(){
 
 /* ================= 표국 (data/pyoguk.js) =================
    의뢰는 늘 같은 5가지 (PYOGUK.jobs). 한 번에 pyoPicks() 곳까지 보냄
-   PLAYER.pyo = { grade, sent:[보낸 의뢰 { id, title, route, reward, n, gold, at:보낸 장면 }] } */
+   PLAYER.pyo = { grade, sent:[보낸 의뢰 { id, title, route, loot:{ items:[{item,n}] } 또는 { gold }, at:보낸 장면 }] }
+   가져오는 것은 보낸 때의 장에 따라 (PYOGUK.jobs 의 items · gold 가 장마다 배열) — 예전 저장의 { reward, n } 도 그대로 받음 */
 function chapterNo(ch){ if (!ch || ch==='서장') return 0; const m = String(ch).match(/\d+/); return m ? +m[0] : 0; }
 function pyoGrade(){ return Math.max(1, chapterNo((SCENES[curScene] || {}).chapter)); }
 function pyoPicks(g){ return Math.min(PYOGUK.jobs.length, (PYOGUK.picksBase || 2) + (g || 1) - 1); }   // 한 번에 보낼 수 있는 행렬 수
@@ -5577,8 +5669,17 @@ function pyoState(){
   const P = PLAYER.pyo; P.sent = P.sent || []; delete P.offers;      // offers : 예전(무작위 의뢰) 저장에만 있던 것
   return P;
 }
-function pyoRewardText(j){ return j.gold ? '금 ' + j.gold.toLocaleString() : (ITEM_RENAMED[j.reward] || j.reward) + ' ' + j.n + '개'; }
-function pyoRewardIcon(j){ return j.gold ? '<span class="pyo-gold">金</span>' : itemIcon(ITEM_RENAMED[j.reward] || j.reward); }
+function pyoAt(arr, g){ return Array.isArray(arr) ? arr[Math.min(arr.length, Math.max(1, g)) - 1] : arr; }   // 장마다 배열 → 그 장의 값 (모자라면 마지막)
+// 의뢰(정의) 또는 보낸 행렬 → { gold } | { items:[{item,n}] }
+function pyoLoot(j, g){
+  if (j.loot) return j.loot;                                                                  // 보낸 행렬 (보낸 때 정해짐)
+  if (j.gold) return { gold:pyoAt(j.gold, g) };
+  if (j.items){ const L = pyoAt(j.items, g) || []; return { items:L.map(x=> Array.isArray(x) ? { item:x[0], n:x[1] } : x) }; }
+  if (j.reward) return { items:[{ item:ITEM_RENAMED[j.reward] || j.reward, n:j.n || 1 }] };   // 예전 저장
+  return { items:[] };
+}
+function pyoRewardText(j, g){ const L = pyoLoot(j, g); return L.gold ? '금 ' + L.gold.toLocaleString() : L.items.map(x=> (ITEM_RENAMED[x.item] || x.item) + ' ' + x.n + '개').join(' · '); }
+function pyoRewardIcon(j, g){ const L = pyoLoot(j, g); return L.gold ? '<span class="pyo-gold">金</span>' : itemIcon(ITEM_RENAMED[(L.items[0]||{}).item] || (L.items[0]||{}).item); }
 function pyoIdle(){ const P = PLAYER.pyo; const g = P ? P.grade : pyoGrade(); return Math.max(0, pyoPicks(g) - (P ? P.sent.length : 0)); }   // 더 보낼 수 있는 행렬 수
 // 이야기 대화가 다 끝난 화면 (출정 전) : 그 전 장면에서 보낸 행렬이 돌아옴 + 장이 바뀌었으면 승급
 function pyoArrive(){
@@ -5589,8 +5690,9 @@ function pyoArrive(){
     P.sent = P.sent.filter(j=> j.at === curScene);
     let items = false;
     const lines = back.map(j=>{
-      if (j.gold) PLAYER.gold += j.gold;
-      else { const r = ITEM_RENAMED[j.reward] || j.reward; PLAYER.inv[r] = (PLAYER.inv[r] || 0) + j.n; items = true; }
+      const L = pyoLoot(j);
+      if (L.gold) PLAYER.gold += L.gold;
+      else L.items.forEach(x=>{ const r = ITEM_RENAMED[x.item] || x.item; PLAYER.inv[r] = (PLAYER.inv[r] || 0) + x.n; items = true; });
       return j.title + ' — ' + pyoRewardText(j);
     });
     notify('표국 행렬이 돌아왔습니다', lines.join('\n') + (items ? '\n(배낭에 넣었습니다)' : ''), 'pyo');
@@ -5604,11 +5706,12 @@ function pyoArrive(){
 function renderPyo(){
   const P = pyoState(), max = pyoPicks(P.grade), left = Math.max(0, max - P.sent.length);
   document.getElementById('pyo-grade').textContent = pyoGradeName(P.grade) + ' · 행렬 ' + P.sent.length + ' / ' + max;
-  let h = '<div class="of-sec">의뢰 다섯 중 ' + max + '곳까지 골라 보냅니다 · 다음 이야기가 끝나고 출발하기 전에 돌아옴</div>';
+  const g = pyoGrade();
+  let h = '<div class="of-sec">의뢰 다섯 중 ' + max + '곳까지 골라 보냅니다 · 다음 이야기가 끝나고 출발하기 전에 돌아옴 · 가져오는 것은 보낸 때의 장에 따라</div>';
   PYOGUK.jobs.forEach(j=>{
-    const out = P.sent.some(s=> s.id === j.id);
-    h += '<div class="pyo-job' + (out ? ' out' : '') + '"><span class="pj-ic">' + pyoRewardIcon(j) + '</span>' +
-         '<div class="pj-main"><b>' + pyoRewardText(j) + '</b><small>' + j.title + ' · ' + j.route + '</small></div>' +
+    const sent = P.sent.find(s=> s.id === j.id), out = !!sent;
+    h += '<div class="pyo-job' + (out ? ' out' : '') + '"><span class="pj-ic">' + pyoRewardIcon(sent || j, g) + '</span>' +
+         '<div class="pj-main"><b>' + pyoRewardText(sent || j, g) + '</b><small>' + j.title + ' · ' + j.route + '</small></div>' +
          (out ? '<span class="pyo-out">길을 떠남</span>'
               : '<div class="top-btn pyo-send' + (left ? '' : ' off') + '" data-id="' + j.id + '">' + (left ? '보내기' : '행렬 없음') + '</div>') +
          '</div>';
@@ -5624,8 +5727,7 @@ function renderPyo(){
 function pyoSend(id){
   const P = pyoState(), j = PYOGUK.jobs.find(x=> x.id === id); if (!j || P.sent.some(s=> s.id === id)) return;
   if (P.sent.length >= pyoPicks(P.grade)){ showToast('보낼 수 있는 행렬이 없습니다 — 한 번에 ' + pyoPicks(P.grade) + '곳까지 (돌아오면 다시 보냄)'); return; }
-  const job = { id:j.id, title:j.title, route:j.route, at:curScene };
-  if (j.gold) job.gold = j.gold; else { job.reward = j.reward; job.n = j.n; }
+  const job = { id:j.id, title:j.title, route:j.route, at:curScene, loot:pyoLoot(j, pyoGrade()) };
   P.sent.push(job);
   showToast(j.title + ' — 행렬이 길을 떠났습니다 (다음 이야기가 끝나면 돌아옴)');
   renderPyo(); refreshMissionBadges();
@@ -6214,7 +6316,8 @@ function makeHero(){
   const msg = document.getElementById('name-msg');
   if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
   HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
-  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = 0; HERO.attr = { mu:0, ne:0, sin:0 }; delete HERO.train;
+  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; delete HERO.train;
+  equipFixedGear('hero', 0);                                   // 무기 · 방어구 : 인물마다 고정 (주인공 철검 · 천옷)
   resetParty();
   PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0;
   startStory();
@@ -6245,7 +6348,7 @@ function makeSnapshot(){
   const sceneId = (saveCtx && saveCtx.scene) || curScene, sc = SCENES[sceneId];
   const snap = { v:1, rv:2, time:Date.now(), chapter:sc.chapter, place:sc.place, scene:sceneId, pos:(saveCtx && saveCtx.pos) || 'end',
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
-                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:HERO.elixir||0, attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}) },
+                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}) },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
            player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
@@ -6313,7 +6416,7 @@ function applySnapshot(s){
   const keepRealm = (r, lv)=> (s.rv >= 2 && REALMS.includes(r)) ? r : realmOfLevel(lv||1);
   HERO.realm = keepRealm(s.hero.realm, HERO.level);
   HERO.equip = Object.assign(emptyEquip(), s.hero.equip || {});
-  HERO.tree = (s.hero.tree || []).slice(); HERO.learned = (s.hero.learned || []).slice(); HERO.elixir = s.hero.elixir || 0;
+  HERO.tree = (s.hero.tree || []).slice(); HERO.learned = (s.hero.learned || []).slice(); HERO.elixir = (s.hero.elixir && typeof s.hero.elixir === 'object') ? Object.assign({}, s.hero.elixir) : (s.hero.elixir || 0);
   HERO.attr = Object.assign({ mu:0, ne:0, sin:0 }, s.hero.attr || {});
   PARTY = (s.party && s.party.length) ? s.party.slice() : ['hero'];
   MEMBERS = JSON.parse(JSON.stringify(s.members || {}));
@@ -6331,6 +6434,7 @@ function applySnapshot(s){
   PLAYER.suryeon = (typeof s.player.suryeon === 'number') ? s.player.suryeon : earnedSuryeon(s.scene);   // 수련치가 생기기 전 저장 → 지나온 전투 보상만큼
   renameOldItems(); ensureSavedItems();          // 강화한 물건 (철검 +3 …) 을 물건 사전에 등록
   fixEquipSlots(HERO); Object.keys(MEMBERS).forEach(id=> fixEquipSlots(MEMBERS[id]));   // 보물 칸 · 능력 점수 (예전 저장)
+  normalizeBagGear(); PARTY.forEach(fixFixedGear);                                         // 고정 장비 · 새 등급 규칙 (예전 저장)
   migrateOldTraining('hero', HERO); Object.keys(MEMBERS).forEach(id=> migrateOldTraining(id, MEMBERS[id]));
   if (s.pos==='battle' && s.battle && BATTLES[s.battle.id]){        // 전투 중 저장 → 그 턴부터 이어서
     const ts = document.getElementById('title-screen');
@@ -6513,11 +6617,13 @@ function renderSlots(m){
   const eq = m.equip || {};
   EQUIP_SLOTS.forEach(([slot, label])=>{
     const n = eq[slot], d = document.createElement('div');
-    d.className = 'eq-slot' + (n ? ' on' : '') + (n && isNamed(n) ? ' named' : '') + (stTab==='bag' && stSlot===slot ? ' sel' : '');
-    d.innerHTML = n ? '<span class="tag">'+EQUIP_GLYPH[slot]+'</span><span class="ic'+gradeCls(n)+'">'+itemIcon(n)+'</span>'
+    const pg = n ? itemParse(n) : null;
+    d.className = 'eq-slot' + (n ? ' on' : '') + (n && isNamed(n) ? ' named' : '') + (pg && pg.grade ? ' g'+pg.grade : '') + (stTab==='bag' && (stSlot===slot || stSel==='@'+slot) ? ' sel' : '');
+    d.innerHTML = n ? '<span class="tag">'+EQUIP_GLYPH[slot]+'</span><span class="ic'+gradeCls(n)+'">'+itemIcon(n)+'</span>'+(pg.lv ? '<span class="lv">+'+pg.lv+'</span>' : '')
                     : '<span class="g">'+EQUIP_GLYPH[slot]+'</span><span class="n">'+label+'</span>';
     d.title = label + ' : ' + (n || '비어 있음');
-    d.onclick = ()=>{ stTab = 'bag'; stSlot = slot; stBagF = slot; stSel = n ? '@'+slot : null; renderTab(); };
+    const fixed = (slot==='weapon' || slot==='armor') && isParty(m.key);    // 무기 · 방어구 : 고정 장비 (배낭에서 바꾸지 않음)
+    d.onclick = ()=>{ stTab = 'bag'; stSlot = fixed ? null : slot; stBagF = fixed ? 'all' : slot; stSel = n ? '@'+slot : null; renderTab(); };
     w.appendChild(d);
   });
 }
@@ -6583,11 +6689,11 @@ function bindStatTab(m){
   };
 }
 /* ---- 배낭 : 물건을 눌러 장착 · 해제 · 복용 · 열기 ---- */
-const ST_BAG_F = [['all','전체'],['weapon','무기'],['armor','방어구'],['accessory','장신구'],['treasure','보물'],['consumable','도구'],['material','재료']];
+const ST_BAG_F = [['all','전체'],['accessory','장신구'],['treasure','보물'],['consumable','도구'],['material','재료']];   // 무기 · 방어구는 고정 (대장간)
 function bagTabHtml(m){
   let h = '<div class="chips">'+ST_BAG_F.map(([k,n])=>'<span class="chip'+(stBagF===k?' on':'')+'" data-f="'+k+'">'+n+'</span>').join('')+'</div>';
-  const usable = n=> (typeof ELIXIR !== 'undefined' && n===ELIXIR.item) || (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item) || (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item);
-  const kind = n=> usable(n) ? 'consumable' : ITEM_DB[n].type;          // 상자 · 영약은 '도구'
+  const usable = n=> !!elixirDef(n) || (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item) || (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item);
+  const kind = n=> usable(n) ? 'consumable' : (ITEM_DB[n].type==='weapon' || ITEM_DB[n].type==='armor') ? 'material' : ITEM_DB[n].type;   // 상자 · 영약은 '도구' · (예전 저장의) 무기 · 방어구는 '재료' 쪽에
   const items = Object.keys(PLAYER.inv).filter(n=> PLAYER.inv[n]>0 && ITEM_DB[n] && (stBagF==='all' || kind(n)===stBagF));
   if (stSel && stSel[0]!=='@' && !items.includes(stSel)) stSel = null;
   h += items.length ? '<div class="sbag-grid">'+items.map((n,i)=>{ const it = ITEM_DB[n], fit = stSlot && it.type===stSlot && !equipBlock(n, m.key);
@@ -6603,6 +6709,14 @@ function bagDetHtml(m){
   if (stSel && stSel[0]==='@'){                          // 낀 물건
     const slot = stSel.slice(1), n = (m.equip||{})[slot], it = n && ITEM_DB[n];
     if (!it) return '<div class="tx"><small>'+ITEM_TYPE_NAME[slot]+' 칸이 비어 있습니다 — 위에서 낄 물건을 고르세요.</small></div>';
+    if ((slot==='weapon' || slot==='armor') && isParty(id)){         // 고정 장비 : 등급 · 강화 · 다음 단계
+      const p = itemParse(n), cap = enhCap(p.grade), G = gradeNames();
+      const next = p.excl ? (p.lv < cap ? '강화 +'+(p.lv+1)+'까지 올릴 수 있음' : '최대 강화')
+                 : p.grade < PROMOTE.need.length ? (p.lv < PROMOTE.need[p.grade] ? '강화 +'+PROMOTE.need[p.grade]+' → '+G[p.grade+1]+' 승급 (승급석 '+PROMOTE.stone[p.grade]+')' : G[p.grade+1]+'(으)로 승급할 수 있음 (승급석 '+PROMOTE.stone[p.grade]+')')
+                 : p.lv < CRAFT.needLv ? '강화 +'+CRAFT.needLv+' → 전용 장비 제작' : (exclFor(id, slot) ? '전용 장비 «'+exclFor(id, slot)+'» 제작 가능 ('+CRAFT.material[slot]+')' : '최대');
+      return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+ITEM_TYPE_NAME[it.type]+' · '+G[p.grade]+' · 강화 +'+p.lv+' / '+cap+'</small>'+
+             (it.stat ? '<div class="st">'+statText(it.stat)+'</div>' : '')+'<div class="diff">다음 : '+next+'</div><small>고정 장비 — 대장간에서 강화 · 승급 · 제작</small></div>';
+    }
     return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+ITEM_TYPE_NAME[it.type]+(it.sub?' · '+it.sub:'')+' · 장착 중</small>'+
            (it.stat ? '<div class="st">'+statText(it.stat)+'</div>' : '')+'<small>'+(it.desc||'')+'</small></div><span class="mini" data-act="unequip" data-slot="'+slot+'">해제</span>';
   }
@@ -6623,17 +6737,20 @@ function bagDetHtml(m){
       extra = '<div class="diff">'+(prev ? '지금 '+prev+' · ' : '')+(diff || '변화 없음')+'</div>';
       btn = '<span class="mini go" data-act="equip">장착</span>';
     }
-  } else if (typeof ELIXIR !== 'undefined' && n===ELIXIR.item){
-    const k = st.elixir || 0; extra = '<div class="diff">복용한 영약 '+k+' / '+ELIXIR.max+'</div>';
-    if (k < ELIXIR.max) btn = '<span class="mini go" data-act="eat">복용</span>';
+  } else if (elixirDef(n)){
+    const E = elixirDef(n), k = elixirCount(st, n);
+    extra = '<div class="diff">'+Object.keys(E.stat).map(x=>STAT_NAME[x]+' +'+E.stat[x]).join(' · ')+' (영구) · 복용 '+k+' / '+E.max+'</div>';
+    if (k < E.max) btn = '<span class="mini go" data-act="eat">복용</span>';
+    else extra += '<div class="no">더 먹을 수 없습니다</div>';
   } else if (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item){
     extra = '<div class="diff">강화석 '+boxStones()+'개 (꼭) + 하나</div>'; btn = '<span class="mini go" data-act="open-t">열기</span>';
   } else if (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item){
     extra = '<div class="diff">한 상자에 금 '+goldBoxRange().map(x=>x.toLocaleString()).join(' ~ ')+'</div>';
     btn = '<span class="mini go" data-act="open-g">열기</span>'+(PLAYER.inv[n] > 1 ? '<span class="mini" data-act="open-ga">모두 열기</span>' : '');
   } else if (it.type==='consumable') extra = '<div class="no">전투 중 명령 메뉴의 \'도구\'로 씁니다</div>';
-  else if (it.type==='material') extra = '<div class="no">대장간에서 씁니다</div>';
-  return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+(ITEM_TYPE_NAME[it.type]||'')+(it.sub?' · '+it.sub:'')+(isNamed(n)?' · 명품':'')+' · '+PLAYER.inv[n]+'개</small>'+
+  else if (it.type==='weapon' || it.type==='armor') extra = '<div class="no">무기 · 방어구는 인물마다 정해져 있음 — 잡화점에서 팔 수 있습니다</div>';
+  else if (it.type==='material') extra = '<div class="no">대장간에서 씁니다'+(n===CRAFT.material.weapon || n===CRAFT.material.armor ? ' (전용 장비 제작)' : '')+'</div>';
+  return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+(elixirDef(n) ? '영약' : (ITEM_TYPE_NAME[it.type]||''))+(it.sub?' · '+it.sub:'')+(isNamed(n)?' · 명품':'')+' · '+PLAYER.inv[n]+'개</small>'+
          (it.stat ? '<div class="st">'+statText(it.stat)+'</div>' : '')+(it.heal ? '<div class="st">체력 회복 +'+it.heal+'</div>' : '')+extra+'<small>'+(it.desc||'')+'</small></div><span class="btns">'+btn+'</span>';
 }
 function bindBagTab(m){
@@ -6644,7 +6761,7 @@ function bindBagTab(m){
     const act = b.dataset.act, n = stSel;
     if (act==='equip'){ const t = ITEM_DB[n].type; if (equipItem(n, id)){ stSel = '@'+t; stSlot = t; refreshStatus(); } }
     else if (act==='unequip'){ if (unequipSlot(b.dataset.slot, id)){ stSel = null; refreshStatus(); } }
-    else if (act==='eat') askConfirm(m.name+josa(m.name,'이','가')+' '+ELIXIR.item+'을 복용하시겠습니까?\n(최대 체력 · 내공이 영구히 오름)', ()=>{ eatElixir(id); refreshStatus(); }, null, '복용한다', '그만둔다');
+    else if (act==='eat') askConfirm(m.name+josa(m.name,'이','가')+' '+n+josa(n,'을','를')+' 복용하시겠습니까?\n(최대 체력 · 내공이 영구히 오름)', ()=>{ eatElixir(id, n); refreshStatus(); }, null, '복용한다', '그만둔다');
     else if (act==='open-t') askOpenBox('treasure');
     else if (act==='open-g') askOpenBox('gold');
     else if (act==='open-ga') askConfirm(GOLD_BOX.item+' '+(PLAYER.inv[GOLD_BOX.item]||0)+'개를 모두 여시겠습니까?', openAllGoldBoxes, null, '모두 연다', '그만둔다');
@@ -6664,12 +6781,12 @@ function bondTabHtml(m){
   }).join('');
 }
 // 영약 복용 (한 사람) — 배낭 창의 고르기 창과 상태보기의 '복용'이 함께 씀
-function eatElixir(id){
-  const E = ELIXIR, st = memberState(id); if (!st) return false;
-  const n = st.elixir || 0; if (n >= E.max){ showToast(nameOf(id)+' — 더 먹을 수 없습니다'); return false; }
+function eatElixir(id, name){
+  const E = elixirDef(name || (elixirList()[0] || {}).item), st = memberState(id); if (!st || !E) return false;
+  const n = elixirCount(st, E.item); if (n >= E.max){ showToast(nameOf(id)+' — '+E.item+'은 더 먹을 수 없습니다'); return false; }
   if (!takeFromBag(E.item)) return false;
-  st.elixir = n + 1; sfx('heal');
-  showToast(nameOf(id) + josa(nameOf(id),'이','가') + ' ' + E.item + '을 복용했습니다 — ' + Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · '));
+  st.elixir = st.elixir || {}; st.elixir[E.item] = n + 1; sfx('heal');
+  showToast(nameOf(id) + josa(nameOf(id),'이','가') + ' ' + E.item + josa(E.item,'을','를') + ' 복용했습니다 — ' + Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · '));
   renderBag(); return true;
 }
 // 열전 : 별호 · 특성 (능력치 보정) · 열전 글 (data/codex.js 의 BIOS)
@@ -6726,7 +6843,7 @@ function renderBagDetail(){
   if (!bagSel){ box.innerHTML = '<div class="bd-none">물건을 눌러<br>정보를 확인하세요</div>'; return; }
   const n = bagSel, it = ITEM_DB[n] || {};
   const curTxt = isEquip(n) ? PARTY.map(id=> nameOf(id)+' '+(memberState(id).equip[it.type]||'없음')).join(' · ') : '';
-  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(ITEM_TYPE_NAME[it.type]||'')+(it.sub ? ' · '+it.sub : '')+(isNamed(n) ? ' · 명품' : isEquip(n) && !['accessory','treasure'].includes(it.type) ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
+  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(elixirDef(n) ? '영약' : (ITEM_TYPE_NAME[it.type]||''))+(it.sub ? ' · '+it.sub : '')+(isNamed(n) ? ' · 명품' : isEquip(n) && !['accessory','treasure'].includes(it.type) ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
     (it.stat ? '<div class="bd-st">'+statText(it.stat)+'</div>' : '')+
     (it.heal ? '<div class="bd-st">체력 회복 +'+it.heal+'</div>' : '')+
     '<div class="bd-ds">'+(it.desc||'')+'</div>'+
@@ -6735,15 +6852,15 @@ function renderBagDetail(){
     (isEquip(n) ? '<div class="bd-cur">현재 '+ITEM_TYPE_NAME[it.type]+' : '+curTxt+'</div>' : '')+
     '<div class="bd-pr">판매가 '+Math.floor(itemPrice(n)*SELL_RATE)+' 금</div>'+
     '<div class="bd-btns">'+
-      (isEquip(n) ? '<div class="top-btn" id="bd-equip">장착하기</div>' : '')+
+      (isEquip(n) && !['weapon','armor'].includes(it.type) ? '<div class="top-btn" id="bd-equip">장착하기</div>' : '')+
       (it.type==='consumable' ? '<div class="top-btn" id="bd-use">사용</div>' : '')+
-      (typeof ELIXIR !== 'undefined' && n===ELIXIR.item ? '<div class="top-btn" id="bd-eat">복용</div>' : '')+
+      (elixirDef(n) ? '<div class="top-btn" id="bd-eat">복용</div>' : '')+
       (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item ? '<div class="top-btn" id="bd-open">열기</div>' : '')+
       (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item ? '<div class="top-btn" id="bd-open-gold">열기</div>'+(PLAYER.inv[n] > 1 ? '<div class="top-btn" id="bd-open-gold-all">모두 열기</div>' : '') : '')+
     '</div>';
   const eb = document.getElementById('bd-equip');  if (eb) eb.onclick = ()=> openEquipPick(n);
   const ub = document.getElementById('bd-use');   if (ub) ub.onclick = ()=> showToast('소모품은 전투 중 도구로 사용합니다 (준비 중)');
-  const xb = document.getElementById('bd-eat');   if (xb) xb.onclick = openElixirPick;
+  const xb = document.getElementById('bd-eat');   if (xb) xb.onclick = ()=> openElixirPick(n);
   const ob = document.getElementById('bd-open');  if (ob) ob.onclick = ()=> askOpenBox('treasure');
   const og = document.getElementById('bd-open-gold'); if (og) og.onclick = ()=> askOpenBox('gold');
   const oa = document.getElementById('bd-open-gold-all'); if (oa) oa.onclick = ()=> askConfirm(GOLD_BOX.item+' '+(PLAYER.inv[GOLD_BOX.item]||0)+'개를 모두 여시겠습니까?', openAllGoldBoxes, null, '모두 연다', '그만둔다');
@@ -6833,7 +6950,9 @@ function takeFromBag(name){
 }
 // 이 인물이 이 물건을 낄 수 있는지 — 못 끼면 이유를 돌려줌
 function equipBlock(name, who){
-  const it = ITEM_DB[name]; if (!it || it.type!=='weapon') return '';
+  const it = ITEM_DB[name]; if (!it) return '';
+  if ((it.type==='weapon' || it.type==='armor') && isParty(who || 'hero')) return '무기 · 방어구는 인물마다 정해져 있음 (대장간에서 강화 · 승급)';
+  if (it.type!=='weapon') return '';
   const bow = who!=='hero' && (UNITS[who] || {}).weapon==='bow';
   if (it.kind==='bow' && !bow) return '활을 쓰는 인물만';
   if (it.kind!=='bow' && bow) return '활만 쓸 수 있음';
@@ -6848,7 +6967,7 @@ function equipItem(name, who){
   who = who || 'hero';
   const st = memberState(who), it = ITEM_DB[name];
   const block = equipBlock(name, who);
-  if (block){ showToast(nameOf(who)+' : '+name+josa(name,'은','는')+' '+(block==='활만 쓸 수 있음' ? '쓸 수 없습니다 (활만 쓸 수 있음)' : '활을 쓰는 인물만 장착할 수 있습니다')); return false; }
+  if (block){ showToast(nameOf(who)+' : '+name+josa(name,'은','는')+' '+(block.indexOf('정해져')>=0 ? '낄 수 없습니다 — '+block : block==='활만 쓸 수 있음' ? '쓸 수 없습니다 (활만 쓸 수 있음)' : '활을 쓰는 인물만 장착할 수 있습니다')); return false; }
   if (!st || !isEquip(name) || !takeFromBag(name)) return false;
   const prev = st.equip[it.type];
   st.equip[it.type] = name;
@@ -6859,6 +6978,7 @@ function equipItem(name, who){
 function unequipSlot(slot, who){
   who = who || 'hero';
   const st = memberState(who), n = st && st.equip[slot]; if (!n) return false;
+  if (slot==='weapon' || slot==='armor'){ showToast('무기 · 방어구는 인물마다 정해져 있어 뺄 수 없습니다'); return false; }
   if (!addToBag(n)){ showToast('배낭이 가득 찼습니다'); return false; }
   st.equip[slot] = null;
   showToast(nameOf(who)+' : '+n+josa(n,'을','를')+' 해제했습니다');
@@ -6909,7 +7029,8 @@ function onNpcAction(label){
   else if (label==='판매'){ openShop('sell'); }
   else if (label==='강화'){ openShop('enh'); }
   else if (label==='승급'){ openShop('prom'); }
-  else { showToast(label === '제작' ? '제작 (전용 장비) 은 준비 중입니다' : label + ' 기능은 준비 중입니다'); }
+  else if (label==='제작'){ openShop('craft'); }
+  else { showToast(label + ' 기능은 준비 중입니다'); }
 }
 
 function openShop(mode){
@@ -6920,7 +7041,7 @@ function openShop(mode){
   renderShop();
 }
 function renderShop(){
-  const forge = shopMode==='enh' || shopMode==='prom';
+  const forge = shopMode==='enh' || shopMode==='prom' || shopMode==='craft';
   document.getElementById('shop-tabs').style.display = forge ? 'none' : '';
   shopPanel.classList.toggle('enh', forge);
   if (forge){ renderForge(shopMode); return; }
@@ -6928,7 +7049,7 @@ function renderShop(){
   document.getElementById('tab-sell').classList.toggle('on', shopMode==='sell');
   const list = document.getElementById('shop-list'); list.innerHTML = '';
   if (shopMode==='buy'){
-    SHOP_ITEMS.forEach(name=>{
+    shopStock().forEach(name=>{
       const it = ITEM_DB[name];
       list.appendChild(makeRow(name, it.desc, it.price + ' 금', '구매', ()=>buyItem(name)));
     });
@@ -6942,6 +7063,8 @@ function renderShop(){
   }
   updateGold();
 }
+// 잡화점에서 파는 것 : 장마다 (data/items.js 의 SHOP_STOCK — 모자라면 마지막 것)
+function shopStock(){ const S = typeof SHOP_STOCK !== 'undefined' ? SHOP_STOCK : [['금창약','해독제']]; return S[Math.min(S.length, Math.max(1, chapterNo((SCENES[curScene] || {}).chapter))) - 1].filter(n=> ITEM_DB[n]); }
 function makeRow(name, sub, price, btnLabel, onClick){
   const r = document.createElement('div'); r.className = 'shop-row';
   r.innerHTML = '<div class="sh-ic">' + itemIcon(name) + '</div><div class="nm">' + name + '<small>' + sub + '</small></div><div class="pr">' + price + '</div>';
@@ -6963,30 +7086,33 @@ function sellItem(name){
   showToast(name + ' 판매 (+' + p + ' 금)'); renderShop();
 }
 
-/* ================= 대장간 강화 · 승급 (data/items.js 의 ENHANCE · PROMOTE) =================
+/* ================= 대장간 강화 · 승급 · 제작 (data/items.js 의 ENHANCE · PROMOTE · CRAFT) =================
    물건 이름 = [등급 ]원래 이름[ +강화]   예) 철검 · 철검 +3 · 희귀 철검 +3 · 보구 가죽갑옷
    (흔함은 붙이지 않음) 물건 사전에는 처음 쓸 때 자동으로 등록 (원래 물건 + 등급 · 강화 능력치) */
 function gradeNames(){ return (typeof PROMOTE !== 'undefined' && PROMOTE.names) || ['흔함']; }
+const EXCL_GRADE = 4;                                    // 전용 장비의 등급 (PROMOTE.names 의 '전용')
 function itemParse(name){
-  const G = gradeNames().slice(1).join('|');
-  const m = String(name||'').match(new RegExp('^(?:(' + G + ') )?(.+?)(?: \\+(\\d+))?$'));
+  const s = String(name||''), m0 = s.match(/^(.+?)(?: \+(\d+))?$/);
+  if (m0 && ITEM_DB[m0[1]] && ITEM_DB[m0[1]].excl) return { base:m0[1], grade:EXCL_GRADE, lv:m0[2] ? +m0[2] : 0, excl:true };   // 전용 : 이름이 따로
+  const G = gradeNames().slice(1).concat(['일반']).join('|');                                   // '일반' = 예전 이름 (지금 상급)
+  const m = s.match(new RegExp('^(?:(' + G + ') )?(.+?)(?: \\+(\\d+))?$'));
   if (!m) return { base:name, grade:0, lv:0 };
-  return { base:m[2], grade:m[1] ? gradeNames().indexOf(m[1]) : 0, lv:m[3] ? +m[3] : 0 };
+  return { base:m[2], grade:m[1] ? (m[1]==='일반' ? 1 : gradeNames().indexOf(m[1])) : 0, lv:m[3] ? +m[3] : 0 };
 }
-function itemName(base, grade, lv){ return (grade > 0 ? gradeNames()[grade] + ' ' : '') + base + (lv > 0 ? ' +' + lv : ''); }
-function gradeStat(stat, grade){
-  const mul = ((typeof PROMOTE !== 'undefined' && PROMOTE.statMult) || [1])[grade] || 1, o = {};
-  for (const k in (stat||{})) o[k] = Math.round(stat[k] * mul);
+function itemName(base, grade, lv){ const ex = ITEM_DB[base] && ITEM_DB[base].excl; return (grade > 0 && !ex ? gradeNames()[grade] + ' ' : '') + base + (lv > 0 ? ' +' + lv : ''); }
+// 능력치 = 원래 능력치 × (등급 배수 + 강화 단계 × perLevel) — 전용은 원래 장비(from) 기준
+function itemStatOf(base, grade, lv){
+  const b = ITEM_DB[base] || {}, src = b.excl ? (ITEM_DB[b.from] || {}).stat : b.stat, G = (PROMOTE.statMult || [1])[grade] || 1, o = {};
+  for (const k in (src||{})){ const v = src[k]; o[k] = Math.round(v * G) + Math.max(1, Math.round(Math.abs(v) * (ENHANCE.perLevel||0.25))) * (lv||0); }
   return o;
 }
-function enhStat(stat, lv){
-  const o = {}; for (const k in (stat||{})){ const v = stat[k]; o[k] = v + Math.max(1, Math.round(Math.abs(v) * (ENHANCE.perLevel||0.25))) * lv; } return o;
-}
-function itemStatOf(base, grade, lv){ return enhStat(gradeStat((ITEM_DB[base] || {}).stat, grade), lv); }
+function enhCap(grade){ return (ENHANCE.cap || [])[grade] != null ? ENHANCE.cap[grade] : (ENHANCE.max || 7); }
+// 전용 장비 : 능력치 · 등급을 미리 채워 둠
+Object.keys(ITEM_DB).forEach(k=>{ const b = ITEM_DB[k]; if (b.excl){ b.grade = EXCL_GRADE; if (!b.stat) b.stat = itemStatOf(k, EXCL_GRADE, 0); } });
 function ensureItem(name){
   if (!name || ITEM_DB[name]) return ITEM_DB[name] || null;
   const p = itemParse(name), b = ITEM_DB[p.base]; if (!b || (!p.lv && !p.grade)) return null;
-  const mul = (PROMOTE.statMult || [1])[p.grade] || 1;
+  const mul = b.excl ? 1 : (PROMOTE.statMult || [1])[p.grade] || 1;
   ITEM_DB[name] = Object.assign({}, b, { stat:itemStatOf(p.base, p.grade, p.lv), price:Math.round(b.price * mul * (1 + 0.5 * p.lv)), base:p.base, grade:p.grade, enh:p.lv,
     desc:(b.desc||'') + ' (' + gradeNames()[p.grade] + (p.lv ? ' · 강화 +' + p.lv : '') + ')' });
   return ITEM_DB[name];
@@ -7001,73 +7127,142 @@ function enhCost(lv){ return { stone:ENHANCE.stone[lv]||0, gold:ENHANCE.gold[lv]
 function promCost(g){ return { stone:PROMOTE.stone[g]||0, gold:PROMOTE.gold[g]||0 }; }      // g → g+1
 function costText(c, stone){ return stone + ' ' + c.stone + '<br>금 ' + c.gold.toLocaleString(); }
 function canPay(c, stone){ return (PLAYER.inv[stone]||0) >= c.stone && PLAYER.gold >= c.gold; }
-// 대장간에 올릴 수 있는 물건 : 아군이 낀 무기 · 방어구 + 배낭의 무기 · 방어구
+
+/* ---------- 고정 장비 : 인물마다 정해진 무기 · 방어구 (data/units.js 의 gear · 주인공은 HERO_DEFAULT.gear) ---------- */
+function fixedGear(id){ return (id==='hero' ? HERO_DEFAULT.gear : (UNITS[id] || {}).gear) || null; }
+function equipFixedGear(id, grade){
+  const st = memberState(id), G = fixedGear(id); if (!st || !G) return;
+  st.equip = Object.assign(emptyEquip(), st.equip || {});
+  ['weapon','armor'].forEach(sl=>{ if (G[sl] && !st.equip[sl]){ const n = itemName(G[sl], grade || 0, 0); ensureItem(n); st.equip[sl] = n; } });
+}
+// 등급 규칙에 맞춤 : 예전 이름('일반') → 새 이름, 그 등급의 최대 강화를 넘은 단계는 잘라 내고 강화석을 돌려줌
+function normalizeGear(name, acc){            // acc 를 주면 돌려줄 강화석을 거기에 더함 (안 주면 바로 배낭에)
+  const p = itemParse(name), b = ITEM_DB[p.base];
+  if (!b || (b.type!=='weapon' && b.type!=='armor')) return name;
+  const cap = enhCap(p.grade); let lv = p.lv, refund = 0;
+  while (lv > cap){ lv--; refund += ENHANCE.stone[lv] || 0; }
+  if (refund){ if (acc) acc.stone += refund; else PLAYER.inv['강화석'] = (PLAYER.inv['강화석'] || 0) + refund; }
+  const n = itemName(p.base, p.grade, lv); ensureItem(n); return n;
+}
+function normalizeBagGear(){
+  const old = PLAYER.inv || {}, inv = {}; let stone = 0;
+  Object.keys(old).forEach(n=>{ const a = { stone:0 }, k = normalizeGear(n, a), c = old[n]; inv[k] = (inv[k] || 0) + c; stone += a.stone * c; });
+  if (stone) inv['강화석'] = (inv['강화석'] || 0) + stone;
+  PLAYER.inv = inv;
+}
+// 예전 저장 : 무기 · 방어구 칸을 그 인물의 고정 장비로 (다른 장비였으면 그 등급 · 강화를 옮김) · 보검(간장 · 막야 · 태아검)은 보물 칸으로
+function fixFixedGear(id){
+  const st = memberState(id), G = fixedGear(id); if (!st || !G) return;
+  st.equip = Object.assign(emptyEquip(), st.equip || {});
+  ['weapon','armor'].forEach(sl=>{
+    const cur = st.equip[sl];
+    if (cur){
+      const p = itemParse(cur), b = ITEM_DB[p.base];
+      if (b && b.type==='treasure'){ if (!st.equip.treasure) st.equip.treasure = cur; else addToBag(cur); st.equip[sl] = null; }
+      else if (b && (p.base===G[sl] || (b.excl && b.owner===id))) st.equip[sl] = normalizeGear(cur);
+      else st.equip[sl] = normalizeGear(itemName(G[sl], Math.min(p.grade, EXCL_GRADE - 1), p.lv));
+    }
+  });
+  equipFixedGear(id, (UNITS[id] || {}).gearGrade || 0);
+}
+// 대장간에 올릴 수 있는 물건 : 아군의 고정 무기 · 방어구
 function enhTargets(){
   const out = [];
-  PARTY.forEach(id=>{ const eq = (memberState(id) || {}).equip || {}; ['weapon','armor'].forEach(sl=>{ const n = eq[sl]; if (n && ITEM_DB[n]) out.push({ name:n, owner:id, slot:sl }); }); });
-  Object.keys(PLAYER.inv).filter(n=>PLAYER.inv[n]>0 && ITEM_DB[n] && (ITEM_DB[n].type==='weapon' || ITEM_DB[n].type==='armor')).forEach(n=> out.push({ name:n, owner:null }));
+  PARTY.forEach(id=>{ const eq = (memberState(id) || {}).equip || {}; ['weapon','armor'].forEach(sl=>{ const n = eq[sl]; if (n && (ITEM_DB[n] || ensureItem(n))) out.push({ name:n, owner:id, slot:sl }); }); });
   return out;
 }
-// 강화 · 승급 화면 (mode = 'enh' | 'prom')
+function exclFor(owner, slot){ return Object.keys(ITEM_DB).find(k=> ITEM_DB[k].excl && ITEM_DB[k].owner===owner && ITEM_DB[k].type===slot) || null; }
+// 강화 · 승급 · 제작 화면 (mode = 'enh' | 'prom' | 'craft')
 function renderForge(mode){
   const list = document.getElementById('shop-list'); list.innerHTML = '';
-  const enh = mode==='enh', stone = enh ? '강화석' : '승급석';
+  const stone = mode==='enh' ? '강화석' : mode==='prom' ? '승급석' : null;
   const head = document.createElement('div'); head.className = 'enh-head';
-  head.innerHTML = '보유 · <b>' + itemIcon(stone) + ' ' + stone + ' ' + (PLAYER.inv[stone]||0) + '</b> · <b>금 ' + PLAYER.gold.toLocaleString() + '</b>' +
-    '<small>' + (enh ? '최대 +' + ENHANCE.max + ' · 등급을 올려도 강화 수치는 그대로 남습니다'
-                     : gradeNames().join(' → ') + ' · 기본 능력치 ×' + PROMOTE.statMult.slice(1).join(' / ×') + ' · 보구 다음은 전용 장비 (준비 중)') + '</small>';
+  const G = gradeNames();
+  head.innerHTML = '보유 · ' + (stone ? '<b>' + itemIcon(stone) + ' ' + stone + ' ' + (PLAYER.inv[stone]||0) + '</b> · '
+                                     : '<b>현철 ' + (PLAYER.inv['현철']||0) + '</b> · <b>천잠사 ' + (PLAYER.inv['천잠사']||0) + '</b> · ') + '<b>금 ' + PLAYER.gold.toLocaleString() + '</b>' +
+    '<small>' + (mode==='enh' ? '등급마다 최대 강화 — ' + G.map((g,i)=> g + ' +' + enhCap(i)).join(' · ')
+               : mode==='prom' ? PROMOTE.need.map((nd,g)=> G[g] + ' +' + nd + '→' + G[g+1] + ' (석 ' + PROMOTE.stone[g] + ')').join(' · ') + ' · 승급하면 강화 0단계부터'
+               : G[CRAFT.needGrade] + ' +' + CRAFT.needLv + ' + 재료 (무기 ' + CRAFT.material.weapon + ' · 방어구 ' + CRAFT.material.armor + ') + 금 ' + CRAFT.gold.toLocaleString() + ' → 전용 장비 (강화 +' + enhCap(EXCL_GRADE) + '까지)') + '</small>';
   list.appendChild(head);
-  const T = enhTargets();
-  if (!T.length){ const e = document.createElement('div'); e.className = 'shop-empty'; e.textContent = '올릴 무기 · 방어구가 없습니다'; list.appendChild(e); }
-  T.forEach(t=>{
-    const p = itemParse(t.name), it = ITEM_DB[t.name];
-    const named = !enh && isNamed(t.name);                 // 명품은 승급 안 됨
-    const max = enh ? p.lv >= ENHANCE.max : (named || p.grade >= gradeNames().length - 1);
-    const where = t.owner ? nameOf(t.owner) + ' 장착' : '배낭 ' + PLAYER.inv[t.name] + '개';
-    const nx = max ? null : (enh ? itemStatOf(p.base, p.grade, p.lv + 1) : itemStatOf(p.base, p.grade + 1, p.lv));
-    const stTxt = (enh ? '' : (named ? '명품' : gradeNames()[p.grade] + (max ? '' : '→' + gradeNames()[p.grade+1])) + ' · ') +
-                  Object.keys(it.stat || {}).map(k=> STAT_NAME[k] + ' ' + it.stat[k] + (nx ? '→' + nx[k] : '')).join(' · ');
-    const c = enh ? enhCost(p.lv) : promCost(p.grade);
-    const label = enh ? '강화' : '승급';
-    const row = makeRow(t.name, where + ' · ' + stTxt, max ? (enh ? '최대' : named ? '명품은 승급할 수 없음' : '최고 등급') : costText(c, stone), max ? (named ? '명품' : '완료') : label, ()=> doForge(t, mode));
+  enhTargets().forEach(t=>{
+    const p = itemParse(t.name), it = ITEM_DB[t.name] || ensureItem(t.name) || {}, cap = enhCap(p.grade);
+    let nx = null, c = null, label = '', why = '', costHtml = '';
+    if (mode==='enh'){
+      if (p.lv >= cap) why = '최대 (+' + cap + ')';
+      else { nx = itemStatOf(p.base, p.grade, p.lv + 1); c = enhCost(p.lv); label = '강화'; }
+    } else if (mode==='prom'){
+      if (p.excl || p.grade >= PROMOTE.need.length) why = p.excl ? '전용 장비' : '보구 — 제작으로';
+      else if (p.lv < PROMOTE.need[p.grade]) why = '강화 +' + PROMOTE.need[p.grade] + ' 필요';
+      else { nx = itemStatOf(p.base, p.grade + 1, 0); c = promCost(p.grade); label = '승급'; }
+    } else {
+      const ex = exclFor(t.owner, t.slot), mat = CRAFT.material[t.slot];
+      if (p.excl) why = '전용 장비';
+      else if (!ex) why = '전용 장비 없음';
+      else if (p.grade < CRAFT.needGrade || p.lv < CRAFT.needLv) why = G[CRAFT.needGrade] + ' +' + CRAFT.needLv + ' 필요';
+      else { nx = ITEM_DB[ex].stat; c = { stone:1, gold:CRAFT.gold }; label = '제작'; t.excl = ex; t.mat = mat; }
+      if (ex) t.exName = ex;
+    }
+    const where = nameOf(t.owner) + ' · ' + ITEM_TYPE_NAME[t.slot];
+    const gTxt = p.excl ? '전용' : G[p.grade] + ' +' + p.lv + '/' + cap;
+    const stTxt = Object.keys(it.stat || {}).map(k=> STAT_NAME[k] + ' ' + it.stat[k] + (nx && nx[k] != null ? '→' + nx[k] : '')).join(' · ');
+    const sub = where + ' · ' + gTxt + (mode==='prom' && nx ? ' → ' + G[p.grade+1] + ' +0' : '') + (mode==='craft' && t.exName ? ' → ' + t.exName : '') + ' · ' + stTxt;
+    costHtml = c ? (mode==='craft' ? t.mat + ' 1<br>금 ' + c.gold.toLocaleString() : costText(c, stone)) : why;
+    const row = makeRow(t.name, sub, costHtml, c ? label : (mode==='enh' && why ? '최대' : '—'), ()=> doForge(t, mode));
     row.classList.add('enh');
     const nm = row.querySelector('.nm'); if (nm) nm.className += gradeCls(t.name);
-    const btn = row.querySelector('.top-btn'); if (max || !canPay(c, stone)) btn.classList.add('off');
+    const btn = row.querySelector('.top-btn');
+    const pay = c && (mode==='craft' ? (PLAYER.inv[t.mat]||0) >= 1 && PLAYER.gold >= c.gold : canPay(c, stone));
+    if (!c || !pay) btn.classList.add('off');
     list.appendChild(row);
   });
   updateGold();
 }
 function renderEnhance(){ renderForge('enh'); }
 function doForge(t, mode){
-  const enh = mode==='enh', stone = enh ? '강화석' : '승급석', p = itemParse(t.name);
-  if (enh ? p.lv >= ENHANCE.max : (isNamed(t.name) || p.grade >= gradeNames().length - 1)) return;
-  const c = enh ? enhCost(p.lv) : promCost(p.grade);
-  if ((PLAYER.inv[stone]||0) < c.stone){ showToast(stone + '이 부족합니다 (필요 ' + c.stone + ')'); return; }
-  if (PLAYER.gold < c.gold){ showToast('금이 부족합니다 (필요 ' + c.gold.toLocaleString() + ')'); return; }
-  const nn = enh ? itemName(p.base, p.grade, p.lv + 1) : itemName(p.base, p.grade + 1, p.lv); ensureItem(nn);
-  if (!t.owner && !PLAYER.inv[nn] && PLAYER.inv[t.name] > 1 && bagUsed() >= BAG_SIZE){ showToast('배낭이 가득 찼습니다'); return; }
-  for (let i=0;i<c.stone;i++) takeFromBag(stone);
-  PLAYER.gold -= c.gold;
-  if (t.owner) memberState(t.owner).equip[t.slot] = nn;
-  else { takeFromBag(t.name); addToBag(nn); }
-  sfx('levelup'); showToast(t.name + ' → ' + nn + (enh ? ' 강화 성공!' : ' 승급 성공!'));
+  const p = itemParse(t.name), st = memberState(t.owner); if (!st) return;
+  let nn = null;
+  if (mode==='enh'){
+    if (p.lv >= enhCap(p.grade)) return;
+    const c = enhCost(p.lv);
+    if ((PLAYER.inv['강화석']||0) < c.stone){ showToast('강화석이 부족합니다 (필요 ' + c.stone + ')'); return; }
+    if (PLAYER.gold < c.gold){ showToast('금이 부족합니다 (필요 ' + c.gold.toLocaleString() + ')'); return; }
+    for (let i=0;i<c.stone;i++) takeFromBag('강화석'); PLAYER.gold -= c.gold;
+    nn = itemName(p.base, p.grade, p.lv + 1);
+  } else if (mode==='prom'){
+    if (p.excl || p.grade >= PROMOTE.need.length) return;
+    if (p.lv < PROMOTE.need[p.grade]){ showToast('먼저 강화 +' + PROMOTE.need[p.grade] + '까지 올리세요'); return; }
+    const c = promCost(p.grade);
+    if ((PLAYER.inv['승급석']||0) < c.stone){ showToast('승급석이 부족합니다 (필요 ' + c.stone + ')'); return; }
+    if (PLAYER.gold < c.gold){ showToast('금이 부족합니다 (필요 ' + c.gold.toLocaleString() + ')'); return; }
+    for (let i=0;i<c.stone;i++) takeFromBag('승급석'); PLAYER.gold -= c.gold;
+    nn = itemName(p.base, p.grade + 1, 0);
+  } else {
+    const ex = exclFor(t.owner, t.slot), mat = CRAFT.material[t.slot];
+    if (!ex || p.excl || p.grade < CRAFT.needGrade || p.lv < CRAFT.needLv) return;
+    if (!(PLAYER.inv[mat] > 0)){ showToast(mat + '이 필요합니다'); return; }
+    if (PLAYER.gold < CRAFT.gold){ showToast('금이 부족합니다 (필요 ' + CRAFT.gold.toLocaleString() + ')'); return; }
+    takeFromBag(mat); PLAYER.gold -= CRAFT.gold;
+    nn = ex;
+  }
+  ensureItem(nn); st.equip[t.slot] = nn;
+  sfx('levelup'); showToast(nameOf(t.owner) + ' — ' + t.name + ' → ' + nn + (mode==='enh' ? ' 강화 성공!' : mode==='prom' ? ' 승급 성공! (강화 0단계부터)' : ' 제작 완료!'));
   renderForge(mode);
 }
 
-/* ================= 영약 (data/items.js 의 ELIXIR) — 배낭에서 복용 → 고른 인물의 최대 체력 · 내력 영구 증가 ================= */
-function openElixirPick(){
-  const E = ELIXIR, slot = Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · ');
+/* ================= 영약 (data/items.js 의 ELIXIRS — 초급 · 중급) — 배낭에서 복용 → 고른 인물의 최대 체력 · 내공 영구 증가 ================= */
+function openElixirPick(name){
+  const E = elixirDef(name) || elixirList()[0], slot = Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · ');
   document.getElementById('ep-title').innerHTML = E.item + ' <small>' + slot + ' (영구) — 복용할 아군을 고르세요 · 인물마다 ' + E.max + '개까지</small>';
   const rows = document.getElementById('ep-rows'); rows.innerHTML = '';
   PARTY.forEach(id=>{
     const st = memberState(id); if (!st) return;
-    const n = st.elixir || 0, full = n >= E.max, v = memberView(id);
+    const n = elixirCount(st, E.item), full = n >= E.max, v = memberView(id);
     const row = document.createElement('div'); row.className = 'ep-row' + (full ? ' same' : '');
     row.innerHTML = '<img src="' + faceOf(id) + '" alt="">' +
       '<div class="ep-info"><div class="ep-nm">' + nameOf(id) + '<span>Lv ' + (st.level||1) + ' · ' + memberRealm(id) + '</span></div>' +
-      '<div class="ep-cur">복용한 영약 ' + n + ' / ' + E.max + '</div></div>' +
+      '<div class="ep-cur">복용한 ' + E.item + ' ' + n + ' / ' + E.max + '</div></div>' +
       '<div class="ep-diff">' + (full ? '더 먹을 수 없음' : '<div class="up">체력 ' + v.maxHp + ' → ' + (v.maxHp + (E.stat.hp||0)) + '</div><div class="up">내공 ' + v.maxMp + ' → ' + (v.maxMp + (E.stat.mp||0)) + '</div>') + '</div>';
-    if (!full) row.onclick = ()=>{ closeEquipPick(); eatElixir(id); };
+    if (!full) row.onclick = ()=>{ closeEquipPick(); eatElixir(id, E.item); };
     rows.appendChild(row);
   });
   document.getElementById('eq-pick').style.display = 'flex';
@@ -7145,7 +7340,7 @@ const TIPS = {
   ],
   hub: [
     { t:'거점', d:'<b>집무실</b> 전투마다 걸린 임무를 받습니다 · <b>표국</b> 의뢰 다섯 중 골라 행렬을 보내면 다음 이야기가 끝날 때 물건을 가져옵니다<br>' +
-              '<b>훈련장</b> 수련치로 능력 · 무공을 익힙니다 · <b>잡화점</b> 사고팔기 · <b>대장간</b> 강화석으로 장비 강화<br>! 표시가 있는 곳에 할 일이 있습니다.' },
+              '<b>훈련장</b> 수련치로 능력 · 무공을 익힙니다 · <b>잡화점</b> 사고팔기 · <b>대장간</b> 무기 · 방어구 강화 · 승급 · 전용 제작<br>! 표시가 있는 곳에 할 일이 있습니다.' },
   ],
 };
 function tipStore(){ try{ return JSON.parse(localStorage.getItem(TIPS_KEY) || '{}'); }catch(e){ return memTips; } }
@@ -7961,7 +8156,7 @@ function openItemList(u){
   items.forEach(n=>{
     const it = ITEM_DB[n], b = document.createElement('div');
     b.className = 'sk-btn';
-    b.innerHTML = itemIcon(n)+' '+n+' ×'+PLAYER.inv[n]+'<small>'+(it.cure ? '중독 풀기' : '체력 +'+it.heal)+' · 자신 / 옆 아군</small>';
+    b.innerHTML = itemIcon(n)+' '+n+' ×'+PLAYER.inv[n]+'<small>'+(it.cure==='all' ? '상태 이상 풀기 · 체력 +'+(it.heal||0) : it.cure ? '중독 풀기' : '체력 +'+it.heal)+' · 자신 / 옆 아군</small>';
     b.addEventListener('click', ev=>{ ev.stopPropagation(); startItem(u, n); });
     list.appendChild(b);
   });
@@ -7987,6 +8182,16 @@ function onItemTarget(x, y){
 function useItem(u, t, n){
   bState.itemMode = null; clearHi();
   const it = ITEM_DB[n];
+  if (it.cure==='all'){                              // 청심환 : 모든 상태 이상 풀기 + 체력 회복
+    if (!t.poison && t.hp >= t.maxHp){ toast(t.name+josa(t.name,'은','는')+' 풀 상태 이상도, 잃은 체력도 없습니다.'); bState.itemMode = { u, n }; itemTargets(u).forEach(a=>{ const c = bCells[a.x+','+a.y]; if (c) c.classList.add('heal-range'); }); return; }
+    if (!takeFromBag(n)) return;
+    const cured = cureUnit(t), before = t.hp; t.hp = Math.min(t.maxHp, t.hp + (it.heal||0));
+    floatNum(t, cured ? '해독 +'+(t.hp-before) : '+'+(t.hp-before), 'heal'); sfx('heal'); positionToken(t);
+    t.el.classList.remove('heal'); void t.el.offsetWidth; t.el.classList.add('heal'); setTimeout(()=>t.el.classList.remove('heal'), 800);
+    toast(u.name+josa(u.name,'이','가')+' '+n+josa(n,'을','를')+' 썼습니다 — '+t.name+(cured ? ' 상태 이상이 풀리고' : '')+' 체력 +'+(t.hp-before)+'  (남은 '+n+' '+(PLAYER.inv[n]||0)+'개)', 1800, [u, t]);
+    u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
+    autoEndCheck(); return;
+  }
   if (it.cure){                                      // 해독제 : 중독 풀기
     if (!t.poison){ toast(t.name+josa(t.name,'은','는')+' 중독되지 않았습니다.'); bState.itemMode = { u, n }; itemTargets(u).forEach(a=>{ const c = bCells[a.x+','+a.y]; if (c) c.classList.add('heal-range'); }); return; }
     if (!takeFromBag(n)) return;
