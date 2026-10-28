@@ -283,13 +283,27 @@
   .st-foot { display:flex; justify-content:flex-end; gap:8px; }
   .st-foot .top-btn { padding:6px 16px; font-size:13px; letter-spacing:1px; }
 
-  #st-detail { width:min(900px,95%); height:min(560px,94%); display:none; flex-direction:column; padding:10px 12px; gap:8px; }
+  #st-detail { width:min(940px,96%); height:min(560px,95%); display:none; flex-direction:column; padding:clamp(6px,calc(1.8 * var(--vh)),10px) 12px; gap:clamp(5px,calc(1.4 * var(--vh)),8px); }
   .sd-cols { flex:1; display:flex; gap:10px; min-height:0; }
   .sd-col { background:rgba(10,8,5,.55); border:1px solid #5e5038; border-radius:3px; padding:8px; display:flex; flex-direction:column; gap:6px; min-height:0; }
-  .sd-left { width:28%; }
-  .sd-mid { flex:1; }
-  .sd-right { width:27%; }
-  #sd-portrait { width:100%; flex:1 1 auto; min-height:0; object-fit:cover; object-position:center 15%; border:2px solid #4a90d9; border-radius:3px; }
+  .sd-left { width:33%; }
+  .sd-mid { flex:1; min-width:0; }
+  .sd-right { width:25%; }
+  /* 왼쪽 : 초상화 + 장비 네 칸 (武 무기 · 甲 방어구 · 飾 장신구 · 寶 보물) */
+  .sd-hero { flex:1; min-height:0; display:flex; gap:clamp(4px,calc(.8 * var(--vw)),6px); }
+  .eq-slots { flex:none; width:clamp(34px,calc(11 * var(--vh)),64px); display:flex; flex-direction:column; justify-content:space-between; gap:clamp(3px,calc(.8 * var(--vh)),6px); height:100%; }
+  .eq-slot { position:relative; flex:0 1 auto; width:100%; min-height:0; aspect-ratio:1/1; border:1px dashed #6d5d3f; border-radius:3px; background:rgba(20,15,9,.85);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#6d5d3f; overflow:hidden; }
+  .eq-slot .g { font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif; font-size:clamp(13px,calc(4.6 * var(--vh)),32px); line-height:1; }
+  .eq-slot .n { font-size:clamp(8px,calc(1.9 * var(--vh)),12px); margin-top:2px; color:#8a7752; white-space:nowrap; }
+  .eq-slot.on { border-style:solid; border-color:#a08a5a; background:rgba(40,30,18,.95); }
+  .eq-slot .ic { font-family:"Noto Serif CJK KR",serif; font-size:clamp(14px,calc(5 * var(--vh)),34px); color:#ffd88a; line-height:1; display:flex; align-items:center; justify-content:center; width:72%; height:72%; }
+  .eq-slot .ic img { width:100%; height:100%; object-fit:contain; }
+  .eq-slot .tag { position:absolute; left:-1px; top:-1px; font-size:9px; line-height:1; padding:2px 3px; background:#2a2016; color:#c9b98a; border-radius:2px 0 2px 0; }
+  .eq-slot.named { border-color:#b07ae0; box-shadow:0 0 0 1px rgba(176,122,224,.35) inset; }
+  .eq-slot.named .ic { color:#d9b3ff; }
+  .eq-slot.sel { outline:2px solid #ffd88a; outline-offset:1px; }
+  #sd-portrait { flex:1; min-width:0; height:100%; object-fit:cover; object-position:center 15%; border:2px solid #4a90d9; border-radius:3px; }
   #sd-portrait.friend { border-color:#f08c1e; }
   .sd-line { font-size:clamp(12px,calc(2.4 * var(--vh)),15px); display:flex; justify-content:space-between; gap:6px; white-space:nowrap; }
   .sd-line b { color:#ffd88a; }
@@ -307,6 +321,75 @@
   .sd-tab { flex:1; text-align:center; padding:5px 0; font-size:12px; cursor:pointer; color:#c9b98a;
     background:rgba(30,24,16,.9); border:1px solid #5e5038; border-radius:3px 3px 0 0; }
   .sd-tab.on { color:#ffe9b0; background:linear-gradient(180deg,#7a2e22,#4a1712); border-color:#d8a24a; }
+  .sd-tab { position:relative; }
+  .sd-tab .dot { position:absolute; right:5px; top:4px; width:7px; height:7px; border-radius:50%; background:#e0543c; }
+  .pt-badge { font-size:10px; padding:1px 6px; border-radius:2px; margin-left:6px; background:#7a2e22; color:#ffe9b0; vertical-align:middle; }
+  /* 능력 : 능력 점수 · 능력치 */
+  .pt-head { display:flex; justify-content:space-between; align-items:baseline; color:#c9b98a; margin-bottom:4px; gap:6px; }
+  .pt-head small { color:#9a8a68; font-size:10px; }
+  .pt-head b { color:#ffd88a; font-size:14px; }
+  .attr { display:grid; grid-template-columns:auto auto 1fr; gap:8px; align-items:center; padding:3px 6px; margin-bottom:3px; border:1px solid #5e5038; border-radius:3px; background:rgba(20,15,9,.7); }
+  .attr .nm { display:flex; align-items:center; gap:5px; color:#ffd88a; width:58px; }
+  .attr .nm i { font-style:normal; font-family:"Noto Serif CJK KR",serif; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #8a7752; border-radius:2px; font-size:12px; color:#ffe9b0; background:#2a2016; }
+  .stepper { display:flex; align-items:center; gap:4px; }
+  .stepper button { width:24px; height:24px; padding:0; border:1px solid #8a7752; background:#2a2016; color:#ffd88a; border-radius:2px; font-size:15px; line-height:1; cursor:pointer; font-family:inherit; }
+  .stepper button:disabled { opacity:.35; cursor:default; }
+  .stepper b { width:20px; text-align:center; color:#fff; font-size:14px; }
+  .attr .ef { color:#8fd0ff; font-size:11px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pt-btns { display:flex; gap:6px; justify-content:flex-end; margin:2px 0 6px; }
+  .pt-none { color:#9a8a68; font-size:11px; }
+  .mini { padding:3px 10px; font-size:11px; border:1px solid #8a7752; background:linear-gradient(180deg, rgba(70,55,30,.95), rgba(28,20,10,.97)); color:#ffd88a; border-radius:3px; cursor:pointer; white-space:nowrap; user-select:none; }
+  .mini.go { background:linear-gradient(180deg,#7a2e22,#4a1712); border-color:#d8a24a; color:#ffe9b0; }
+  .mini.off { opacity:.4; cursor:default; }
+  .derived { display:grid; grid-template-columns:repeat(3, 1fr); gap:1px 12px; border-top:1px solid rgba(138,119,82,.4); padding-top:5px; }
+  .dv { display:flex; justify-content:space-between; white-space:nowrap; }
+  .dv span { color:#c9b98a; } .dv b { color:#ffe9b0; font-weight:normal; }
+  .dv em, .dv-note span { font-style:normal; font-size:10px; margin-left:3px; }
+  .dv em.eq, .dv-note .eq { color:#7ad08a; } .dv em.pt, .dv-note .pt { color:#8fd0ff; }
+  .dv-note { color:#9a8a68; font-size:10px; margin-top:4px; }
+  /* 배낭 (상태보기) */
+  .chips { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:5px; }
+  .chip { padding:2px 8px; font-size:11px; border:1px solid #5e5038; border-radius:10px; color:#c9b98a; cursor:pointer; background:rgba(20,15,9,.7); user-select:none; }
+  .chip.on { color:#ffe9b0; border-color:#d8a24a; background:#4a1712; }
+  .sbag-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(clamp(42px,calc(11 * var(--vh)),62px),1fr)); gap:4px; }
+  .sbag-it { position:relative; aspect-ratio:1; border:1px solid #6d5d3f; border-radius:3px; background:rgba(20,15,9,.85); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; }
+  .sbag-it .ic { font-family:"Noto Serif CJK KR",serif; font-size:clamp(14px,calc(4 * var(--vh)),24px); color:#ffd88a; height:56%; display:flex; align-items:center; justify-content:center; }
+  .sbag-it .ic img { height:100%; object-fit:contain; }
+  .sbag-it .nm { font-size:9px; color:#d9c9a0; max-width:96%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+  .sbag-it .ct { position:absolute; right:2px; top:0; font-size:10px; color:#fff; text-shadow:0 1px 1px #000; }
+  .sbag-it.named { border-color:#b07ae0; } .sbag-it.named .ic { color:#d9b3ff; }
+  .sbag-it.sel { outline:2px solid #ffd88a; outline-offset:1px; }
+  .sbag-it.fit { box-shadow:0 0 0 2px #7ad08a inset; }
+  .sbag-empty { color:#9a8a68; padding:8px 2px; }
+  .sbag-det { margin-top:6px; border:1px solid #8a7752; border-radius:3px; padding:5px 8px; background:rgba(40,30,18,.9); display:flex; gap:8px; align-items:center; }
+  .sbag-det .dic { flex:none; width:clamp(30px,calc(8 * var(--vh)),44px); height:clamp(30px,calc(8 * var(--vh)),44px); display:flex; align-items:center; justify-content:center; font-family:"Noto Serif CJK KR",serif; font-size:clamp(16px,calc(4.4 * var(--vh)),26px); color:#ffd88a; border:1px solid #6d5d3f; border-radius:3px; background:rgba(20,15,9,.85); }
+  .sbag-det .dic img { width:80%; height:80%; object-fit:contain; }
+  .sbag-det .tx { flex:1; min-width:0; }
+  .sbag-det b { color:#ffd88a; } .sbag-det b.named { color:#d9b3ff; }
+  .sbag-det small { display:block; color:#b9a982; font-size:11px; } .sbag-det small.ty { display:inline; color:#9a8a68; }
+  .sbag-det .st { color:#7ad08a; font-size:11px; }
+  .sbag-det .diff { color:#c9b98a; font-size:11px; } .sbag-det .diff .up { color:#7ad08a; } .sbag-det .diff .down { color:#e07a6a; }
+  .sbag-det .no { color:#d9a37a; font-size:11px; }
+  .sbag-det .btns { display:flex; flex-direction:column; gap:4px; flex:none; }
+  /* 인연 */
+  .bond-note { color:#9a8a68; font-size:10px; margin-bottom:4px; }
+  .bond { display:flex; gap:8px; align-items:center; border:1px solid #5e5038; border-radius:3px; padding:5px 8px; margin-bottom:5px; background:rgba(20,15,9,.7); }
+  .bond .faces { display:flex; flex:none; }
+  .bond .faces img, .bond .faces span { width:clamp(24px,calc(7 * var(--vh)),36px); height:clamp(24px,calc(7 * var(--vh)),36px); border-radius:50%; margin-right:-6px; flex:none; }
+  .bond .faces img { object-fit:cover; border:2px solid #4a90d9; background:#222; }
+  .bond .faces span { border:2px dashed #5e5038; display:inline-flex; align-items:center; justify-content:center; color:#6d5d3f; }
+  .bond .tx { flex:1; min-width:0; padding-left:6px; }
+  .bond b { color:#ffd88a; } .bond small { display:block; color:#b9a982; font-size:11px; }
+  .bond .ef { color:#8fd0ff; font-size:11px; }
+  .bond .when { flex:none; font-size:10px; padding:1px 6px; border-radius:2px; background:#2b4f7a; color:#cfe3ff; white-space:nowrap; }
+  .bond.lock { opacity:.55; } .bond.lock .when { background:#3a3226; color:#b9a982; }
+  /* 오른쪽 : 열전 */
+  .sd-sec.bio-sec { margin-top:0; }
+  .sd-sec.bio-sec + div { text-align:left; }
+  #sd-bio { flex:1; min-height:0; display:flex; flex-direction:column; }
+  #sd-bio .bio-row { font-size:12px; padding:2px 0; }
+  #sd-bio .bio-row small { font-size:10px; }
+  #sd-bio .bio-text { flex:1; min-height:0; overflow-y:auto; font-size:clamp(11px,calc(2.3 * var(--vh)),13px); line-height:1.6; padding:3px 1px; }
   #sd-tabbody { flex:1; overflow-y:auto; font-size:12px; line-height:1.55; padding:4px 2px; }
   .stat-row { display:grid; grid-template-columns:44px 1fr 40px; align-items:center; gap:8px; margin:5px 0; }
   .stat-row .k { color:#c9b98a; } .stat-row .v { text-align:right; color:#ffe9b0; }
@@ -356,7 +439,7 @@
   .bag-slot .cnt { position:absolute; right:3px; bottom:1px; font-size:10px; color:#fff; text-shadow:0 1px 2px #000; }
   .bag-slot .nm { position:absolute; left:0; right:0; bottom:1px; font-size:9px; color:#d9c9a0; text-align:center; white-space:nowrap; overflow:hidden; }
   .bag-slot.t-weapon { background:rgba(70,30,20,.6); } .bag-slot.t-armor { background:rgba(30,45,70,.6); }
-  .bag-slot.t-accessory { background:rgba(60,30,70,.6); } .bag-slot.t-consumable { background:rgba(30,60,35,.6); }
+  .bag-slot.t-accessory { background:rgba(60,30,70,.6); } .bag-slot.t-treasure { background:rgba(70,55,20,.6); } .bag-slot.t-consumable { background:rgba(30,60,35,.6); }
   #bag-detail { width:34%; border:1px solid #5e5038; border-radius:3px; background:rgba(10,8,5,.6); padding:8px 10px; display:flex; flex-direction:column; gap:6px; overflow-y:auto; }
   #bag-detail .bd-top { display:flex; gap:10px; align-items:center; }
   /* 설명이 길어도 버튼(장착 · 복용 · 열기)은 늘 창 아래에 보이게 */
@@ -977,28 +1060,25 @@
       <div class="st-title">인물 정보</div>
       <div class="sd-cols">
         <div class="sd-col sd-left">
-          <img id="sd-portrait" alt="">
+          <div class="sd-hero"><div class="eq-slots" id="sd-slots"></div><img id="sd-portrait" alt=""></div>
           <div class="sd-line"><span><b id="sd-name"></b> <span id="sd-lv" style="color:#fff"></span></span><span class="realm" id="sd-realm"></span></div>
           <div class="sd-line"><span id="sd-job"></span><span id="sd-camp"></span></div>
-          <div class="sd-field"><span>칭호</span><em id="sd-title" style="font-style:normal">없음</em></div>
           <div class="bar-row">체력<div class="bar hp"><i id="sd-hp-bar"></i><em id="sd-hp"></em></div></div>
           <div class="bar-row">내공<div class="bar mp"><i id="sd-mp-bar"></i><em id="sd-mp"></em></div></div>
           <div class="bar-row">경험<div class="bar ex"><i id="sd-ex-bar" style="width:0"></i><em id="sd-ex">0/100</em></div></div>
         </div>
         <div class="sd-col sd-mid">
           <div class="sd-tabs">
-            <div class="sd-tab" data-tab="bio">열전</div>
-            <div class="sd-tab" data-tab="stat">능력</div>
+            <div class="sd-tab" data-tab="bond">인연</div>
+            <div class="sd-tab" data-tab="stat">능력<span class="dot" id="sd-pt-dot" style="display:none"></span></div>
             <div class="sd-tab" data-tab="skill">무공</div>
-            <div class="sd-tab" data-tab="equip">장비</div>
+            <div class="sd-tab" data-tab="bag">배낭</div>
           </div>
           <div id="sd-tabbody"></div>
         </div>
         <div class="sd-col sd-right">
-          <div class="sd-sec">- 인물 특성 -</div><div id="sd-trait">없음</div>
-          <div class="sd-sec">- 직업 특성 -</div><div id="sd-jobtrait">없음</div>
-          <div class="sd-sec">- 버프 효과 -</div><div>없음</div>
-          <div class="sd-spacer"></div>
+          <div class="sd-sec bio-sec">- 열전 -</div>
+          <div id="sd-bio"></div>
           <div class="sd-field"><span>상태</span>정상</div>
           <div class="sd-gold"><span>소지금</span><b id="sd-gold">0</b></div>
         </div>
@@ -1455,6 +1535,14 @@ const LEVELUP_HEAL = 0.3;
 // 반격 : 일반 공격을 받고 살아남으면 바로 한 번 되받아침 (무공에는 반격하지 않음)
 const COUNTER = { on:true, power:1.0 };
 
+// 능력 점수 (상태보기 → 능력) : per 레벨마다 gain 점 → 무력 · 내력 · 신법에 나눔 (아군만)
+//   mult = 레벨 능력치에 1점마다 곱해 더함 (0.03 = 3%), add = 1점마다 더함, skillPow = 1점마다 무공 위력, movePer = 이만큼마다 이동 +1
+const ATTR = { per:10, gain:4, list:[
+  { key:'mu',  g:'武', name:'무력', mult:{ atk:0.03, hp:0.02 },             desc:'공격 3% · 체력 2%' },
+  { key:'ne',  g:'氣', name:'내력', mult:{ mp:0.04, def:0.02 }, skillPow:0.02, desc:'내공 4% · 방어 2% · 무공 위력 2%' },
+  { key:'sin', g:'身', name:'신법', add:{ hit:1, eva:1 }, movePer:10,      desc:'명중 1 · 회피 1 · 10점마다 이동 1' },
+] };
+
 // 적 능력치 보정 : 모든 적 (side 'enemy')의 레벨 능력치에 곱함 — 우군 · 아군은 그대로. (예: atk:0.9 = 공격 10% 낮춤)
 const ENEMY_STAT = { mult:{ atk:0.9 } };   // power : 반격 위력 (1.0 = 일반 공격과 같음)
 
@@ -1481,8 +1569,8 @@ const HERO_DEFAULT = { job:'무인', move:4, skills:[] };
 // 주인공은 이름이 정해져 있음 — 시작할 때 고른 모습(m 남 / f 여)에 따라
 //   stat : 처음부터 붙는 능력치 (atk 공격, mp 내력 …)   story : 고르는 화면에 보이는 짧은 사연
 const HERO_LOOKS = {
-  m: { name:'천명우', stat:{ atk:8 }, trait:'공격형', story:'어린 시절 세가가 멸문할 때 누이 명화를 잃었다. 원수를 잊지 않는다.' },
-  f: { name:'천명화', stat:{ mp:8 },  trait:'내력형', story:'어린 시절 세가가 멸문할 때 오라버니 명우를 잃었다. 세가 어른들의 당부대로, 살아남는 것이 먼저다.' },
+  m: { name:'천명우', stat:{ atk:8 }, trait:'공격형', attrRec:[2,1,1], story:'어린 시절 세가가 멸문할 때 누이 명화를 잃었다. 원수를 잊지 않는다.' },
+  f: { name:'천명화', stat:{ mp:8 },  trait:'내력형', attrRec:[1,2,1], story:'어린 시절 세가가 멸문할 때 오라버니 명우를 잃었다. 세가 어른들의 당부대로, 살아남는 것이 먼저다.' },
 };
 // 인물 특성 (trait) : 레벨 능력치에 붙는 보정 — mult = 곱하기 (hp 체력, mp 내력, atk 공격, def 방어), add = 더하기 (hit 명중, eva 회피 …)
 //   인물마다 data 의 trait:{ name, mult, add } 로 적음. 상태 화면 '열전' 탭에 보임
@@ -1492,12 +1580,34 @@ const UNIT_RANKS = {
   boss: { label:'보스',     mult:{ hp:2, def:1.1 } },
 };
 
+// 능력 점수 '추천' 비율 [무력, 내력, 신법] — 아군 인물의 attrRec (주인공은 위 HERO_LOOKS)
+
+/* 인연 (상태보기 → 인연 · 전투에서 저절로 발동)
+   members : 인연을 맺은 인물 · from : 이 장면이 끝나면 맺어짐 (null = 아직 없음 — '???' 로 보임)
+   when : 'adj' = 다른 인연 인물이 바로 옆(상하좌우)에 있으면 · 'deploy' = 모두 출전해 살아 있으면
+   eff  : 인물마다 { dmgCut:받는 피해 감소, atkPct:공격 %, hit:명중, eva:회피, regenPct:아군 턴 시작 체력 회복 %, foe:{ faction, pct } } — all 은 모두에게 */
+const BONDS = [
+  { id:'wudang_promise', name:'무당산의 약속',   members:['hero','cheonghwa'],                from:'wudang_after',           when:'adj',
+    eff:{ all:{ dmgCut:0.10 } },                                  text:'서로 받는 피해 -10%' },
+  { id:'same_foe',       name:'같은 원수',       members:['hero','cheolmyeong'],              from:'cheolgeom_hall_talk',    when:'deploy',
+    eff:{ all:{ foe:{ faction:'천교', pct:0.10 } } },             text:'천교 무리에게 주는 피해 +10%' },
+  { id:'inn_cup',        name:'취현객잔의 술잔', members:['hero','cheonghwa','cheolmyeong'], from:'yangyang_inn_cheonghwa', when:'deploy',
+    eff:{ all:{ atkPct:0.05, regenPct:0.03 } },                   text:'셋 모두 공격 +5% · 아군 턴 시작에 체력 3% 회복' },
+  { id:'beggar_cheon',   name:'소걸개와 천씨',   members:['hero','seokun'],                   from:'gaebang_interrogation',  when:'adj',
+    eff:{ seokun:{ eva:5 }, hero:{ hit:5 } },                     text:'석운 회피 +5 · 주인공 명중 +5' },
+  { id:'gaebang_sib',    name:'개방의 사형매',   members:['seokun','jinsoyeon'],              from:null,                     when:'adj',
+    eff:{},                                                       text:'' },
+];
+// 적의 소속 (인연 '같은 원수' 같은 효과에 씀) — 천교에 든 무리
+const UNIT_FACTION = { sapa_musa:'천교', sapa_gosu:'천교', guhu:'천교', sapa_ganbu:'천교', sado_gyeol:'천교', cheongyo_archer:'천교',
+                       cheolgeom_traitor:'천교', nokrim_boss:'천교', nokrim:'천교', nokrim_archer:'천교' };
+
 const UNITS = {
   // ---- 아군 (합류 인물) ----
-  cheonghwa: { name:'청화', job:'무당파 2대제자', title:'대사형', level:3, move:4, skills:[], face:'cheonghwa', card:'cheonghwa', party:true,  // 삼류
+  cheonghwa: { name:'청화', job:'무당파 2대제자', title:'대사형', level:3, move:4, skills:[], face:'cheonghwa', card:'cheonghwa', attrRec:[1,2,1], party:true,  // 삼류
                trait:{ name:'방어형 · 앞을 막음', mult:{ hp:1.1, def:1.1, atk:0.95 } } },
   // 철명 — 화원파(화산파 속가) 문주. 문파가 멸문한 뒤 산에서 사냥꾼으로 지냄. 일반 공격은 활(한 칸 띄운 적만), 무공은 화산파 기초 무공(육합권법 등 — 붙은 적)
-  cheolmyeong: { name:'철명', job:'화원파 문주', title:'사냥꾼', level:'hero+2', move:5, range:2, minRange:2, weapon:'bow', skills:[], face:'hunter', card:'hunter', party:true,
+  cheolmyeong: { name:'철명', job:'화원파 문주', title:'사냥꾼', level:'hero+2', move:5, range:2, minRange:2, weapon:'bow', skills:[], face:'hunter', card:'hunter', attrRec:[2,0,2], party:true,
                  trait:{ name:'궁수 · 멀리서', mult:{ atk:1.05, hp:0.9, def:0.9 }, add:{ hit:5 } },
                  startTree:['a1','a2'] },   // 합류할 때 육합권법은 이미 익힘
 
@@ -1525,7 +1635,7 @@ const UNITS = {
   noyugak:   { name:'노유각', job:'개방 장로', title:'절강 분타주', level:60, move:4, face:'noyugak', card:'noyugak' },   // 원작의 개방 장로. 이번에는 분타 안에서 물건을 지킴
   // 석운 — 절강 분타 전투 두 번은 우군(data/battles.js 에 friend:true), 사도결 심문 뒤 아군으로 합류 (이류 · 주인공 +1, Lv10 ~ 20)
   //   합류할 때 삼류 수련도(data/training.js 의 seokun)는 모두 익힌 채 → 이류 판부터
-  seokun:    { name:'석운',   job:'개방 후개', title:'소걸개', level:'hero+1', joinRealm:'이류', move:5, skills:['타구봉법 · 반자결'], face:'seokun', card:'seokun', party:true,
+  seokun:    { name:'석운',   job:'개방 후개', title:'소걸개', level:'hero+1', joinRealm:'이류', move:5, skills:['타구봉법 · 반자결'], face:'seokun', card:'seokun', attrRec:[1,1,2], party:true,
                trait:{ name:'기동형 · 날렵함', mult:{ def:0.95 }, add:{ eva:5 } },
                startTree:['a1','a2','a3','a4','a5','d1','d2','d3','d4','d5','n1','n2','n3','n4','n5'] },     // 황용의 수제자 · 다음 방주감
   jinsoyeon: { name:'진소연', job:'황 방주의 제자', level:1, move:5, skills:['탄지신통'], face:'jinsoyeon', card:'jinsoyeon' },                 // 황용의 수제자 · 석운의 사매
@@ -1655,7 +1765,7 @@ const SKILLS = {
    ===================================================================== */
 
 // 물건 사전
-//   type : weapon(무기) / armor(방어구) / accessory(장신구) / consumable(소모품) / material(재료)
+//   type : weapon(무기) / armor(방어구) / accessory(장신구) / treasure(보물 — 심법 서책 · 보패, sub:'심법' | '보패') / consumable(소모품) / material(재료)
 //   icon : 그림이 없을 때 배낭 칸에 표시할 글자
 //   img  : 그림 (data/assets.js 의 item 이름) — 있으면 글자 대신 그림
 //   stat : 장착 시 능력치 보너스 (atk 공격, def 방어, hit 명중, eva 회피, hp 체력, mp 내력)
@@ -1680,14 +1790,14 @@ const ITEM_DB = {
   '비취 가락지': { type:'accessory', icon:'翠', price:400, stat:{ hit:5, eva:2 }, desc:'맑은 비취를 깎아 만든 가락지. 손끝이 정확해지고 몸놀림이 가벼워진다.' },
   '호심경':     { type:'accessory', icon:'鏡', price:400, stat:{ def:5 },        desc:'가슴에 대는 둥근 구리 거울. 급소를 지켜 준다.' },
   '금사 요대':  { type:'accessory', icon:'帶', price:400, stat:{ hp:30 },        desc:'금실을 엮어 짠 허리띠. 허리를 단단히 받쳐 오래 버티게 한다.' },
-  '소주천 요결': { type:'accessory', icon:'書', img:'book', price:450, stat:{ mp:10 }, desc:'기를 몸 안에서 작게 한 바퀴 돌리는 요령을 적은 서책. 지니면 내력이 는다.' },
+  '소주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:450, stat:{ mp:10 }, desc:'기를 몸 안에서 작게 한 바퀴 돌리는 요령을 적은 서책. 지니면 내력이 는다.' },
   // ---- 보물상자 (제3장부터) ----
   '팔괘 옥패':  { type:'accessory', icon:'卦', price:600, stat:{ def:4, eva:4 }, desc:'팔괘를 새긴 옥패. 지니면 몸이 단단해지고 발이 가벼워진다.' },
   '묵옥 반지':  { type:'accessory', icon:'墨', price:600, stat:{ atk:6 },        desc:'먹빛 옥을 깎아 만든 반지. 지니면 손에 힘이 붙는다.' },
   '백옥 잠':    { type:'accessory', icon:'簪', price:600, stat:{ mp:12 },        desc:'흰 옥으로 만든 비녀. 머리를 맑게 해 기를 모으기 쉽다.' },
-  '대주천 요결': { type:'accessory', icon:'書', img:'book', price:700, stat:{ mp:15 }, desc:'기를 온몸으로 크게 돌리는 요령을 적은 서책. 지니면 내력이 크게 는다.' },
-  '전뢰심법': { type:'accessory', icon:'書', img:'book', price:300, stat:{ mp:7 }, desc:'번개처럼 기를 몰아치는 심법을 적은 서책. 몸에 지니면 내력이 오른다.' },
-  '토납법 서책': { type:'accessory', icon:'書', img:'book', price:150, stat:{ mp:3 }, desc:'숨을 고르고 기를 다스리는 법을 적은 서책. 몸에 지니면 내력이 조금 는다.' },
+  '대주천 요결': { type:'treasure', sub:'심법', icon:'書', img:'book', price:700, stat:{ mp:15 }, desc:'기를 온몸으로 크게 돌리는 요령을 적은 서책. 지니면 내력이 크게 는다.' },
+  '전뢰심법': { type:'treasure', sub:'심법', icon:'書', img:'book', price:300, stat:{ mp:7 }, desc:'번개처럼 기를 몰아치는 심법을 적은 서책. 몸에 지니면 내력이 오른다.' },
+  '토납법 서책': { type:'treasure', sub:'심법', icon:'書', img:'book', price:150, stat:{ mp:3 }, desc:'숨을 고르고 기를 다스리는 법을 적은 서책. 몸에 지니면 내력이 조금 는다.' },
   // ---- 표국 행렬이 가져오는 물건 (data/pyoguk.js) ----
   '강화석': { type:'material', icon:'強', price:100, desc:'무기와 방어구를 단단하게 벼리는 돌. 대장간 "강화"에 쓴다.' },
   '승급석': { type:'material', icon:'昇', price:300, desc:'물건의 격을 끌어올리는 귀한 돌. 대장간 "승급"으로 무기 · 방어구의 등급을 올린다 (흔함 → 일반 → 희귀 → 보구).' },
@@ -1695,18 +1805,20 @@ const ITEM_DB = {
   '금전상자': { type:'material', icon:'錢', price:300, desc:'전투에서 거둔 돈궤. 배낭에서 "열기"하면 금이 나온다 (장이 오를수록 많이).' },
   '영약':   { type:'material', icon:'丹', img:'pills', price:500, desc:'기운을 북돋는 귀한 약. 배낭에서 "복용"하면 최대 체력 · 내력이 영구히 오른다 (인물마다 5개까지).' },
   // ---- 명품 (전투 보상 — 제2장부터 한 전투에 하나씩) ----
-  '야명주': { type:'accessory', icon:'珠', named:true, price:3000, stat:{ hit:4, mp:6 },  desc:'어둠 속에서도 달빛처럼 빛나는 구슬. 지니면 눈이 밝아지고 기가 맑아진다.' },
+  '야명주': { type:'treasure', sub:'보패', icon:'珠', named:true, price:3000, stat:{ hit:4, mp:6 },  desc:'어둠 속에서도 달빛처럼 빛나는 구슬. 지니면 눈이 밝아지고 기가 맑아진다.' },
   '간장':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:15, hit:3 }, desc:'오나라의 명장 간장이 아내 막야와 함께 벼려 낸 한 쌍의 명검 중 웅검(雄劍). 묵직하고 곧다.' },
   '막야':   { type:'weapon',    icon:'劍', named:true, price:4000, stat:{ atk:13, eva:4 }, desc:'간장과 한 쌍을 이루는 자검(雌劍). 아내 막야의 이름을 땄다. 가볍고 날래다.' },
   '태아검': { type:'weapon',    icon:'劍', named:true, price:4500, stat:{ atk:16, hit:2 }, desc:'구야자와 간장이 함께 벼렸다는 세 자루 명검 가운데 하나. 위엄의 검이라 불린다.' },
-  '화씨벽': { type:'accessory', icon:'璧', named:true, price:5000, stat:{ def:4, hp:20 }, desc:'초나라 사람 변화가 두 번이나 발이 잘리면서도 바친 천하의 보옥. 지니면 몸이 굳건해진다.' },
+  '화씨벽': { type:'treasure', sub:'보패', icon:'璧', named:true, price:5000, stat:{ def:4, hp:20 }, desc:'초나라 사람 변화가 두 번이나 발이 잘리면서도 바친 천하의 보옥. 지니면 몸이 굳건해진다.' },
 };
 // 이름을 바꾼 물건 (예전 저장을 불러올 때 새 이름으로 바꿔 줌)  옛 이름 : 새 이름
 const ITEM_RENAMED = { '토나법 서책':'토납법 서책', '보물':'보물상자' };
 
-const ITEM_TYPE_NAME = { weapon:'무기', armor:'방어구', accessory:'장신구', consumable:'소모품', material:'재료' };
-const EQUIP_SLOTS = [['weapon','무기'], ['armor','방어구'], ['accessory','장신구']];
-const STAT_NAME = { atk:'공격', def:'방어', hit:'명중', eva:'회피', hp:'체력', mp:'내력' };
+const ITEM_TYPE_NAME = { weapon:'무기', armor:'방어구', accessory:'장신구', treasure:'보물', consumable:'소모품', material:'재료' };
+const EQUIP_SLOTS = [['weapon','무기'], ['armor','방어구'], ['accessory','장신구'], ['treasure','보물']];
+// 장비 칸 글자 (상태보기 — 초상화 왼쪽 네 칸)
+const EQUIP_GLYPH = { weapon:'武', armor:'甲', accessory:'飾', treasure:'寶' };
+const STAT_NAME = { atk:'공격', def:'방어', hit:'명중', eva:'회피', hp:'체력', mp:'내공' };
 
 const BAG_SIZE = 30;          // 배낭 칸 수 (같은 물건은 한 칸에 겹쳐 보관)
 const START_GOLD = 0;         // 새 게임 시작 금 (금 = 잡화점 · 대장간. 훈련장은 수련치)
@@ -4994,6 +5106,31 @@ function growthBonus(id){
   if (id==='hero' && typeof HERO_LOOKS !== 'undefined'){ const L = HERO_LOOKS[HERO.look==='f' ? 'f' : 'm']; if (L && L.stat) for (const k in L.stat) b[k] = (b[k]||0) + L.stat[k]; }   // 남 : 공격 +8 · 여 : 내력 +8
   return b;
 }
+/* ---------- 능력 점수 (data/growth.js 의 ATTR) : 10레벨마다 4점 → 무력 · 내력 · 신법 ---------- */
+function attrTotal(level){ return typeof ATTR === 'undefined' ? 0 : Math.floor((level||1) / ATTR.per) * ATTR.gain; }
+function attrOf(id){ const st = memberState(id); if (!st) return { mu:0, ne:0, sin:0 }; if (!st.attr) st.attr = { mu:0, ne:0, sin:0 }; return st.attr; }
+function attrUsed(a){ return a ? (a.mu||0) + (a.ne||0) + (a.sin||0) : 0; }
+function attrLeft(id){ const st = memberState(id); return st && isParty(id) ? Math.max(0, attrTotal(st.level) - attrUsed(attrOf(id))) : 0; }
+function attrModOf(a){                       // computeStats 의 mods 하나 { mult, add }
+  if (typeof ATTR === 'undefined' || !a || !attrUsed(a)) return null;
+  const m = { mult:{}, add:{} };
+  ATTR.list.forEach(L=>{ const n = a[L.key] || 0; if (!n) return;
+    for (const k in (L.mult||{})) m.mult[k] = (m.mult[k] || 1) + L.mult[k] * n;
+    for (const k in (L.add||{}))  m.add[k]  = (m.add[k]  || 0) + L.add[k] * n; });
+  return m;
+}
+function attrMoveOf(a){ const L = typeof ATTR !== 'undefined' && ATTR.list.find(x=>x.movePer); return L && a ? Math.floor((a[L.key]||0) / L.movePer) : 0; }
+function attrSkillPowOf(a){ let p = 1; if (typeof ATTR !== 'undefined' && a) ATTR.list.forEach(L=>{ if (L.skillPow) p += L.skillPow * (a[L.key]||0); }); return p; }
+function attrMove(id){ return isParty(id) ? attrMoveOf(attrOf(id)) : 0; }
+// '추천' : 그 인물의 비율(attrRec)대로 점수를 나눔 (나머지는 비율이 큰 쪽부터)
+function attrRecommend(id, total){
+  const rec = (id==='hero' ? ((HERO_LOOKS[heroSex()]||{}).attrRec) : (UNITS[id]||{}).attrRec) || [1,1,1];
+  const sum = rec.reduce((a,b)=>a+b, 0) || 1, keys = ['mu','ne','sin'];
+  const raw = rec.map(r=> total * r / sum), out = raw.map(Math.floor); let left = total - out.reduce((a,b)=>a+b, 0);
+  raw.map((r,i)=>[r - out[i], rec[i], i]).sort((a,b)=> b[0]-a[0] || b[1]-a[1]).forEach(([,,i])=>{ if (left > 0){ out[i]++; left--; } });
+  const o = {}; keys.forEach((k,i)=> o[k] = out[i]); return o;
+}
+
 // 해금한 심법(패시브)들의 효과 합
 function treeEffects(id){
   const e = { mpRegen:0, hpRegen:0, counterPow:0, dmgCut:0 };
@@ -5045,8 +5182,9 @@ function computeStats(level, equip, extra, realm, mods){
            maxHp:s.hp+b.hp+a.hp, maxMp:s.mp+b.mp+a.mp, bonus:b };
 }
 // 인물 특성 · 대장 등급 보정 목록 (computeStats 의 mods)
-function statMods(id, rank, side){
+function statMods(id, rank, side, attr){        // attr : 능력 점수 (안 주면 저장된 점수, null 이면 빼고 계산)
   const d = UNITS[id] || {}, out = [];
+  if (side!=='enemy' && isParty(id) && memberState(id)){ const am = attrModOf(attr === undefined ? attrOf(id) : attr); if (am) out.push(am); }
   if (d.trait) out.push(d.trait);
   if (rank && typeof UNIT_RANKS !== 'undefined' && UNIT_RANKS[rank]) out.push(UNIT_RANKS[rank]);
   if (side==='enemy' && typeof ENEMY_STAT !== 'undefined') out.push(ENEMY_STAT);       // 적 공통 보정 (data/growth.js)
@@ -5159,7 +5297,7 @@ function startScene(name, fromLoad){
 }
 let scriptIdx = 0, typing = false, typeTimer = null;
 const HERO = { name:'주인공', look:'m', job:HERO_DEFAULT.job, move:HERO_DEFAULT.move, skills:HERO_DEFAULT.skills.slice(),
-               level:1, exp:0, realm:REALMS[0], equip:{ weapon:null, armor:null, accessory:null },
+               level:1, exp:0, realm:REALMS[0], equip:{ weapon:null, armor:null, accessory:null, treasure:null }, attr:{ mu:0, ne:0, sin:0 },
                tree:[], learned:[] };     // tree = 수련도에서 해금한 노드, learned = 이야기 등으로 따로 배운 무공
 function fillName(t){ return codexText(t); }   // {name} → 주인공 이름 (조사는 받침에 맞춤) · {소협|소저} → 남자 주인공은 앞, 여자 주인공은 뒤 — 아래 codexText
 function lineText(line){ return fillName(sexText(line)); }
@@ -5285,7 +5423,15 @@ let PARTY = ['hero'];      // 합류 순서
 let MEMBERS = {};          // 합류 인물 상태 { level, exp, realm, equip }
 function isParty(id){ return PARTY.includes(id); }
 function memberState(id){ return id==='hero' ? HERO : MEMBERS[id]; }
-function emptyEquip(){ return { weapon:null, armor:null, accessory:null }; }
+function emptyEquip(){ return { weapon:null, armor:null, accessory:null, treasure:null }; }
+// 예전 저장 : 장신구 칸에 낀 심법 서책 · 보패 → 보물 칸으로 (보물 칸에 이미 있으면 배낭으로)
+function fixEquipSlots(st){
+  if (!st || !st.equip) return;
+  st.equip = Object.assign(emptyEquip(), st.equip);
+  const a = st.equip.accessory, it = a && ITEM_DB[a];
+  if (it && it.type==='treasure'){ if (!st.equip.treasure) st.equip.treasure = a; else addToBag(a); st.equip.accessory = null; }
+  if (!st.attr) st.attr = { mu:0, ne:0, sin:0 };
+}
 function joinParty(id, silent){
   const d = UNITS[id];
   if (!d || isParty(id)) return;
@@ -5296,7 +5442,7 @@ function joinParty(id, silent){
     const ri = REALMS.indexOf(d.joinRealm), lo = REALM_LEVELS[ri][1], hi = REALM_LEVELS[ri+1] ? REALM_LEVELS[ri+1][1] : MAX_LEVEL;
     lv = Math.max(lo, Math.min(hi, lv)); realm = d.joinRealm;
   }
-  MEMBERS[id] = { level:lv, exp:0, realm, equip:emptyEquip(), tree:(d.startTree||[]).slice(), learned:[] };
+  MEMBERS[id] = { level:lv, exp:0, realm, equip:emptyEquip(), tree:(d.startTree||[]).slice(), learned:[], attr:{ mu:0, ne:0, sin:0 } };
   if (!silent) showToast(d.name+josa(d.name,'이','가')+' 아군으로 합류했습니다');
 }
 function resetParty(){ PARTY = ['hero']; MEMBERS = {}; }
@@ -5527,7 +5673,7 @@ function openGoldBox(){
   const more = document.getElementById('bx-more'), left = PLAYER.inv[B] || 0;
   more.style.display = left ? '' : 'none'; more.textContent = '하나 더 열기 (' + left + ')';
   const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
-  bagSel = left ? B : null; renderBag();
+  bagSel = left ? B : null; bagChanged();
 }
 // 금전상자 모두 열기 → 합계
 function openAllGoldBoxes(){
@@ -5542,15 +5688,17 @@ function openAllGoldBoxes(){
   document.getElementById('bx-ds').textContent = '';
   document.getElementById('bx-more').style.display = 'none';
   const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
-  bagSel = null; renderBag();
+  bagSel = null; bagChanged();
 }
+// 배낭이 바뀜 (상자 열기 등) → 배낭 창 · 상태보기(배낭 탭)를 다시 그림
+function bagChanged(){ renderBag(); if (document.getElementById('status-modal').style.display==='flex' && document.getElementById('st-detail').style.display!=='none') refreshStatus(); }
 function openBox(){
   if (boxKind==='gold'){ openGoldBox(); return; }
   const B = TREASURE_BOX.item;
   if (!takeFromBag(B)) return;
   document.querySelector('#box-modal .bx-title').textContent = B + '를 열었습니다';
   const got = boxRoll();
-  if (!addToBag(got)){ PLAYER.inv[B] = (PLAYER.inv[B] || 0) + 1; showToast('배낭이 가득 찼습니다 — 물건을 정리한 뒤 여세요'); renderBag(); return; }
+  if (!addToBag(got)){ PLAYER.inv[B] = (PLAYER.inv[B] || 0) + 1; showToast('배낭이 가득 찼습니다 — 물건을 정리한 뒤 여세요'); bagChanged(); return; }
   const ns = boxStones(); for (let k=0;k<ns;k++) addToBag('강화석');     // 강화석은 꼭
   const it = ITEM_DB[got] || {};
   document.getElementById('bx-ic').innerHTML = itemIcon(got);
@@ -5560,7 +5708,7 @@ function openBox(){
   const more = document.getElementById('bx-more'), left = PLAYER.inv[B] || 0;
   more.style.display = left ? '' : 'none'; more.textContent = '하나 더 열기 (' + left + ')';
   const m = document.getElementById('box-modal'); m.style.display = 'none'; void m.offsetWidth; m.style.display = 'flex';
-  bagSel = left ? B : got; renderBag();
+  bagSel = left ? B : got; bagChanged();
 }
 document.getElementById('bx-ok').addEventListener('click', ()=>{ document.getElementById('box-modal').style.display = 'none'; });
 document.getElementById('bx-more').addEventListener('click', openBox);
@@ -6067,7 +6215,7 @@ function makeHero(){
   const msg = document.getElementById('name-msg');
   if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
   HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
-  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = 0; delete HERO.train;
+  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = 0; HERO.attr = { mu:0, ne:0, sin:0 }; delete HERO.train;
   resetParty();
   PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0;
   startStory();
@@ -6098,7 +6246,7 @@ function makeSnapshot(){
   const sceneId = (saveCtx && saveCtx.scene) || curScene, sc = SCENES[sceneId];
   const snap = { v:1, rv:2, time:Date.now(), chapter:sc.chapter, place:sc.place, scene:sceneId, pos:(saveCtx && saveCtx.pos) || 'end',
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
-                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:HERO.elixir||0 },
+                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:HERO.elixir||0, attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}) },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
            player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
@@ -6167,6 +6315,7 @@ function applySnapshot(s){
   HERO.realm = keepRealm(s.hero.realm, HERO.level);
   HERO.equip = Object.assign(emptyEquip(), s.hero.equip || {});
   HERO.tree = (s.hero.tree || []).slice(); HERO.learned = (s.hero.learned || []).slice(); HERO.elixir = s.hero.elixir || 0;
+  HERO.attr = Object.assign({ mu:0, ne:0, sin:0 }, s.hero.attr || {});
   PARTY = (s.party && s.party.length) ? s.party.slice() : ['hero'];
   MEMBERS = JSON.parse(JSON.stringify(s.members || {}));
   Object.keys(MEMBERS).forEach(id=>{ const m = MEMBERS[id]; m.realm = keepRealm(m.realm, m.level); m.equip = Object.assign(emptyEquip(), m.equip||{});
@@ -6182,6 +6331,7 @@ function applySnapshot(s){
   PLAYER.trainCnt = Object.assign({}, s.player.trainCnt || {});
   PLAYER.suryeon = (typeof s.player.suryeon === 'number') ? s.player.suryeon : earnedSuryeon(s.scene);   // 수련치가 생기기 전 저장 → 지나온 전투 보상만큼
   renameOldItems(); ensureSavedItems();          // 강화한 물건 (철검 +3 …) 을 물건 사전에 등록
+  fixEquipSlots(HERO); Object.keys(MEMBERS).forEach(id=> fixEquipSlots(MEMBERS[id]));   // 보물 칸 · 능력 점수 (예전 저장)
   migrateOldTraining('hero', HERO); Object.keys(MEMBERS).forEach(id=> migrateOldTraining(id, MEMBERS[id]));
   if (s.pos==='battle' && s.battle && BATTLES[s.battle.id]){        // 전투 중 저장 → 그 턴부터 이어서
     const ts = document.getElementById('title-screen');
@@ -6301,17 +6451,22 @@ function memberView(id){
   const party = isParty(id);
   const c = Object.assign({}, src, { key:id, camp: party ? '아군' : '우군', friend: !party, face:faceOf(id), card:cardOf(id) });
   c.skills = party ? memberSkills(id) : (src.skills||[]).slice(); c.level = c.level || 1;
+  if (party) c.move = (c.move || 4) + attrMove(id);                 // 신법 10점마다 이동 +1
   Object.assign(c, computeStats(c.level, c.equip, party ? growthBonus(id) : null, party ? memberRealm(id) : null, statMods(id))); c.hp = c.maxHp; c.mp = c.maxMp;
   return c;
 }
-let stMembers = [], stIdx = 0, stTab = 'stat', stPick = null;
-function refreshStatus(){ stMembers = partyMembers(); openDetail(stIdx); }
+let stMembers = [], stIdx = 0, stTab = 'stat';
+// 상태보기 (인물 정보) 상태 : 배낭 탭 분류 · 고른 물건 ('@weapon' = 그 칸에 낀 물건) · 고른 장비 칸 · 능력 점수 (확정 전)
+let stBagF = 'all', stSel = null, stSlot = null, stPend = null, stPendFor = null;
+function refreshStatus(){ stMembers = partyMembers(); openDetail(stIdx, true); }
 function openStatus(){
   stMembers = partyMembers();
   const rows = document.getElementById('st-rows'); rows.innerHTML = '';
   stMembers.forEach((m,i)=>{
     const r = document.createElement('div'); r.className = 'st-row' + (m.friend?' friend':'');
+    const left = attrLeft(m.key);
     r.innerHTML = '<img src="'+m.face+'"><div class="nm">'+m.name+'<span class="camp'+(m.friend?' friend':'')+'">'+m.camp+'</span>'+
+                  (left ? '<span class="pt-badge">능력 점수 +'+left+'</span>' : '')+
                   '<small>Lv '+(m.level||1)+' · '+m.job+' · '+m.realm+' · 경험 '+(m.exp||0)+'/'+EXP_MAX+(atWall(m.key)?' · <span class="wall">경지의 벽</span>':'')+'</small></div>'+
                   '<div class="hp">체력 '+m.hp+'/'+m.maxHp+'<br>내공 '+m.mp+'/'+m.maxMp+'</div>';
     r.addEventListener('click', ()=>openDetail(i));
@@ -6321,12 +6476,13 @@ function openStatus(){
   document.getElementById('st-detail').style.display = 'none';
   document.getElementById('status-modal').style.display = 'flex';
 }
-function openDetail(i){
-  stIdx = (i + stMembers.length) % stMembers.length; if (stIdx!==i) stPick = null;
-  const m = stMembers[stIdx];
+function stMember(){ return stMembers[stIdx]; }
+function openDetail(i, keep){
+  stIdx = (i + stMembers.length) % stMembers.length;
+  const m = stMember();
+  if (!keep || stPendFor !== m.key){ stSel = null; stSlot = null; stPend = Object.assign({ mu:0, ne:0, sin:0 }, attrOf(m.key)); stPendFor = m.key; }
   const p = document.getElementById('sd-portrait'); p.src = m.card; p.className = m.friend ? 'friend' : '';
   document.getElementById('sd-name').textContent = m.name;
-  document.getElementById('sd-title').textContent = m.title || '없음';
   document.getElementById('sd-lv').textContent = 'Lv '+(m.level||1);
   document.getElementById('sd-ex').textContent = (m.exp||0)+'/'+EXP_MAX;
   document.getElementById('sd-ex-bar').style.width = ((m.exp||0)/EXP_MAX*100)+'%';
@@ -6338,58 +6494,186 @@ function openDetail(i){
   document.getElementById('sd-hp-bar').style.width = (m.hp/m.maxHp*100)+'%';
   document.getElementById('sd-mp-bar').style.width = (m.maxMp ? m.mp/m.maxMp*100 : 0)+'%';
   document.getElementById('sd-gold').textContent = PLAYER.gold.toLocaleString();
-  document.getElementById('sd-trait').textContent = traitName(m.key) || '없음';      // 인물 특성 이름 (보정 수치는 '열전' 탭)
+  document.getElementById('sd-bio').innerHTML = bioPanel(m);
   document.getElementById('st-list').style.display = 'none';
   document.getElementById('st-detail').style.display = 'flex';
   renderTab();
 }
+// 오른쪽 : 열전 (별호 · 칭호 · 특성 · 열전 글)
+function bioPanel(m){
+  const b = bioOf(m.key), tn = traitName(m.key), tt = traitText(m.key);
+  let h = '<div class="bio-row"><span class="k">별호</span><span>'+((b && b.alias) || '없음')+'</span></div>'+
+          '<div class="bio-row"><span class="k">칭호</span><span>'+(m.title || '없음')+'</span></div>';
+  if (tn) h += '<div class="bio-row"><span class="k">특성</span><span>'+tn+(tt ? '<small>'+tt+'</small>' : '')+'</span></div>';
+  h += b ? '<div class="bio-text">'+codexText(sexText(b))+'</div>' : '<div class="bio-text none">아직 열전이 없습니다.</div>';
+  return h;
+}
+// 왼쪽 : 초상화 옆 장비 네 칸 — 누르면 배낭 탭에서 그 칸에 낄 물건만
+function renderSlots(m){
+  const w = document.getElementById('sd-slots'); w.innerHTML = '';
+  const eq = m.equip || {};
+  EQUIP_SLOTS.forEach(([slot, label])=>{
+    const n = eq[slot], d = document.createElement('div');
+    d.className = 'eq-slot' + (n ? ' on' : '') + (n && isNamed(n) ? ' named' : '') + (stTab==='bag' && stSlot===slot ? ' sel' : '');
+    d.innerHTML = n ? '<span class="tag">'+EQUIP_GLYPH[slot]+'</span><span class="ic'+gradeCls(n)+'">'+itemIcon(n)+'</span>'
+                    : '<span class="g">'+EQUIP_GLYPH[slot]+'</span><span class="n">'+label+'</span>';
+    d.title = label + ' : ' + (n || '비어 있음');
+    d.onclick = ()=>{ stTab = 'bag'; stSlot = slot; stBagF = slot; stSel = n ? '@'+slot : null; renderTab(); };
+    w.appendChild(d);
+  });
+}
 function renderTab(){
-  const m = stMembers[stIdx], body = document.getElementById('sd-tabbody');
+  const m = stMember(), body = document.getElementById('sd-tabbody');
   document.querySelectorAll('.sd-tab').forEach(t=>t.classList.toggle('on', t.dataset.tab===stTab));
-  if (stTab==='stat'){
-    const T = statsAtLevel(MAX_LEVEL), MAX = { atk:T.atk, def:T.def, hit:T.hit, eva:T.eva, hp:T.hp, mp:T.mp };
-    const B = m.bonus || {};
-    const pct = (v,max)=> Math.min(100, Math.log1p(v)/Math.log1p(max)*100);    // 만렙 기준 (로그 눈금)
-    const row = (k,v,max,bk)=>'<div class="stat-row"><span class="k">'+k+'</span><div class="bar"><i style="width:'+pct(v,max)+'%"></i></div>'+
-                               '<span class="v">'+v+(B[bk]?'<em class="bn">+'+B[bk]+'</em>':'')+'</span></div>';
-    body.innerHTML = row('공격',m.atk,MAX.atk,'atk')+row('방어',m.def,MAX.def,'def')+row('명중',m.hit,MAX.hit,'hit')+row('회피',m.eva,MAX.eva,'eva')+
-                     row('체력',m.maxHp,MAX.hp,'hp')+row('내력',m.maxMp,MAX.mp,'mp')+
-                     '<div class="stat-row"><span class="k">이동</span><span></span><span class="v">'+(m.move||'-')+'</span></div>';
-  } else if (stTab==='skill'){
+  const dot = document.getElementById('sd-pt-dot'); if (dot) dot.style.display = attrLeft(m.key) > 0 ? '' : 'none';
+  renderSlots(m);
+  if (stTab==='stat'){ body.innerHTML = statTabHtml(m); bindStatTab(m); }
+  else if (stTab==='skill'){
     const party = isParty(m.key), ms = party ? treeMastery(m.key) : {};
     const pas = party ? unlockedNodes(m.key).filter(n=>n.type==='passive').map(n=>n.name) : [];
     const ef = party ? treeEffects(m.key) : {};
     const efTxt = nodeEffectText({ effect:ef });
-    if (!m.skills.length && !pas.length){ body.innerHTML = '<div style="color:#b9a982;padding:8px 2px">익힌 무공이 없습니다.</div>'; return; }
+    if (!m.skills.length && !pas.length){ body.innerHTML = '<div class="sbag-empty">익힌 무공이 없습니다.</div>'; return; }
     body.innerHTML = m.skills.map(n=> '<div class="sk-card"><b>'+n+'</b><small>'+skillText(SKILLS[n], ms[n])+'</small></div>').join('') +
                      (pas.length ? '<div class="sk-card passive"><b>심법 <em>'+pas.length+'개</em></b><small>'+efTxt+'<br>'+pas.join(' · ')+'</small></div>' : '');
-  } else if (stTab==='equip'){
-    const eq = m.equip || {}, mine = isParty(m.key);
-    let html = EQUIP_SLOTS.map(([slot,label])=>{
-      const n = eq[slot], it = n && ITEM_DB[n];
-      const btn = !mine ? '' : (n ? '<div class="top-btn eq-act" data-unequip="'+slot+'">해제</div>'
-                                  : '<div class="top-btn eq-act" data-pick="'+slot+'">장착</div>');
-      return '<div class="eq-card'+(stPick===slot?' picking':'')+'"><div class="eq-ico'+(n?' on':'')+'">'+(n ? itemIcon(n) : '－')+'</div>'+
-             '<div class="eq-txt">'+label+' : '+(n||'없음')+'<small>'+(it ? statText(it.stat) : '배낭에 있는 '+label+josa(label,'을','를')+' 장착할 수 있습니다')+'</small></div>'+btn+'</div>';
-    }).join('');
-    if (mine && stPick){
-      const cands = Object.keys(PLAYER.inv).filter(n=>PLAYER.inv[n]>0 && ITEM_DB[n] && ITEM_DB[n].type===stPick && !equipBlock(n, m.key));
-      html += '<div class="eq-pick"><div class="eq-pick-t">배낭의 '+ITEM_TYPE_NAME[stPick]+'</div>'+
-              (cands.length ? cands.map(n=>'<div class="eq-pick-row"><span class="ic">'+itemIcon(n)+'</span>'+n+' ×'+PLAYER.inv[n]+
-                 '<small>'+statText(ITEM_DB[n].stat)+'</small><div class="top-btn eq-act" data-equip="'+n+'">장착</div></div>').join('')
-                            : '<div class="eq-empty">배낭에 장착할 '+ITEM_TYPE_NAME[stPick]+josa(ITEM_TYPE_NAME[stPick],'이','가')+' 없습니다.</div>')+'</div>';
-    }
-    body.innerHTML = html;
-    body.querySelectorAll('[data-unequip]').forEach(b=>b.onclick=()=>{ unequipSlot(b.dataset.unequip, m.key); refreshStatus(); });
-    body.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ stPick = stPick===b.dataset.pick ? null : b.dataset.pick; renderTab(); });
-    body.querySelectorAll('[data-equip]').forEach(b=>b.onclick=()=>{ equipItem(b.dataset.equip, m.key); stPick = null; refreshStatus(); });
-  } else {
-    body.innerHTML = bioHtml(m.key);
   }
+  else if (stTab==='bag'){ body.innerHTML = bagTabHtml(m); bindBagTab(m); }
+  else { body.innerHTML = bondTabHtml(m); }
+}
+/* ---- 능력 : 능력 점수 (무력 · 내력 · 신법) + 능력치 (장비 초록 · 능력 점수 파랑) ---- */
+function statTabHtml(m){
+  const id = m.key, party = isParty(id), P = stPend || { mu:0, ne:0, sin:0 };
+  let h = '';
+  if (party && typeof ATTR !== 'undefined'){
+    const tot = attrTotal(m.level), left = tot - attrUsed(P), saved = attrOf(id);
+    const dirty = ATTR.list.some(L=> (P[L.key]||0) !== (saved[L.key]||0));
+    h += '<div class="pt-head"><span>능력 점수 <small>· '+ATTR.per+'레벨마다 '+ATTR.gain+'점 · 1점마다 →</small></span><span>남은 점수 <b>'+left+'</b> / '+tot+'</span></div>';
+    ATTR.list.forEach(L=>{
+      const v = P[L.key] || 0;
+      h += '<div class="attr"><span class="nm"><i>'+L.g+'</i>'+L.name+'</span>'+
+           '<span class="stepper"><button data-k="'+L.key+'" data-d="-1"'+(v<=0?' disabled':'')+'>−</button><b>'+v+'</b><button data-k="'+L.key+'" data-d="1"'+(left<=0?' disabled':'')+'>+</button></span>'+
+           '<span class="ef">'+L.desc+'</span></div>';
+    });
+    h += '<div class="pt-btns">'+(tot ? '<span class="mini" id="pt-rec">추천</span><span class="mini" id="pt-reset">다시 나누기</span><span class="mini go'+(dirty?'':' off')+'" id="pt-ok">확정</span>'
+                                      : '<span class="pt-none">Lv '+ATTR.per+'부터 '+ATTR.gain+'점씩 생깁니다</span>')+'</div>';
+  }
+  // 능력치 : 확정 전이면 나눈 대로 미리 보기
+  const st = memberState(id), lv = m.level || 1, eqB = equipBonus(m.equip), tb = party ? growthBonus(id) : null, rl = party ? memberRealm(id) : null;
+  const full = computeStats(lv, m.equip, tb, rl, statMods(id, null, null, party ? P : null));
+  const noAt = computeStats(lv, m.equip, tb, rl, statMods(id, null, null, null));
+  const row = (nm, k, eqk)=>{ const v = full[k], e = eqB[eqk] || 0, a = v - noAt[k];
+    return '<div class="dv"><span>'+nm+'</span><b>'+v+(e ? '<em class="eq">+'+e+'</em>' : '')+(a ? '<em class="pt">'+(a>0?'+':'')+a+'</em>' : '')+'</b></div>'; };
+  const mv = (UNITS[id] && UNITS[id].move) || (id==='hero' ? HERO.move : 4), mvA = party ? attrMoveOf(P) : 0;
+  h += '<div class="derived">'+row('공격','atk','atk')+row('방어','def','def')+row('명중','hit','hit')+row('회피','eva','eva')+row('체력','maxHp','hp')+row('내공','maxMp','mp')+
+       '<div class="dv"><span>이동</span><b>'+((id==='hero' ? HERO.move : mv) + mvA)+(mvA ? '<em class="pt">+'+mvA+'</em>' : '')+'</b></div>'+
+       (party && attrSkillPowOf(P) > 1 ? '<div class="dv"><span>무공 위력</span><b>+'+Math.round((attrSkillPowOf(P)-1)*100)+'%</b></div>' : '')+'</div>'+
+       '<div class="dv-note"><span class="eq">초록</span> = 장비 · <span class="pt">파랑</span> = 능력 점수</div>';
+  return h;
+}
+function bindStatTab(m){
+  const body = document.getElementById('sd-tabbody'), id = m.key;
+  body.querySelectorAll('.stepper button').forEach(b=> b.onclick = ()=>{ const k = b.dataset.k; stPend[k] = Math.max(0, (stPend[k]||0) + (+b.dataset.d)); renderTab(); });
+  const q = x=> document.getElementById(x);
+  if (q('pt-rec'))   q('pt-rec').onclick   = ()=>{ stPend = attrRecommend(id, attrTotal(m.level)); renderTab(); };
+  if (q('pt-reset')) q('pt-reset').onclick = ()=>{ stPend = { mu:0, ne:0, sin:0 }; renderTab(); };
+  if (q('pt-ok'))    q('pt-ok').onclick    = ()=>{
+    if (q('pt-ok').classList.contains('off')) return;
+    Object.assign(attrOf(id), stPend); sfx('levelup');
+    showToast(m.name+' — 능력 점수를 나눴습니다 (무력 '+stPend.mu+' · 내력 '+stPend.ne+' · 신법 '+stPend.sin+')');
+    refreshStatus();
+  };
+}
+/* ---- 배낭 : 물건을 눌러 장착 · 해제 · 복용 · 열기 ---- */
+const ST_BAG_F = [['all','전체'],['weapon','무기'],['armor','방어구'],['accessory','장신구'],['treasure','보물'],['consumable','도구'],['material','재료']];
+function bagTabHtml(m){
+  let h = '<div class="chips">'+ST_BAG_F.map(([k,n])=>'<span class="chip'+(stBagF===k?' on':'')+'" data-f="'+k+'">'+n+'</span>').join('')+'</div>';
+  const items = Object.keys(PLAYER.inv).filter(n=> PLAYER.inv[n]>0 && ITEM_DB[n] && (stBagF==='all' || ITEM_DB[n].type===stBagF));
+  if (stSel && stSel[0]!=='@' && !items.includes(stSel)) stSel = null;
+  h += items.length ? '<div class="sbag-grid">'+items.map((n,i)=>{ const it = ITEM_DB[n], fit = stSlot && it.type===stSlot && !equipBlock(n, m.key);
+         return '<div class="sbag-it'+(isNamed(n)?' named':'')+(stSel===n?' sel':'')+(fit?' fit':'')+'" data-i="'+i+'"><span class="ic'+gradeCls(n)+'">'+itemIcon(n)+'</span>'+
+                (PLAYER.inv[n]>1 ? '<span class="ct">'+PLAYER.inv[n]+'</span>' : '')+'<span class="nm'+gradeCls(n)+'">'+n+'</span></div>'; }).join('')+'</div>'
+                    : '<div class="sbag-empty">'+(stSlot ? '배낭에 이 칸에 낄 물건이 없습니다.' : '배낭이 비어 있습니다.')+'</div>';
+  h += '<div class="sbag-det">'+bagDetHtml(m)+'</div>';
+  bagTabHtml.items = items;
+  return h;
+}
+function bagDetHtml(m){
+  const id = m.key, st = memberState(id);
+  if (stSel && stSel[0]==='@'){                          // 낀 물건
+    const slot = stSel.slice(1), n = (m.equip||{})[slot], it = n && ITEM_DB[n];
+    if (!it) return '<div class="tx"><small>'+ITEM_TYPE_NAME[slot]+' 칸이 비어 있습니다 — 위에서 낄 물건을 고르세요.</small></div>';
+    return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+ITEM_TYPE_NAME[it.type]+(it.sub?' · '+it.sub:'')+' · 장착 중</small>'+
+           (it.stat ? '<div class="st">'+statText(it.stat)+'</div>' : '')+'<small>'+(it.desc||'')+'</small></div><span class="mini" data-act="unequip" data-slot="'+slot+'">해제</span>';
+  }
+  if (!stSel){
+    if (stSlot && !(m.equip||{})[stSlot]) return '<div class="tx"><small>'+ITEM_TYPE_NAME[stSlot]+' 칸이 비어 있습니다 — 초록 테 물건을 눌러 장착하세요.</small></div>';
+    return '<div class="tx"><small>물건을 누르면 설명과 장착 · 복용 · 열기 버튼이 나옵니다. 초상화 옆 장비 칸을 누르면 그 칸에 낄 물건만 보여 줍니다.</small></div>';
+  }
+  const n = stSel, it = ITEM_DB[n] || {};
+  let extra = '', btn = '';
+  if (isEquip(n)){
+    const block = equipBlock(n, id);
+    if (block) extra = '<div class="no">장착 불가 — '+block+'</div>';
+    else {
+      const lv = st.level||1, tb = growthBonus(id), rl = memberRealm(id), md = statMods(id);
+      const a = computeStats(lv, st.equip, tb, rl, md), b = computeStats(lv, Object.assign({}, st.equip, { [it.type]:n }), tb, rl, md);
+      const diff = EQ_DIFF_KEYS.filter(([k])=> a[k]!==b[k]).map(([k,nm])=>{ const d = b[k]-a[k]; return '<span class="'+(d>0?'up':'down')+'">'+STAT_NAME[nm]+' '+a[k]+'→'+b[k]+'</span>'; }).join(' ');
+      const prev = st.equip[it.type];
+      extra = '<div class="diff">'+(prev ? '지금 '+prev+' · ' : '')+(diff || '변화 없음')+'</div>';
+      btn = '<span class="mini go" data-act="equip">장착</span>';
+    }
+  } else if (typeof ELIXIR !== 'undefined' && n===ELIXIR.item){
+    const k = st.elixir || 0; extra = '<div class="diff">복용한 영약 '+k+' / '+ELIXIR.max+'</div>';
+    if (k < ELIXIR.max) btn = '<span class="mini go" data-act="eat">복용</span>';
+  } else if (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item){
+    extra = '<div class="diff">강화석 '+boxStones()+'개 (꼭) + 하나</div>'; btn = '<span class="mini go" data-act="open-t">열기</span>';
+  } else if (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item){
+    extra = '<div class="diff">한 상자에 금 '+goldBoxRange().map(x=>x.toLocaleString()).join(' ~ ')+'</div>';
+    btn = '<span class="mini go" data-act="open-g">열기</span>'+(PLAYER.inv[n] > 1 ? '<span class="mini" data-act="open-ga">모두 열기</span>' : '');
+  } else if (it.type==='consumable') extra = '<div class="no">전투 중 명령 메뉴의 \'도구\'로 씁니다</div>';
+  else if (it.type==='material') extra = '<div class="no">대장간에서 씁니다</div>';
+  return '<span class="dic'+gradeCls(n)+'">'+itemIcon(n)+'</span><div class="tx"><b class="'+gradeCls(n).trim()+'">'+n+'</b> <small class="ty">'+(ITEM_TYPE_NAME[it.type]||'')+(it.sub?' · '+it.sub:'')+(isNamed(n)?' · 명품':'')+' · '+PLAYER.inv[n]+'개</small>'+
+         (it.stat ? '<div class="st">'+statText(it.stat)+'</div>' : '')+(it.heal ? '<div class="st">체력 회복 +'+it.heal+'</div>' : '')+extra+'<small>'+(it.desc||'')+'</small></div><span class="btns">'+btn+'</span>';
+}
+function bindBagTab(m){
+  const body = document.getElementById('sd-tabbody'), id = m.key, items = bagTabHtml.items || [];
+  body.querySelectorAll('.chip').forEach(c=> c.onclick = ()=>{ stBagF = c.dataset.f; stSlot = EQUIP_SLOTS.some(([s])=> s===stBagF) ? stBagF : null; stSel = null; renderTab(); });
+  body.querySelectorAll('.sbag-it').forEach(c=> c.onclick = ()=>{ stSel = items[+c.dataset.i]; renderTab(); });
+  body.querySelectorAll('[data-act]').forEach(b=> b.onclick = ()=>{
+    const act = b.dataset.act, n = stSel;
+    if (act==='equip'){ const t = ITEM_DB[n].type; if (equipItem(n, id)){ stSel = '@'+t; stSlot = t; refreshStatus(); } }
+    else if (act==='unequip'){ if (unequipSlot(b.dataset.slot, id)){ stSel = null; refreshStatus(); } }
+    else if (act==='eat') askConfirm(m.name+josa(m.name,'이','가')+' '+ELIXIR.item+'을 복용하시겠습니까?\n(최대 체력 · 내공이 영구히 오름)', ()=>{ eatElixir(id); refreshStatus(); }, null, '복용한다', '그만둔다');
+    else if (act==='open-t') askOpenBox('treasure');
+    else if (act==='open-g') askOpenBox('gold');
+    else if (act==='open-ga') askConfirm(GOLD_BOX.item+' '+(PLAYER.inv[GOLD_BOX.item]||0)+'개를 모두 여시겠습니까?', openAllGoldBoxes, null, '모두 연다', '그만둔다');
+  });
+}
+/* ---- 인연 : 이 인물이 맺은 (맺을) 인연 ---- */
+function bondTabHtml(m){
+  const list = bondList().filter(b=> b.members.includes(m.key));
+  if (!list.length) return '<div class="sbag-empty">아직 맺은 인연이 없습니다.</div>';
+  const when = b=> b.when==='deploy' ? (b.members.length > 2 ? b.members.length+'명 모두 출전' : '함께 출전') : '이웃하면';
+  return '<div class="bond-note">인연은 이야기에서 맺어지고, 조건이 맞으면 전투에서 저절로 발동합니다.</div>' + list.map(b=>{
+    const open = bondOpen(b), sc = open && SCENES[b.from];
+    const faces = b.members.map(id=> open || id===m.key ? '<img src="'+faceOf(id)+'" alt="">' : '<span>?</span>').join('');
+    return '<div class="bond'+(open?'':' lock')+'"><span class="faces">'+faces+'</span><div class="tx"><b>'+(open ? b.name : '???')+'</b>'+
+           '<small>'+(open ? (sc.chapter||'')+' · '+(sc.place||'') : '아직 맺지 못한 인연')+'</small>'+(open ? '<span class="ef">'+b.text+'</span>' : '')+'</div>'+
+           '<span class="when">'+(open ? when(b) : '잠김')+'</span></div>';
+  }).join('');
+}
+// 영약 복용 (한 사람) — 배낭 창의 고르기 창과 상태보기의 '복용'이 함께 씀
+function eatElixir(id){
+  const E = ELIXIR, st = memberState(id); if (!st) return false;
+  const n = st.elixir || 0; if (n >= E.max){ showToast(nameOf(id)+' — 더 먹을 수 없습니다'); return false; }
+  if (!takeFromBag(E.item)) return false;
+  st.elixir = n + 1; sfx('heal');
+  showToast(nameOf(id) + josa(nameOf(id),'이','가') + ' ' + E.item + '을 복용했습니다 — ' + Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · '));
+  renderBag(); return true;
 }
 // 열전 : 별호 · 특성 (능력치 보정) · 열전 글 (data/codex.js 의 BIOS)
 function traitText(id){
-  const nm = { hp:'체력', mp:'내력', atk:'공격', def:'방어', hit:'명중', eva:'회피' };
+  const nm = { hp:'체력', mp:'내공', atk:'공격', def:'방어', hit:'명중', eva:'회피' };
   if (id==='hero'){ const L = (typeof HERO_LOOKS !== 'undefined' && HERO_LOOKS[heroSex()]) || {};
     return Object.keys(L.stat||{}).map(k=> nm[k]+' +'+L.stat[k]).join(' · '); }
   const t = (UNITS[id] || {}).trait || {};
@@ -6397,15 +6681,7 @@ function traitText(id){
 }
 function bioOf(id){ const b = (typeof BIOS !== 'undefined' && BIOS[id]) || null;      // from 장면을 지나기 전에는 숨김
   return b && (!b.from || (storyIdx(b.from) >= 0 && storyIdx(b.from) < codexPos())) ? b : null; }
-function bioHtml(id){
-  const b = bioOf(id), tn = traitName(id), tt = traitText(id);
-  let h = '';
-  if (b && b.alias) h += '<div class="bio-row"><span class="k">별호</span>'+b.alias+'</div>';
-  if (tn) h += '<div class="bio-row"><span class="k">특성</span><span>'+tn+(tt ? '<small>'+tt+'</small>' : '')+'</span></div>';
-  h += b ? '<div class="bio-text">'+codexText(sexText(b))+'</div>' : '<div class="bio-text none">아직 열전이 없습니다.</div>';
-  return h;
-}
-document.querySelectorAll('.sd-tab').forEach(t=>t.addEventListener('click', ()=>{ stTab = t.dataset.tab; renderTab(); }));
+document.querySelectorAll('.sd-tab').forEach(t=>t.addEventListener('click', ()=>{ stTab = t.dataset.tab; if (stTab!=='bag'){ stSlot = null; } renderTab(); }));
 document.getElementById('sd-prev').addEventListener('click', ()=>openDetail(stIdx-1));
 document.getElementById('sd-next').addEventListener('click', ()=>openDetail(stIdx+1));
 document.getElementById('sd-list').addEventListener('click', openStatus);
@@ -6449,7 +6725,7 @@ function renderBagDetail(){
   if (!bagSel){ box.innerHTML = '<div class="bd-none">물건을 눌러<br>정보를 확인하세요</div>'; return; }
   const n = bagSel, it = ITEM_DB[n] || {};
   const curTxt = isEquip(n) ? PARTY.map(id=> nameOf(id)+' '+(memberState(id).equip[it.type]||'없음')).join(' · ') : '';
-  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(ITEM_TYPE_NAME[it.type]||'')+(isNamed(n) ? ' · 명품' : isEquip(n) && it.type!=='accessory' ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
+  box.innerHTML = '<div class="bd-top"><div class="bd-ic">'+itemIcon(n)+'</div><div><div class="bd-nm'+gradeCls(n)+'">'+n+'</div><div class="bd-ty">'+(ITEM_TYPE_NAME[it.type]||'')+(it.sub ? ' · '+it.sub : '')+(isNamed(n) ? ' · 명품' : isEquip(n) && !['accessory','treasure'].includes(it.type) ? ' · '+gradeNames()[itemParse(n).grade] : '')+' · 보유 '+PLAYER.inv[n]+'</div></div></div>'+
     (it.stat ? '<div class="bd-st">'+statText(it.stat)+'</div>' : '')+
     (it.heal ? '<div class="bd-st">체력 회복 +'+it.heal+'</div>' : '')+
     '<div class="bd-ds">'+(it.desc||'')+'</div>'+
@@ -6505,13 +6781,13 @@ document.querySelectorAll('.bag-tab').forEach(t=>t.addEventListener('click', ()=
 document.getElementById('bag-close').addEventListener('click', ()=>{ document.getElementById('bag-modal').style.display='none'; });
 document.getElementById('bag-to-status').addEventListener('click', ()=>{
   document.getElementById('bag-modal').style.display='none';
-  openStatus(); stTab = 'equip'; openDetail(0);
+  openStatus(); stTab = 'bag'; openDetail(0);
 });
 document.getElementById('btn-bag').addEventListener('click', openBag);
 
 /* ================= NPC: 대장간 / 잡화점 ================= */
 function itemPrice(name){ return (ITEM_DB[name] || { price:0 }).price; }
-function isEquip(name){ const it = ITEM_DB[name]; return !!it && ['weapon','armor','accessory'].includes(it.type); }
+function isEquip(name){ const it = ITEM_DB[name]; return !!it && ['weapon','armor','accessory','treasure'].includes(it.type); }
 // 무공 한 줄 설명 (mastery = 그 인물의 숙련 { power, guard, star } — 있으면 오른 값으로)
 function skillText(d, ms){
   if (!d) return '';
@@ -6790,12 +7066,7 @@ function openElixirPick(){
       '<div class="ep-info"><div class="ep-nm">' + nameOf(id) + '<span>Lv ' + (st.level||1) + ' · ' + memberRealm(id) + '</span></div>' +
       '<div class="ep-cur">복용한 영약 ' + n + ' / ' + E.max + '</div></div>' +
       '<div class="ep-diff">' + (full ? '더 먹을 수 없음' : '<div class="up">체력 ' + v.maxHp + ' → ' + (v.maxHp + (E.stat.hp||0)) + '</div><div class="up">내공 ' + v.maxMp + ' → ' + (v.maxMp + (E.stat.mp||0)) + '</div>') + '</div>';
-    if (!full) row.onclick = ()=>{
-      if (!takeFromBag(E.item)) return;
-      st.elixir = n + 1; closeEquipPick(); sfx('heal');
-      showToast(nameOf(id) + josa(nameOf(id),'이','가') + ' ' + E.item + '을 복용했습니다 — ' + slot);
-      renderBag();
-    };
+    if (!full) row.onclick = ()=>{ closeEquipPick(); eatElixir(id); };
     rows.appendChild(row);
   });
   document.getElementById('eq-pick').style.display = 'flex';
@@ -7249,6 +7520,7 @@ function startBattleIntro(){
     const lead = units.hero || aliveOf('ally')[0]; if (lead && cam.zoom) camTo(lead);
     showBanner('전투 개시');
     setTimeout(()=>showBanner('아군 턴'), 1200);
+    const bs = bondSummary(); if (bs) setTimeout(()=> toast(bs, 2600), 2300);
     battleCheckpoint();
   });
 }
@@ -7320,7 +7592,7 @@ function makeAlly(id, x, y, extra){
   if (isParty(id)){
     const st = memberState(id), src = id==='hero' ? HERO : d;
     cfg = { key:id, id, x, y, side:'ally', name:nameOf(id), job:src.job, title:src.title,
-            level:st.level, exp:st.exp, move:src.move, range:src.range, minRange:src.minRange, skills:memberSkills(id), equip:st.equip,
+            level:st.level, exp:st.exp, move:(src.move||4) + attrMove(id), skillPow:attrSkillPowOf(attrOf(id)), range:src.range, minRange:src.minRange, skills:memberSkills(id), equip:st.equip,
             treeBonus:growthBonus(id), passive:treeEffects(id), mastery:treeMastery(id), realmFixed:memberRealm(id), faceSrc:faceOf(id) };
   } else {
     cfg = { key:id, id, x, y, side:'ally', friend:true, name:d.name, job:d.job,
@@ -7782,9 +8054,11 @@ function gainExp(u, amount){
     setTimeout(()=> toast(u.name+' — '+ascendInfo(u.key).to+' 경지에 오를 수 있습니다!\n명령 메뉴의 \'승급\' (행동을 씀)', 2800, [u]), 3300);
   }
   positionToken(u);
+  const ptUp = ups && isParty(u.key) ? attrTotal(u.level) - attrTotal(u.level - ups) : 0;   // 10레벨마다 능력 점수
   if (ups) setTimeout(()=>{
     showBanner(u.realm!==oldRealm ? '경지 상승! '+u.realm : u.name+' 레벨 업!'); sfx('levelup');
     toast(u.name+' Lv '+u.level+' — 체력 +'+gain.hp+' · 내공 +'+gain.mp+' · 공격 +'+gain.atk+' · 방어 +'+gain.def+
+          (ptUp > 0 ? '\n능력 점수 +'+ptUp+' (상태보기 → 능력)' : '')+
           (gain.heal>0 ? '\n체력 '+Math.round(LEVELUP_HEAL*100)+'% 회복 +'+gain.heal+'  ('+u.hp+'/'+u.maxHp+')' : ''), 2400, [u]);
     if (gain.heal>0) floatNum(u, '+'+gain.heal, 'heal');
     if (gain.heal>0 && u.el){ u.el.classList.remove('heal'); void u.el.offsetWidth; u.el.classList.add('heal'); setTimeout(()=>u.el.classList.remove('heal'), 800); }
@@ -7970,8 +8244,10 @@ function allyTurnStart(){
   poisonTick(aliveOf('ally'));
   aliveOf('ally').forEach(u=>{
     if (u.guard){ u.guard = null; u.el.classList.remove('guard'); }
-    const p = u.passive; if (!p) return;
     let delay = 0;
+    const br = bondVal(u, 'regenPct');                                          // 인연 : 턴 시작 체력 회복
+    if (br > 0 && u.hp < u.maxHp){ const b = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * br))); floatNum(u, '+'+(u.hp-b), 'heal', delay); delay += 350; positionToken(u); }
+    const p = u.passive; if (!p) return;
     if (p.hpRegen && u.hp < u.maxHp){ const b = u.hp; u.hp = Math.min(u.maxHp, u.hp + p.hpRegen); floatNum(u, '+'+(u.hp-b), 'heal', delay); delay += 350; }
     if (p.mpRegen && u.mp < u.maxMp){ const b = u.mp; u.mp = Math.min(u.maxMp, u.mp + p.mpRegen); floatNum(u, '내공 +'+(u.mp-b), 'mp', delay); }
     positionToken(u);
@@ -8015,7 +8291,7 @@ function castSkill(u, name, x, y){
     const targets = area.map(([cx,cy])=>unitAt(cx,cy,'enemy')).filter(Boolean);
     let hits=0, total=0, kills=0;
     const pw = d.power + ((u.mastery && u.mastery[name] && u.mastery[name].power) || 0);     // 숙련(n성)으로 오른 위력
-    targets.forEach(t=>{ const r = strike(u, t, pw, true); if(!r.miss){ hits++; total+=r.dmg; if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });
+    targets.forEach(t=>{ const r = strike(u, t, pw * (u.skillPow || 1), true); if(!r.miss){ hits++; total+=r.dmg; if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });   // 내력 : 무공 위력
     sfx(hits ? 'skill' : 'miss');
     const near = [u].concat(targets);
     if (!targets.length) toast(name+'! 범위 안에 적이 없습니다.');
@@ -8110,13 +8386,41 @@ function floatNum(u, text, kind, delay){
   u.el.parentNode.appendChild(f);
   setTimeout(()=>f.remove(), 1300 + (delay||0));
 }
+/* ---------- 인연 (data/units.js 의 BONDS) : 이야기에서 맺어지고, 조건이 맞으면 전투에서 저절로 발동 ---------- */
+function bondList(){ return typeof BONDS !== 'undefined' ? BONDS : []; }
+function bondOpen(b){ if (!b.from) return false; const i = storyIdx(b.from); return i >= 0 && i < codexPos(); }   // 그 장면을 지났으면 맺어짐
+function bondUnit(id){ const u = units[id]; return u && u.side==='ally' && !u.friend && u.hp > 0 && !u.fled ? u : null; }
+function bondOn(b, u){                         // 이 전투에서 지금 u 에게 발동하는가
+  if (!b.members.includes(u.id) || !bondOpen(b)) return false;
+  const others = b.members.filter(id=> id!==u.id).map(bondUnit);
+  if (b.when==='deploy') return others.every(Boolean);
+  return others.some(o=> o && manhattan(o, u) === 1);                          // adj : 다른 인연 인물이 바로 옆에
+}
+function bondEffs(u){
+  if (!u || u.side!=='ally' || u.friend || !bState) return [];
+  return bondList().filter(b=> bondOn(b, u)).map(b=> Object.assign({}, (b.eff||{}).all || {}, (b.eff||{})[u.id] || {}));
+}
+function bondVal(u, key){ return bondEffs(u).reduce((s,e)=> s + (typeof e[key]==='number' ? e[key] : 0), 0); }
+function bondFoe(atk, def){                     // 그 소속의 적에게 주는 피해 +
+  const f = typeof UNIT_FACTION !== 'undefined' && def && UNIT_FACTION[def.id]; if (!f) return 0;
+  return bondEffs(atk).reduce((s,e)=> s + (e.foe && e.foe.faction===f ? e.foe.pct : 0), 0);
+}
+// 전투 개시 알림 : 이번 전투에 함께 나온 인연
+function bondSummary(){
+  const on = [], adj = [];
+  bondList().forEach(b=>{ if (!bondOpen(b) || !b.members.every(id=> bondUnit(id))) return; (b.when==='deploy' ? on : adj).push(b.name); });
+  if (!on.length && !adj.length) return '';
+  return '인연 — ' + on.concat(adj.map(n=> n + ' (이웃하면)')).join(' · ');
+}
+
 // 한 번의 타격: 명중률 = 명중 - 회피 / 피해 = 공격×위력(±10%) - 방어×0.5  (지형은 이동에만 영향)
 function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 쪽에서 (무공)
-  const hitChance = Math.max(5, Math.min(99, atk.hit - def.eva));
+  const hitChance = Math.max(5, Math.min(99, atk.hit + bondVal(atk,'hit') - def.eva - bondVal(def,'eva')));     // 인연 : 명중 · 회피
   if (Math.random()*100 > hitChance){ floatNum(def, '회피', 'miss'); if (!quiet) sfx('miss'); return { miss:true, hitChance }; }
   const guardDef = (def.guard && def.guard.def) || 0;                       // 방어 무공으로 오른 방어
-  const cut = (def.passive && def.passive.dmgCut) || 0;                     // 심법 : 받는 피해 감소
-  const dmg = Math.max(1, Math.round((atk.atk*power*(0.9+Math.random()*0.2) - (def.def+guardDef)*0.5) * (1-cut)));
+  const cut = Math.min(0.8, ((def.passive && def.passive.dmgCut) || 0) + bondVal(def,'dmgCut'));   // 심법 · 인연 : 받는 피해 감소
+  const up = (1 + bondVal(atk,'atkPct')) * (1 + bondFoe(atk, def));                             // 인연 : 공격 % · 그 소속의 적에게 주는 피해
+  const dmg = Math.max(1, Math.round((atk.atk*up*power*(0.9+Math.random()*0.2) - (def.def+guardDef)*0.5) * (1-cut)));
   def.hp = Math.max(0, def.hp-dmg);
   if (def.hold) def.roused = true;                                          // 대기하던 적은 맞으면 움직이기 시작
   floatNum(def, '-'+dmg, 'dmg'); if (!quiet) sfx('hit');
