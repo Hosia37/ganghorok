@@ -1173,10 +1173,9 @@
       <div id="story-text"><span id="story-text-span"></span><span id="story-next">▶ 클릭해서 계속</span></div>
     </div>
     <div id="top-menu-wrap" class="hidden">
-      <div class="top-btn" id="btn-go-battle">출정</div>
+      <div class="top-btn" id="btn-go-battle">출발</div>
       <div class="top-btn" id="btn-save">저장</div>
       <div class="top-btn" id="btn-status">상태보기</div>
-      <div class="top-btn" id="btn-bag">배낭</div>
       <div class="top-btn" id="btn-settings">설정</div>
     </div>
     <div id="hub-open-wrap" class="hidden"><div class="top-btn hub-open" id="btn-hub">거점</div></div>
@@ -2235,7 +2234,7 @@ const SCENES = {
     npcs: [
       { id:'cheonghwa', x:53, y:62, give:{ item:'무당 호신부' },
         line:'사조님께서 손수 그려 주신 호신부입니다. 산문을 지키는 동안 몸에 지니십시오.',
-        after:'사파 무리가 산문 계단 아래까지 올라왔습니다. 채비가 되면 출정하시지요.' },
+        after:'사파 무리가 산문 계단 아래까지 올라왔습니다. 채비가 되면 출발하시지요.' },
     ],
     sortie: 'wudang_defense',
   },
@@ -5605,7 +5604,7 @@ function pyoArrive(){
 function renderPyo(){
   const P = pyoState(), max = pyoPicks(P.grade), left = Math.max(0, max - P.sent.length);
   document.getElementById('pyo-grade').textContent = pyoGradeName(P.grade) + ' · 행렬 ' + P.sent.length + ' / ' + max;
-  let h = '<div class="of-sec">의뢰 다섯 중 ' + max + '곳까지 골라 보냅니다 · 다음 이야기가 끝나고 출정하기 전에 돌아옴</div>';
+  let h = '<div class="of-sec">의뢰 다섯 중 ' + max + '곳까지 골라 보냅니다 · 다음 이야기가 끝나고 출발하기 전에 돌아옴</div>';
   PYOGUK.jobs.forEach(j=>{
     const out = P.sent.some(s=> s.id === j.id);
     h += '<div class="pyo-job' + (out ? ' out' : '') + '"><span class="pj-ic">' + pyoRewardIcon(j) + '</span>' +
@@ -6587,7 +6586,9 @@ function bindStatTab(m){
 const ST_BAG_F = [['all','전체'],['weapon','무기'],['armor','방어구'],['accessory','장신구'],['treasure','보물'],['consumable','도구'],['material','재료']];
 function bagTabHtml(m){
   let h = '<div class="chips">'+ST_BAG_F.map(([k,n])=>'<span class="chip'+(stBagF===k?' on':'')+'" data-f="'+k+'">'+n+'</span>').join('')+'</div>';
-  const items = Object.keys(PLAYER.inv).filter(n=> PLAYER.inv[n]>0 && ITEM_DB[n] && (stBagF==='all' || ITEM_DB[n].type===stBagF));
+  const usable = n=> (typeof ELIXIR !== 'undefined' && n===ELIXIR.item) || (typeof TREASURE_BOX !== 'undefined' && n===TREASURE_BOX.item) || (typeof GOLD_BOX !== 'undefined' && n===GOLD_BOX.item);
+  const kind = n=> usable(n) ? 'consumable' : ITEM_DB[n].type;          // 상자 · 영약은 '도구'
+  const items = Object.keys(PLAYER.inv).filter(n=> PLAYER.inv[n]>0 && ITEM_DB[n] && (stBagF==='all' || kind(n)===stBagF));
   if (stSel && stSel[0]!=='@' && !items.includes(stSel)) stSel = null;
   h += items.length ? '<div class="sbag-grid">'+items.map((n,i)=>{ const it = ITEM_DB[n], fit = stSlot && it.type===stSlot && !equipBlock(n, m.key);
          return '<div class="sbag-it'+(isNamed(n)?' named':'')+(stSel===n?' sel':'')+(fit?' fit':'')+'" data-i="'+i+'"><span class="ic'+gradeCls(n)+'">'+itemIcon(n)+'</span>'+
@@ -6783,7 +6784,7 @@ document.getElementById('bag-to-status').addEventListener('click', ()=>{
   document.getElementById('bag-modal').style.display='none';
   openStatus(); stTab = 'bag'; openDetail(0);
 });
-document.getElementById('btn-bag').addEventListener('click', openBag);
+// (출발 전 화면의 '배낭' 버튼은 없앰 — 배낭은 상태보기의 '배낭' 탭에서)
 
 /* ================= NPC: 대장간 / 잡화점 ================= */
 function itemPrice(name){ return (ITEM_DB[name] || { price:0 }).price; }
