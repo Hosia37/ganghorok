@@ -3318,7 +3318,7 @@ const SCENES = {
       { who:'sado_gyeol', text:'흐흐… 곧 알게 될 거다. 양양도, 절강도… 그저 시작일 뿐이니.' },
       { cast:['cheolmyeong','sado_gyeol','cheonghwa','hero','seokun'],
         who:'cheolmyeong', shake:true, text:'시작이라고? 화원파를 쓸어버린 것도 네놈들에겐 시작에 불과했단 말이냐!' },
-      { who:'cheonghwa',  text:'위지 소협, 참으십시오. 여기서 해치우면 아무것도 알아낼 수 없습니다.' },
+      { who:'cheonghwa',  text:'위지 대협, 참으십시오. 여기서 해치우면 아무것도 알아낼 수 없습니다.' },
       { who:'hero',       text:'분타로 데려갑시다. 장로님 앞에서 제대로 묻겠습니다.' },
     ],
     next: 'gaebang_interrogation',
@@ -3841,7 +3841,7 @@ const SCENES = {
    intro      : 전투 시작 전 대사 { who, text }  (who = 'hero' / 'guo' / 'e1' ...)
    events     : 정해진 턴(아군 턴 시작)에 일어나는 일
      { turn, spawn:[적 증원], talk:[대사] }        — who:'arrival' = 이번에 나타난 첫 유닛
-     { turn, arrive:{id,x,y}, talk, ultimate:{ by, name, retreatLine }, victory:true }
+     { turn, arrive:{id,x,y}, talk, ultimate:{ by, name, retreatLine | fallLine, lineBy }, victory:true }
      { turn, ifKills:5, talk, flee:{ who:'e1', to:[x,y] }, goal:'…', afterTalk:[…], leave:{ who, to, msg } }
                                                     — 그 턴에 적을 5명 이상 쓰러뜨렸으면 : 대사 → 그 적이 도망 → 목표 글 바꿈 → 뒤 대사
                                                       → leave 의 인물(아군 · 우군)이 전장을 떠남 (쓰러진 것으로 치지 않음)
@@ -3850,7 +3850,7 @@ const SCENES = {
                                                     — 대사 뒤 나타난 인물이 적 하나(ids 중 가장 가까운 산 적)를 단숨에 쓰러뜨림 → 뒤 대사
                                                       대사의 who:'target' = 그 적, or:'target' = 말할 인물이 쓰러졌으면 대신, needTarget = 쓰러뜨릴 적이 있을 때만
      spawn 에도 name · skills 등을 적을 수 있음
-                                                    — 인물 등장 → 무공으로 적 전원 퇴각 → 승리
+                                                    — 인물 등장 → 무공 (컷인) → retreatLine 이면 적 전원 퇴각 · fallLine 이면 전원 쓰러짐 (lineBy = 말하는 적) → 승리
    victory    : 승리 처리
      enemiesLeft : 적이 이 수 이하로 남으면 승리 (0 = 전멸, null = 쓰러뜨려서는 끝나지 않음)
      retreat     : 남은 적이 물러나는 연출 { line, to:[x,y] }
@@ -3944,7 +3944,8 @@ const BATTLES = {
         talk:[ { who:'arrival', text:'애송이 둘한테 뭘 그리 꾸물대나! 한꺼번에 덮쳐라!' } ] },
       { turn:13, arrive:{ id:'zhang', x:16, y:5 },
         talk:[ { who:'zhang', text:'물러서라! 무당의 산문 앞에서 더는 소란을 허락하지 않겠다.' } ],
-        ultimate:{ by:'zhang', name:'태극혜검', retreatLine:'태, 태극혜검이다…! 장삼봉이 나왔다, 퇴각하라!' },
+        // 태극혜검 (무공 컷인 taegeuk) → 사파 우두머리 '암살에 실패한 건가…!' → 사파가 모두 쓰러짐
+        ultimate:{ by:'zhang', name:'태극혜검', lineBy:'e1', fallLine:'암살에 실패한 건가…!' },
         victory:true },
     ],
     victory: {
@@ -9054,24 +9055,37 @@ function freeCellNear(x, y){
   return null;
 }
 // 절초 : 적 전원에게 맞고 → 퇴각
+// 이벤트 무공 (적 전원) — 무공 컷인 (data/skills.js 의 cutin) → 적 전원 피격 → 한 명이 대사 →
+//   fallLine 이면 적이 모두 쓰러짐 / retreatLine 이면 모두 물러남. lineBy = 대사할 적 (쓰러졌으면 남은 적 중 첫째)
 function castUltimate(ult, done){
-  const caster = units[ult.by], foes = aliveOf('enemy');
-  if (caster){ caster.el.classList.add('lunge-l'); setTimeout(()=>caster.el.classList.remove('lunge-l'), 300); }
-  showBanner(ult.name); sfx('skill');
-  BS.classList.remove('ult-flash'); void BS.offsetWidth; BS.classList.add('ult-flash');
-  foes.forEach(f=>{
-    const c = bCells[f.x+','+f.y]; if (c){ c.classList.remove('skill-hit'); void c.offsetWidth; c.classList.add('skill-hit'); }
-    f.el.classList.add('flash','shake');
-  });
-  setTimeout(()=>{
-    foes.forEach(f=> f.el.classList.remove('flash','shake'));
-    if (!foes.length){ done(); return; }
-    runBattleDialog([{ who:unitKey(foes[0]), text:ult.retreatLine }], ()=>{
-      bState.intro = true;
-      foes.forEach(f=>{ f.el.style.transition = 'opacity .8s ease, transform .8s ease'; f.el.style.opacity = '0'; f.el.style.transform = 'translateY(40px)'; });
-      setTimeout(()=>{ foes.forEach(f=>{ f.el.style.display = 'none'; f.hp = 0; f.fled = true; }); done(); }, 900);
+  const caster = units[ult.by];
+  playCutin(caster, ult.name, played=>{
+    const foes = aliveOf('enemy');
+    if (caster){ caster.el.classList.add('lunge-l'); setTimeout(()=>caster.el.classList.remove('lunge-l'), 300); }
+    if (!played) showBanner(ult.name);
+    sfx('skill');
+    BS.classList.remove('ult-flash'); void BS.offsetWidth; BS.classList.add('ult-flash');
+    foes.forEach(f=>{
+      const c = bCells[f.x+','+f.y]; if (c){ c.classList.remove('skill-hit'); void c.offsetWidth; c.classList.add('skill-hit'); }
+      f.el.classList.add('flash','shake');
     });
-  }, 1000);
+    setTimeout(()=>{
+      foes.forEach(f=> f.el.classList.remove('flash','shake'));
+      if (!foes.length){ done(); return; }
+      const sp = (ult.lineBy && units[ult.lineBy] && units[ult.lineBy].hp>0) ? units[ult.lineBy] : foes[0];
+      runBattleDialog([{ who:unitKey(sp), text:ult.fallLine || ult.retreatLine }], ()=>{
+        bState.intro = true;
+        if (ult.fallLine){                                   // 모두 쓰러짐
+          foes.forEach(f=>{ f.el.classList.add('flash','shake'); });
+          setTimeout(()=>{ foes.forEach(f=>{ f.el.classList.remove('flash','shake'); f.hp = 0; f.killedBy = caster ? caster.id : null; f.el.classList.add('dead'); }); sfx('hit'); }, 320);
+          setTimeout(()=>{ foes.forEach(f=>{ f.el.style.display = 'none'; }); done(); }, 1300);
+          return;
+        }
+        foes.forEach(f=>{ f.el.style.transition = 'opacity .8s ease, transform .8s ease'; f.el.style.opacity = '0'; f.el.style.transform = 'translateY(40px)'; });
+        setTimeout(()=>{ foes.forEach(f=>{ f.el.style.display = 'none'; f.hp = 0; f.fled = true; }); done(); }, 900);
+      });
+    }, 1000);
+  });
 }
 function eventVictory(){
   bState.over = true;
