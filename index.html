@@ -898,6 +898,35 @@
   .cx-note { font-size:clamp(11px,calc(2.5 * var(--vh)),13px); color:#e8dcc0; line-height:1.55; padding-left:9px; border-left:2px solid #5d4f36; }
   .cx-note.new { border-left-color:#d8a24a; color:#fff1d0; }
   .notice.codex { border-left-color:#c9a2e8; } .notice.codex b { color:#e2c8ff; }
+  /* 출전 편성 (제4장 무력대부터) : 고정 인물 + 고를 인원 */
+  #sortie-modal { position:absolute; inset:0; z-index:94; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.66); }
+  #sp-box { width:min(660px,94%); max-height:94%; display:flex; flex-direction:column; gap:7px; padding:12px 16px; }
+  #sp-sub { font-size:12px; color:#c9b98a; }
+  .sp-label { font-size:11px; color:#b9a982; letter-spacing:1px; }
+  #sp-team, #sp-bench { display:flex; flex-wrap:wrap; gap:8px; }
+  #sp-bench { overflow-y:auto; min-height:0; }
+  .sp-card { position:relative; width:84px; display:flex; flex-direction:column; align-items:center; gap:1px; padding:6px 4px 5px;
+    border:1px solid #6d5d3f; border-radius:4px; background:rgba(12,9,6,.85); cursor:pointer; }
+  .sp-card img { width:52px; height:52px; border-radius:50%; object-fit:cover; border:3px solid #4a90d9; background:#222; flex:none; }
+  .sp-card .nm { font-size:12px; color:#ffe9b0; white-space:nowrap; }
+  .sp-card .lv { font-size:10px; color:#b9a982; white-space:nowrap; }
+  .sp-card .tag { position:absolute; left:3px; top:3px; font-size:9px; line-height:1.3; padding:0 4px; border-radius:2px; background:#2a2016; color:#c9b98a; }
+  .sp-card.fixed { cursor:default; border-color:#8a7752; }
+  .sp-card.fixed .tag { background:#4a3a1c; color:#ffd88a; }
+  .sp-card.on { border-color:#ffd88a; box-shadow:0 0 0 1px #ffd88a inset; background:rgba(60,44,20,.88); }
+  .sp-card.on .tag { background:#2f7a58; color:#eafff3; }
+  .sp-card.empty { cursor:default; border-style:dashed; color:#7a6a4a; justify-content:center; min-height:84px; }
+  .sp-card.empty .g { font-size:24px; line-height:1; }
+  #sp-bond { font-size:12px; color:#8fe0a8; min-height:1.2em; }
+  #sp-box .st-foot { gap:10px; }
+  #sp-go { padding:6px 26px; } #sp-go.off { opacity:.4; }
+  @media (max-height:420px){   /* 폰 가로 */
+    #sp-box { max-height:98%; padding:7px 12px; gap:4px; }
+    .sp-card { width:68px; padding:4px 3px 3px; } .sp-card img { width:38px; height:38px; border-width:2px; }
+    .sp-card .nm { font-size:11px; } .sp-card.empty { min-height:64px; }
+    #sp-team, #sp-bench { gap:6px; }
+    #sp-box .st-foot .top-btn { padding:4px 16px; }
+  }
   #pyo-modal { position:absolute; inset:0; z-index:93; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.62); }
   #pyo-box { width:min(560px,92%); max-height:92%; display:flex; flex-direction:column; gap:8px; padding:12px 16px; }
   #pyo-grade { font-size:12px; color:#c9b98a; }
@@ -1049,6 +1078,15 @@
     <div class="tip-head"><span id="tip-title"></span><span id="tip-page"></span></div>
     <div id="tip-body"></div>
     <div class="st-foot"><div class="top-btn" id="tip-skip">닫기</div><div class="top-btn" id="tip-next">다음</div></div>
+  </div></div>
+  <div id="sortie-modal"><div class="st-box" id="sp-box">
+    <div class="of-head"><span class="st-title">출전 편성</span><span id="sp-sub"></span></div>
+    <div class="sp-label" id="sp-team-label">출전</div>
+    <div id="sp-team"></div>
+    <div class="sp-label">대기 — 눌러서 출전 · 다시 누르면 빼기</div>
+    <div id="sp-bench"></div>
+    <div id="sp-bond"></div>
+    <div class="st-foot"><div class="top-btn" id="sp-cancel">돌아가기</div><div class="top-btn" id="sp-go">출 전</div></div>
   </div></div>
   <div id="pyo-modal"><div class="st-box" id="pyo-box">
     <div class="of-head"><span class="st-title">표 국</span><span id="pyo-grade"></span></div>
@@ -1635,6 +1673,10 @@ const UNIT_RANKS = {
    members : 인연을 맺은 인물 · from : 이 장면이 끝나면 맺어짐 (null = 아직 없음 — '???' 로 보임)
    when : 'adj' = 다른 인연 인물이 바로 옆(상하좌우)에 있으면 · 'deploy' = 모두 출전해 살아 있으면
    eff  : 인물마다 { dmgCut:받는 피해 감소, atkPct:공격 %, hit:명중, eva:회피, regenPct:아군 턴 시작 체력 회복 %, foe:{ faction, pct } } — all 은 모두에게 */
+// 출전 편성 — 제4장 무력대 출범부터. 전투(data/battles.js)에 picks:[{x,y},{x,y}] 를 적으면 출발 전에 편성 창
+//   fixed : 늘 나가는 인물 (전투의 allies 에 자리를 적음) · pick : 아군 중에서 더 고르는 인원 (picks 의 자리에 순서대로)
+const SORTIE = { fixed:['hero','cheonghwa','cheolmyeong'], pick:2 };
+
 const BONDS = [
   { id:'wudang_promise', name:'무당산의 약속',   members:['hero','cheonghwa'],                from:'wudang_after',           when:'adj',
     eff:{ all:{ dmgCut:0.10 } },                                  text:'서로 받는 피해 -10%' },
@@ -6012,7 +6054,58 @@ document.getElementById('btn-go-battle').addEventListener('click', ()=>{
   if (sc.sortieScene && SCENES[sc.sortieScene]){ document.getElementById('snpc-box').style.display = 'none'; chainScene(sc.sortieScene); return; }   // 출정 → 전투 전 장면 (대화 뒤 바로 전투)
   goBattle(id);
 });
-function goBattle(id){
+/* ================= 출전 편성 (data/units.js 의 SORTIE · 전투의 picks) =================
+   전투에 picks 가 있으면 출발 전에 편성 창 : 고정 인물(allies) + 아군 중에서 pick 명 — 고른 인물은 picks 자리에 순서대로
+   고를 사람이 pick 명 이하면 창 없이 모두 출전. 마지막에 고른 인원을 기억 (PLAYER.lastPicks) */
+let curPicks = null, spBattle = null, spDone = null, spSel = [];
+function sortiePick(b){ const S = typeof SORTIE !== 'undefined' ? SORTIE : { pick:2 }; return Math.min(b.pick != null ? b.pick : S.pick, (b.picks || []).length); }
+function sortieFixed(b){ return (b.allies || []).map(a=> a.id).filter(id=> id==='hero' || isParty(id)); }
+function sortieCands(b){ const used = new Set((b.allies || []).map(a=> a.id)); return PARTY.filter(id=> !used.has(id)); }
+function openSortie(id, done, canCancel){
+  const b = BATTLES[id], n = sortiePick(b), cands = sortieCands(b);
+  if (cands.length <= n){ done(cands.slice()); return; }
+  spBattle = id; spDone = done;
+  spSel = (PLAYER.lastPicks || []).filter(x=> cands.includes(x)).slice(0, n);
+  document.getElementById('sp-cancel').style.display = canCancel ? '' : 'none';
+  renderSortie(); document.getElementById('sortie-modal').style.display = 'flex';
+}
+function renderSortie(){
+  const b = BATTLES[spBattle], n = sortiePick(b), cands = sortieCands(b), fixed = sortieFixed(b);
+  const card = (id, cls, tag)=>{ const st = memberState(id) || {};
+    return '<div class="sp-card '+cls+'" data-id="'+id+'">'+(tag ? '<span class="tag">'+tag+'</span>' : '')+'<img src="'+faceOf(id)+'" alt="">'+
+           '<span class="nm">'+nameOf(id)+'</span><span class="lv">Lv '+(st.level||1)+' · '+memberRealm(id)+'</span></div>'; };
+  document.getElementById('sp-sub').textContent = (b.name || '') + ' · 고정 ' + fixed.length + '명 + ' + n + '명';
+  document.getElementById('sp-team-label').textContent = '출전 ' + (fixed.length + spSel.length) + ' / ' + (fixed.length + n);
+  let h = fixed.map(id=> card(id, 'fixed', '고정')).join('') + spSel.map(id=> card(id, 'pick on', '출전')).join('');
+  for (let i = spSel.length; i < n; i++) h += '<div class="sp-card empty"><span class="g">+</span><span class="nm">빈 자리</span></div>';
+  document.getElementById('sp-team').innerHTML = h;
+  document.getElementById('sp-bench').innerHTML = cands.map(id=> card(id, 'cand' + (spSel.includes(id) ? ' on' : ''), spSel.includes(id) ? '출전' : '')).join('');
+  const team = fixed.concat(spSel);                                  // 이 편성으로 맺어지는 인연
+  const bs = bondList().filter(x=> bondOpen(x) && x.members.every(m=> team.includes(m))).map(x=> x.name + (x.when==='adj' ? ' (이웃하면)' : ''));
+  document.getElementById('sp-bond').textContent = bs.length ? '인연 — ' + bs.join(' · ') : '';
+  document.getElementById('sp-go').classList.toggle('off', spSel.length < n);
+  document.querySelectorAll('#sp-bench .sp-card, #sp-team .sp-card.pick').forEach(c=> c.onclick = ()=> spToggle(c.dataset.id));
+}
+function spToggle(id){
+  const n = sortiePick(BATTLES[spBattle]), i = spSel.indexOf(id);
+  if (i >= 0) spSel.splice(i, 1); else { if (spSel.length >= n) spSel.shift(); spSel.push(id); }
+  sfx('click'); renderSortie();
+}
+document.getElementById('sp-go').addEventListener('click', ()=>{
+  if (document.getElementById('sp-go').classList.contains('off')){ showToast(sortiePick(BATTLES[spBattle]) + '명을 골라 주세요'); return; }
+  document.getElementById('sortie-modal').style.display = 'none';
+  PLAYER.lastPicks = spSel.slice();
+  const d = spDone; spDone = null; if (d) d(spSel.slice());
+});
+document.getElementById('sp-cancel').addEventListener('click', ()=>{ document.getElementById('sortie-modal').style.display = 'none'; spDone = null; });
+function goBattle(id, picked){
+  const b = BATTLES[id];
+  if (b && b.picks && !picked){                                      // 출전 편성 먼저
+    const ss = document.getElementById('story-screen');
+    openSortie(id, ids=>{ curPicks = ids; goBattle(id, true); }, ss.style.display !== 'none' && ss.classList.contains('ended'));
+    return;
+  }
+  if (!(b && b.picks)) curPicks = null;
   document.getElementById('story-screen').style.display = 'none';
   document.getElementById('battle-screen').style.display = 'block';
   startBattle(id);
@@ -7885,6 +7978,11 @@ function resetBattle(withIntro){
     const extra = isParty(a.id) ? null : Object.assign({ key }, a.level ? { level:resolveLevel(a.level, d.level) } : {}, placeOverrides(a), { ov:placeOverrides(a) });
     units[key] = makeAlly(a.id, a.x, a.y, extra);   // 우군은 전투마다 레벨 · 이름 · 무공을 정할 수 있음
   });
+  if (curBattle.picks) (curPicks || []).forEach((id, i)=>{          // 출전 편성에서 고른 인물 → picks 자리
+    const p = curBattle.picks[i]; if (!p || units[id] || !isParty(id)) return;
+    const c = freeCellNear(p.x, p.y) || [p.x, p.y];
+    units[id] = makeAlly(id, c[0], c[1], null);
+  });
   curBattle.enemies.forEach((e,i)=> addEnemy(e, 'e'+(i+1)));
   newBattleState();
   battleHudReset();
@@ -7905,7 +8003,7 @@ function battleSaveBlock(){
 }
 function battleSnapshot(){
   const evs = curBattle.events || [];
-  return { id:curBattleId, turnCount:bState.turnCount, enemySeq:bState.enemySeq, zoom:cam.zoom, start:battleStartSave,
+  return { id:curBattleId, turnCount:bState.turnCount, enemySeq:bState.enemySeq, zoom:cam.zoom, start:battleStartSave, picks:curPicks ? curPicks.slice() : null,
            fired: bState.fired.map(e=>evs.indexOf(e)).filter(i=>i>=0),
            expBy: Object.assign({}, bState.expBy), mission: Object.assign({}, bState.mission || {}), goalText: bState.goalText || null,
            units: Object.keys(units).map(k=>{ const u = units[k];
@@ -7927,7 +8025,7 @@ function doBattleSave(){
 }
 // 저장해 둔 전투를 그 턴부터 이어서
 function resumeBattle(b){
-  curBattleId = b.id; curBattle = BATTLES[b.id];
+  curBattleId = b.id; curBattle = BATTLES[b.id]; curPicks = b.picks || null;
   if (!loadMap(curBattle.map)) return;
   battleStartSave = b.start || JSON.stringify({ inv:PLAYER.inv, gold:PLAYER.gold, hero:{ level:HERO.level, exp:HERO.exp, realm:HERO.realm }, members:MEMBERS });
   Object.values(units).forEach(u=>{ if(u.el) u.el.remove(); });
@@ -9096,7 +9194,6 @@ function freeCellNear(x, y){
   }
   return null;
 }
-// 절초 : 적 전원에게 맞고 → 퇴각
 // 이벤트 무공 (적 전원) — 무공 컷인 (data/skills.js 의 cutin) → 적 전원 피격 → 한 명이 대사 →
 //   fallLine 이면 적이 모두 쓰러짐 / retreatLine 이면 모두 물러남. lineBy = 대사할 적 (쓰러졌으면 남은 적 중 첫째)
 function castUltimate(ult, done){
