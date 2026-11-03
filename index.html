@@ -73,6 +73,18 @@
     border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,.55);
   }
   .story-card.dim { filter:grayscale(0.9) brightness(0.5); }
+  /* 회상 (빛바랜 색 · 가장자리 어둡게) · 시점 표시 */
+  #story-fb { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .8s ease;
+              -webkit-backdrop-filter:sepia(.8) saturate(.7) brightness(.78); backdrop-filter:sepia(.8) saturate(.7) brightness(.78);
+              background:radial-gradient(ellipse at center, rgba(0,0,0,0) 42%, rgba(28,16,4,.62) 100%); }
+  #story-screen.fb #story-fb { opacity:1; }
+  #story-screen.fb .story-card { filter:sepia(.75) saturate(.75) brightness(.92); }
+  #story-screen.fb .story-card.dim { filter:sepia(.8) saturate(.6) brightness(.5); }
+  #story-badge { position:absolute; left:3%; top:4%; z-index:21; display:none; padding:4px 13px; border-radius:14px; font-size:13px; letter-spacing:3px;
+                 background:rgba(24,14,4,.74); color:#e8c98a; border:1px solid rgba(232,201,138,.5); pointer-events:none; }
+  #story-badge.on { display:block; }
+  #story-badge.pov { color:#f2b0a4; border-color:rgba(214,92,78,.65); background:rgba(44,8,6,.78); }
+  #story-screen.ended #story-badge { display:none; }
   .story-card.speaking { transform:scale(1.03); }
 
   #story-box {
@@ -1231,6 +1243,8 @@
 
 
   <div id="story-screen">
+    <div id="story-fb"></div>
+    <div id="story-badge"></div>
     <div id="story-cards"></div>
     <div id="story-box">
       <div id="story-name">곽정</div>
@@ -5715,7 +5729,34 @@ Object.assign(SCENES, {
       { who:'guo', text:'성화대의 본진은 사천 성도에 두겠소. 무진 방장께서 소림의 무승을 하나 보내 주셨소. 성도에서 기다릴 것이오.' },
       { who:'narr', text:'그렇게 성화대가 세워졌다. 작은 별 하나가, 사천을 향해 떠났다.' },
     ],
+    next:'tg_ch3',
+  },
+  tg_ch3: {
+    chapter:'제3장',
+    place:'구천궁 천명전',
+    bg:'mk_jt',
+    cast:[ 'cheonmu', 'taeheo', 'haranseol' ],
+    script:[
+      { who:'narr', text:'같은 무렵. 구름 위에 떠 있는 궁, 구천궁.' },
+      { who:'taeheo', text:'교주님. 남궁에 보낸 혈하대가 꺾였습니다. 사도결은 빼내 왔으나, 남궁의 딸은 놓쳤습니다.' },
+      { who:'haranseol', text:'혈교의 개들이 또 일을 그르쳤군요. 사천의 혈영마군에게 책임을 물으시지요.' },
+      { who:'cheonmu', text:'누가 막았느냐.' },
+      { who:'taeheo', text:'정도연합이 젊은 무인들을 모아 무력대를 꾸렸다 합니다. 성화대. 그 대주가… 천씨세가의 생존자라 하더군요.' },
+      { shake:true, who:'narr', text:'천명전에 긴 침묵이 내려앉았다.' },
+      { who:'cheonmu', text:'…그래. 역시 살아 있었구나.' },
+      { who:'taeheo', text:'구후는 십 년 전, 천씨의 아이들이 모두 불길에 삼켜졌다고 아뢰었지요.' },
+      { who:'cheonmu', text:'그리고 십 년 동안 양양 바닥을 들쑤시고 다녔지. 무엇을 쫓는지는 한 번도 아뢰지 않은 채로.' },
+      { who:'haranseol', text:'구후가 주인님을 속였다는 말씀입니까. 명만 내리시면, 그 목을—' },
+      { who:'cheonmu', text:'두어라. 짖는 개는 짖는 데 쓰면 된다.' },
+      { who:'cheonmu', text:'그 아이는 건드리지 마라. 제 발로 오게 두어라. 사천으로, 혈교로… 결국은 이 하늘 아래로.' },
+      { who:'haranseol', text:'주인님의 핏줄이라 해도, 성화대는 천교에 칼을 겨눈 자들입니다.' },
+      { who:'cheonmu', text:'그러니 보고 싶은 게다. 내 아들이 끝내 들지 않은 칼을, 그 아이는 누구에게 겨누는지.' },
+      { who:'cheonmu', text:'천씨는 나 하나로 족하다. …허나 이 하늘을 물려받을 천씨는, 하나 있어야겠지.' },
+      { who:'haranseol', text:'…명을 받들겠습니다.' },
+      { who:'taeheo', text:'(흐흐… 교주의 뒤를 이을 그릇인가, 교주를 끝낼 칼인가. 이 늙은이도 궁금해지는군.)' },
+    ],
     next:'sd_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -6153,6 +6194,35 @@ Object.assign(SCENES, {
       { who:'jegal_yun', text:'야수궁이 혈교에 짐승을 대 주고 있다면, 혈교의 발을 끊을 수 있습니다.' },
       { who:'hero', text:'남만 밀림으로 가지요.' },
     ],
+    next:'cd_night',
+  },
+  cd_night: {
+    chapter:'제4장',
+    place:'성도 망강루 · 밤',
+    bg:'mk_cd',
+    cast:[ 'namgung_seol', 'hero', 'dangsoso' ],
+    script:[
+      { who:'narr', text:'성도의 열병이 가라앉은 밤. 망강루 뒤뜰에서 쇳소리가 울렸다.' },
+      { who:'namgung_seol', text:'하앗! …하아, 하아.' },
+      { who:'hero', text:'남궁 소저, 이 밤에 검을 휘두르고 있었어요?', textM:'남궁 소저, 이 밤에 검을 휘두르고 계셨습니까.', textF:'남궁 소저, 이 밤에 검을 휘두르고 있었어요?' },
+      { who:'namgung_seol', text:'대주. 소소 언니가 그러는데, 독인은 웬만큼 베어서는 쓰러지지도 않는대요. 그러니까 더 빨라져야죠.' },
+      { who:'dangsoso', text:'내가 언제 남궁의 검이 느리다고 했어요? 독인이 원래 그렇다는 거지.' },
+      { who:'namgung_seol', text:'세가를 나와서 처음 하는 일이에요. 오라버니는 누워 있고, 아버님은 걱정만 하시고… 잘하고 싶어요.' },
+      { who:'dangsoso', text:'…나도 처음 외당주가 됐을 때 그랬어요. 당가 어른들이 다들 나를 계집애로만 봤거든요. 그래서 독을 남보다 두 배로 먹어 봤죠.' },
+      { who:'namgung_seol', text:'두 배로 먹어요?!' },
+      { who:'dangsoso', text:'농담이에요. 반쯤은.' },
+      { who:'hero', text:'(저마다 제 집을 등에 지고 온 사람들. 성화대는 그런 사람들이 모인 곳이었다.)' },
+      { cast:[ 'jegal_yun', 'hero', 'hyegong' ], who:'narr', text:'객잔 안쪽, 제갈윤의 방에는 아직 불이 켜져 있었다.' },
+      { who:'jegal_yun', text:'대주. 아직 안 주무셨습니까.' },
+      { who:'hero', text:'가주님이야말로요. 뭘 쓰고 계세요?', textM:'가주님이야말로. 무엇을 쓰고 계십니까?', textF:'가주님이야말로요. 뭘 쓰고 계세요?' },
+      { who:'jegal_yun', text:'세가에 보내는 서신입니다. 아버님 장례를 치르고 사흘 만에 세가를 나왔으니, 할 일이 산더미처럼 남았지요.' },
+      { who:'jegal_yun', text:'가끔 생각합니다. 아버님이라면 지금 어떻게 하셨을까. 그러면 답이 나옵니다. 그런데… 그 답을 잘했다고 해 줄 사람은 이제 없더군요.' },
+      { who:'hero', text:'(…그 마음을 안다. 십 년 동안, 나도 그랬으니까.)' },
+      { who:'hero', text:'성화대가 있잖아요. 잘한 일은, 저희가 잘했다고 할게요.', textM:'성화대가 있습니다. 잘한 일은, 저희가 잘했다고 하겠습니다.', textF:'성화대가 있잖아요. 잘한 일은, 저희가 잘했다고 할게요.' },
+      { who:'jegal_yun', text:'…하하. 대주께 그런 말을 들으니 이상하게 힘이 납니다.' },
+      { who:'hyegong', text:'아미타불. 다들 안 자고 무얼 하시오. 소승은 배가 고파서 깼소만.' },
+      { who:'narr', text:'그날 밤 망강루의 부엌에서, 혜공은 만두를 스무 개 비웠다.' },
+    ],
     end:{ bg:'mk_cd', cast:[ 'hero', 'dangsoso', 'hasam' ] },
     npcs:[
       { id:'hasam', x:66, y:64, line:'야수궁주는 짐승처럼 싸운다 하오. 흑표는 발이 빠르니 조심하시오.' },
@@ -6234,7 +6304,32 @@ Object.assign(SCENES, {
       { cast:[ 'jegal_yun', 'hero', 'hyegong' ], who:'jegal_yun', text:'혈영마군이 마교의 사자를 기다렸다 했습니다. 마교는 서역 길로 사람을 보내고 있습니다. 곽 대협께서도 서역으로 가라 하셨습니다.' },
       { who:'narr', text:'성화대는 짐을 꾸렸다. 이번엔 서쪽, 모래와 눈의 땅이었다.' },
     ],
+    next:'tg_ch4',
+  },
+  tg_ch4: {
+    chapter:'제4장',
+    place:'남해 혈마궁',
+    bg:'mk_hm',
+    cast:[ 'hyeolcheonma', 'maunak' ],
+    script:[
+      { who:'narr', text:'같은 무렵. 남해, 핏빛 늪 한가운데 솟은 혈교의 본산, 혈마궁.' },
+      { who:'hyeolcheonma', text:'혈영이 죽었다고?' },
+      { who:'maunak', text:'내가 사천에 닿았을 땐 분타가 이미 잿더미였소. 성화대라는 애송이들 짓이오.' },
+      { who:'hyeolcheonma', text:'성화대… 천씨의 핏줄이 이끈다는 그놈들이로군.' },
+      { who:'maunak', text:'그렇소. 천명의 손주.' },
+      { who:'hyeolcheonma', text:'크하하! 천명은 그 아이를 건드리지 말라 했다지. 혈교의 칠장로가 목이 달아났는데도!' },
+      { who:'maunak', text:'천마께서도 그 말을 들으시고 웃으셨소. 하늘을 하나로 만든다는 자가, 제 핏줄 하나는 못 놓는다고.' },
+      { who:'hyeolcheonma', text:'들어라, 마운악. 혈교는 사십 년을 땅 밑에 숨어 살았다. 천명이 내민 손을 잡은 건 다시 하늘 아래 서기 위해서였지, 그자 손주의 들러리를 서기 위해서가 아니다.' },
+      { who:'maunak', text:'무슨 말씀이오.' },
+      { who:'hyeolcheonma', text:'천명이 떠난 뒤 이 하늘을 이을 자가 그 아이라면, 혈교도 마교도 영영 개로 남는다. …그 아이가 길에서 사라진다면 이야기가 다르지.' },
+      { who:'maunak', text:'천명의 명을 어기자는 거요?' },
+      { who:'hyeolcheonma', text:'길에서 죽는 놈은 많다. 서역 길은 험하지 않나?' },
+      { who:'maunak', text:'…흐흐. 서역이라면 마교의 앞마당이지. 귀검대를 화산으로 보내 두었소. 그 애송이들이 서쪽으로 온다면—' },
+      { who:'hyeolcheonma', text:'모래에 묻어 버려라. 천명에게는 사막이 삼켰다고 전하면 그만이다.' },
+      { who:'narr', text:'그 무렵, 성화대는 서쪽으로 길을 잡고 있었다.' },
+    ],
     next:'lz_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -6604,6 +6699,39 @@ Object.assign(SCENES, {
     ],
     sortie:'black_sand',
   },
+  ds_night: {
+    chapter:'제5장',
+    place:'돈황 사막 · 밤',
+    bg:'mk_dh',
+    cast:[ 'cheolmyeong', 'hero', 'cheonghwa' ],
+    script:[
+      { who:'narr', text:'흑사보가 무너진 밤. 사막의 모닥불 곁에서, 위지렴은 오래도록 활시위만 만지작거렸다.' },
+      { who:'cheonghwa', text:'위지 대협. 화산 이야기를 들은 뒤로 한마디도 없으십니다.' },
+      { who:'cheolmyeong', text:'…화산이라. 사 년 만에 다시 그 이름을 듣는구려.' },
+      { who:'hero', text:'화원파가 화산의 속가였다고 들었어요.', textM:'화원파가 화산의 속가였다고 들었습니다.', textF:'화원파가 화산의 속가였다고 들었어요.' },
+      { who:'cheolmyeong', text:'그렇소. 화산의 검 몇 수를 물려받은 작은 문파였지. 식구라야 열다섯. 그 밤도 그랬소.' },
+      { fb:true, cast:[], who:'narr', text:'— 사 년 전. 양양 성 밖, 화원파의 산문.' },
+      { who:'npc', name:'사제 소운', text:'문주 사형! 철검문 놈들이… 횃불이 산문 아래까지 줄지어 올라와요!' },
+      { who:'cheolmyeong', text:'소운, 너는 우리 중에 발이 제일 빠르다. 지금 바로 화산으로 가라. 화산의 속가가 무너지고 있다고 전해라.' },
+      { who:'npc', name:'사제 소운', text:'사형은요? 다들 남는데 저만 혼자—' },
+      { who:'cheolmyeong', text:'누군가는 닿아야 한다. 가라!' },
+      { who:'narr', text:'그 밤, 화원파의 검 열세 자루가 꺾였다. 살아남은 것은 사제들의 시신 밑에 깔려 있던 문주 하나뿐이었다.' },
+      { fb:false, cast:[ 'cheolmyeong', 'hero', 'cheonghwa' ], who:'cheolmyeong', text:'화산은 오지 않았소. 소운도 돌아오지 않았지. 한 달 뒤, 화산으로 넘어가는 고갯길에서 그 아이의 검을 찾았소.' },
+      { who:'cheolmyeong', text:'그 뒤로 검을 놓고 활을 들었소. 검을 쥐면 그 아이 얼굴이 떠올라서.' },
+      { who:'cheonghwa', text:'……' },
+      { who:'hero', text:'그래도 화산으로 가시는 거예요?', textM:'그래도 화산으로 가시는 겁니까.', textF:'그래도 화산으로 가시는 거예요?' },
+      { who:'cheolmyeong', text:'소운이 끝내 닿지 못한 길이오. 이번엔 내가 가 보려 하오. …그리고 이번엔, 늦지 않고 싶소.' },
+      {
+        who:'hero',
+        text:'(늦지 않고 싶다… 그 밤, 나는 살아남는 것 말고는 아무것도 하지 못했다.)',
+        textM:'(늦지 않고 싶다… 그 말이 가슴 어딘가에 걸렸다. 그 밤, 나는 누이의 손 하나도 붙잡지 못했으니까.)',
+        textF:'(늦지 않고 싶다… 그 밤, 나는 살아남는 것 말고는 아무것도 하지 못했다.)',
+      },
+      { who:'cheonghwa', text:'이번엔 혼자 달리지 마십시오, 위지 대협. 성화대가 함께 달립니다.' },
+      { who:'cheolmyeong', text:'…하하. 무당의 대사형께서 그리 말하니, 믿어 보리다.' },
+    ],
+    next:'hs_arrival',
+  },
   hs_arrival: {
     chapter:'제5장',
     place:'화산 아래',
@@ -6753,7 +6881,7 @@ Object.assign(BATTLES, {
       gold:2000,
       suryeon:3200,
       exp:45,
-      next:'hs_arrival',
+      next:'ds_night',
     },
   },
   hwasan_rescue: {
@@ -6987,6 +7115,35 @@ Object.assign(SCENES, {
     ],
     sortie:'grassland',
   },
+  cw_night: {
+    chapter:'제6장',
+    place:'막북 초원 · 밤',
+    bg:'mk_cw',
+    cast:[ 'hero', 'cheonghwa' ],
+    script:[
+      { who:'narr', text:'칸의 기병이 흩어진 초원의 밤. 하늘이 낮아, 별이 손에 닿을 듯했다.' },
+      { who:'cheonghwa', text:'무당산에서 보던 별과는 다르군요. 여기선 별이 너무 가깝습니다.' },
+      { who:'hero', text:'청화 도장도 별을 봐요?', textM:'청화 도장도 별을 보십니까?', textF:'청화 도장도 별을 봐요?' },
+      { who:'cheonghwa', text:'사형제들이 잠든 밤이면 가끔. 대사형이라는 자리는, 낮에는 늘 앞에 서 있어야 하니까요.' },
+      { who:'hero', text:'무거워요?', textM:'무겁습니까?', textF:'무거워요?' },
+      { who:'cheonghwa', text:'산을 내려온 뒤로는 조금 가벼워졌습니다. 앞에 서는 사람이 저 하나가 아니니까요.' },
+      { who:'cheonghwa', text:'사조님께서 산을 내려가라 하실 때 그러셨습니다. 무당의 검은 산 위에서 빛나는 게 아니라, 길 위에서 빛나는 거라고.' },
+      { who:'hero', text:'(길 위에서 빛난다. 쫓기기만 하던 나에게 처음 등을 내어 준 것도, 길 위의 사람들이었다.)' },
+      {
+        who:'hero',
+        text:'도장. 가끔 무서워요. 그 사람의 피가 제 안에도 흐르는데, 정말 핏줄이 아무것도 아닐까 하고요.',
+        textM:'도장. 저는 가끔 두렵습니다. 그 사람의 피가 제 안에도 흐르는데, 정말 핏줄이 아무것도 아닌지.',
+        textF:'도장. 가끔 무서워요. 그 사람의 피가 제 안에도 흐르는데, 정말 핏줄이 아무것도 아닐까 하고요.',
+      },
+      { who:'cheonghwa', text:'…그 두려움을 아는 사람은, 그 사람과 같은 길을 걷지 않습니다. 두려운 줄 모르는 사람이 길을 잃지요.' },
+      { cast:[ 'hero', 'namgung_seol', 'seokun' ], who:'namgung_seol', text:'두 분! 여기서 뭐 해요? 석운 소협이 아란 아주머니 술을 몰래 들고 나왔어요!' },
+      { who:'seokun', text:'쉿, 쉿! 몰래라니, 빌린 거요! 초원의 밤엔 마유주를 마셔야 한다고 아란 아주머니가… 말은 안 했지만 그런 눈빛이었소!' },
+      { who:'namgung_seol', text:'그거 말젖으로 빚은 술이래요. 엄청 시큼하대요.' },
+      { who:'hero', text:'(웃음이 났다. 별 아래에서 이렇게 웃어 본 게, 언제였던가.)' },
+      { who:'cheonghwa', text:'…한 잔씩만입니다. 내일은 빙원입니다.' },
+    ],
+    next:'bo_arrival',
+  },
   bo_arrival: {
     chapter:'제6장',
     place:'빙원',
@@ -7145,7 +7302,7 @@ Object.assign(BATTLES, {
       gold:2500,
       suryeon:4000,
       exp:50,
-      next:'bo_arrival',
+      next:'cw_night',
     },
   },
   ice_outer: {
@@ -7275,10 +7432,19 @@ Object.assign(UNITS, {
   cheongyo_spy: { name:'천교 밀정', job:'천교 밀정', level:1, move:4, range:2, minRange:2, skills:[ '천면 비수' ], face:'mk_lk_b', foe:true },
   poison_smith: { name:'독수 장인', job:'천교 밀정', level:1, move:4, skills:[ '만독장' ], face:'mk_lk_c', foe:true },
   under_guard: { name:'지하 철위', job:'천교 밀정', level:1, move:4, face:'mk_lk_d', foe:true },
-  samagang: { name:'사마강', job:'천교 사대호법', title:'현무호법', level:1, move:4, skills:[ '현무 붕산권', '현무 철벽' ], face:'mk_ty_boss', card:'mk_ty_boss', foe:true },
+  samagang: { name:'사마강', job:'천교 사대천왕', title:'현무천왕', level:1, move:4, skills:[ '현무 붕산권', '현무 철벽' ], face:'mk_ty_boss', card:'mk_ty_boss', foe:true },
   fort_guard: { name:'요새 수비병', job:'태항산 천교 요새', level:1, move:4, face:'mk_ty_a', foe:true },
   hyeol_swordsman: { name:'혈교 혈검수', job:'태항산 천교 요새', level:1, move:4, skills:[ '혈하검법' ], face:'mk_ty_b', foe:true },
   demon_guard: { name:'마교 호법위', job:'태항산 천교 요새', level:1, move:4, skills:[ '광풍도' ], face:'mk_ty_c', foe:true },
+});
+BONDS.push({
+  id:'tea_sisters',
+  name:'차 한 잔의 언니',
+  members:[ 'seolran', 'namgung_seol' ],
+  from:'ml_camp',
+  when:'adj',
+  eff:{ seolran:{ eva:4 }, namgung_seol:{ atkPct:0.05 } },
+  text:'설란 회피 +4 · 남궁설 공격 +5%',
 });
 // 천교 무리 (인연 '같은 원수' 의 피해 +10% 대상)
 Object.assign(UNIT_FACTION, { takbalung:'천교', vanguard_axe:'천교', vanguard_xbow:'천교', hyeolma_cavalry:'천교', demon_raider:'천교', gohon:'천교', tomb_jiangshi:'천교', corpse_monk:'천교', grave_ghoul:'천교', corpse_giant:'천교', cheonmyeongaek:'천교', canal_assassin:'천교', cheongyo_spy:'천교', poison_smith:'천교', under_guard:'천교', samagang:'천교', fort_guard:'천교', hyeol_swordsman:'천교', demon_guard:'천교' });
@@ -7309,6 +7475,30 @@ Object.assign(SCENES, {
     sortie:'yellow_river',
     unlock:'hub',
   },
+  ml_camp: {
+    chapter:'제7장',
+    place:'무림맹 총단 · 성화대 막사',
+    bg:'mk_ml',
+    cast:[ 'seolran', 'dangsoso', 'jeongsim' ],
+    script:[
+      { who:'narr', text:'황하 나루의 싸움이 끝난 밤. 무림맹 총단 한쪽, 성화대의 막사.' },
+      { who:'dangsoso', text:'설란 소저, 아까부터 혼자 그러고 있어요? 이리 와요. 정심이 끓인 차가 있어요.' },
+      { who:'seolran', text:'…괜찮습니다. 빙궁에서는 원래 혼자 차를 마셔요.' },
+      { who:'jeongsim', text:'여긴 빙궁이 아니잖아요. 그리고 이 차, 혼자 마시기엔 너무 많이 끓였어요.' },
+      { who:'seolran', text:'……' },
+      { cast:[ 'seolran', 'namgung_seol', 'dangsoso' ], who:'namgung_seol', text:'설란 언니! 빙백장으로 황하 물도 얼릴 수 있다는 거 진짜예요? 어떻게 하는 거예요?' },
+      { who:'seolran', text:'언… 니?' },
+      { who:'namgung_seol', text:'싫어요? 그럼 설란 소저라고 부를게요.' },
+      { who:'seolran', text:'…아니요. 언니로 해요. 빙궁에서는… 그렇게 불러 주는 사람이 없었어요.' },
+      { who:'dangsoso', text:'거 봐요. 차 한 잔이면 다 풀린다니까.' },
+      { who:'narr', text:'그날 밤, 설란은 처음으로 소리 내어 웃었다.' },
+      { cast:[ 'hero', 'hyegong', 'hyeondo' ], who:'hyeondo', text:'대주! 혜공 스님하고 팔씨름을 했는데 세 판을 내리 졌소. 소림 사람들 팔은 쇠로 만들었소?' },
+      { who:'hyegong', text:'아미타불. 소승은 이겼다고 한 적 없소. 현도 소협의 팔이 먼저 누웠을 뿐이오.' },
+      { who:'hyeondo', text:'그게 진 거요, 스님!' },
+      { who:'hero', text:'내일은 개방 총타로 가요. 팔은 아껴 두세요.', textM:'내일은 개방 총타로 갑니다. 팔은 아껴 두시지요.', textF:'내일은 개방 총타로 가요. 팔은 아껴 두세요.' },
+    ],
+    next:'gbt_arrival',
+  },
   gbt_arrival: {
     chapter:'제7장',
     place:'개방 총타',
@@ -7331,6 +7521,68 @@ Object.assign(SCENES, {
       { id:'seokun', x:82, y:64, line:'이번 싸움은 내가 꼭 나가겠소. 개방 형제들 원수요.' },
     ],
     sortie:'bukmang',
+  },
+  tg_ch7a: {
+    chapter:'제7장',
+    place:'낙양 지하수로',
+    bg:'mk_lk',
+    cast:[ 'guhu', 'cheonmyeongaek' ],
+    script:[
+      { who:'narr', text:'같은 밤, 낙양의 땅 밑. 물 떨어지는 소리만 울리는 지하수로.' },
+      { who:'cheonmyeongaek', text:'…시혈당이 무너졌소. 고혼이 죽었다 하오.' },
+      { who:'guhu', text:'흐흐, 시체나 주무르던 놈이니 시체가 된 것도 어울리지.' },
+      { who:'cheonmyeongaek', text:'성화대는 다음으로 이곳을 칠 거요. 그 대주가… 천씨의 아이라지.' },
+      { who:'guhu', text:'그래. 그 밤에 놓친 불씨.' },
+      { who:'cheonmyeongaek', text:'교주께선 그 아이를 산 채로 데려오라 하셨다 들었소. 그런데 구 장로는 십 년 동안 그 아이를 죽이려 쫓았지.' },
+      { who:'guhu', text:'…눈이 밝구나, 천면.' },
+      { fb:true, bg:'yangyang_manor', cast:[], who:'narr', text:'— 십 년 전. 몽골군이 양양을 에워싼 밤, 천씨세가.' },
+      { who:'guhu', text:'가주와 그 처는 베어라. 아이 둘은 산 채로 데려오라는 교주님의 명이다.' },
+      { who:'npc', name:'천교 무사', text:'장로님, 장원 안쪽에서 식솔들이 아이들을 감싸고 버팁니다!' },
+      { who:'guhu', text:'……. 불을 질러라.' },
+      { who:'npc', name:'천교 무사', text:'예? 아이들은 산 채로—' },
+      { who:'guhu', text:'핏줄을 남겨 두면 언젠가 칼이 되어 돌아온다. 교주님께는 불길이 삼켰다고 아뢰면 그만이다. 질러라!' },
+      { who:'narr', text:'그 밤 양양의 하늘은 몽골군의 불과 천씨세가의 불로 함께 붉었다. 그리고 그 불길 속에서, 아이 하나가 빠져나갔다.' },
+      { fb:false, bg:'mk_lk', cast:[ 'guhu', 'cheonmyeongaek' ], who:'guhu', text:'교주님은 늘 그러셨지. 하늘을 하나로 만들겠다면서, 정작 제 핏줄 하나는 끊지 못하셨다. 그러니 누군가는 대신 끊어야지.' },
+      { who:'cheonmyeongaek', text:'그 아이가 여기까지 온다면, 교주께서 그 밤의 일을 아시게 될 거요.' },
+      { who:'guhu', text:'그러니 여기서 끝내야지. 흐흐… 십 년 묵은 빚은, 땅 밑에 묻는 게 제일이다.' },
+      { who:'cheonmyeongaek', text:'(……)' },
+    ],
+    next:'lk_memory',
+    pov:'천교',
+  },
+  lk_memory: {
+    chapter:'제7장',
+    place:'개방 총타 · 밤',
+    bg:'mk_gbt',
+    cast:[ 'hero' ],
+    script:[
+      { who:'narr', text:'그날 밤, 개방 총타의 움막. 낙양의 땅 밑에 구후가 있다는 말을 들은 뒤로, 잠이 오지 않았다.' },
+      { who:'hero', text:'(구후. 십 년 동안 그 이름을 잊으려 애썼다. 끝내 잊히지 않았다.)', textM:'(구후. 십 년 동안 꿈에서도 그 이름을 불렀다.)', textF:'(구후. 십 년 동안 그 이름을 잊으려 애썼다. 끝내 잊히지 않았다.)' },
+      { fb:true, bg:'yangyang_manor', cast:[], who:'narr', text:'— 십 년 전, 양양. 몽골군의 북소리가 성벽을 두드리던 밤.' },
+      { only:'m', who:'npc', name:'아버님', text:'명우야, 명화를 데리고 뒷문으로 가거라. 무슨 소리가 들려도 돌아보지 마라.' },
+      { only:'f', who:'npc', name:'아버님', text:'명화야, 오라비 손을 놓지 말거라. 무슨 소리가 들려도 돌아보지 마라.' },
+      { who:'npc', name:'어머님', text:'여보, 저들은 몽골군이 아니에요. 몽골군은 담을 넘어 이렇게 조용히 오지 않아요.' },
+      { who:'npc', name:'아버님', text:'…알고 있소. 아버님께서 보낸 자들이겠지.' },
+      { who:'npc', name:'아버님', text:'천씨의 칼은 그분의 하늘을 위해 들지 않는다. 그 대답의 값이라면… 내가 치르겠소.' },
+      { only:'m', who:'npc', name:'어린 명화', text:'오라버니… 무서워.' },
+      { only:'m', who:'npc', name:'어린 명우', text:'괜찮아, 명화야. 오라버니 손 꼭 잡아.' },
+      { only:'f', who:'npc', name:'어린 명우', text:'명화야, 내 손 꼭 잡아. 오라비가 지켜 줄게.' },
+      { only:'f', who:'npc', name:'어린 명화', text:'오라버니…' },
+      { who:'narr', text:'뒷문 앞에서 불길이 치솟았다. 늙은 집사와 식솔들이 그 불길 앞을 막아섰다.' },
+      { who:'npc', name:'늙은 집사', text:'뛰십시오! 뒤돌아보지 마십시오!' },
+      { only:'m', who:'narr', text:'연기 속에서, 명화의 작은 손이 미끄러졌다. 돌아보았을 때는 불길밖에 없었다.' },
+      { only:'f', who:'narr', text:'오라버니가 손을 놓았다. 등을 떠밀고는, 불길 쪽으로 돌아섰다. “살아, 명화야.”' },
+      { fb:false, bg:'mk_gbt', cast:[ 'hero' ], who:'narr', text:'……' },
+      { only:'m', who:'hero', text:'(그 밤, 나는 누이의 손을 놓쳤다. 놓친 것인지, 놓아 버린 것인지… 십 년 동안 그것만 생각했다.)' },
+      { only:'f', who:'hero', text:'(살아, 명화야. 오라버니의 마지막 말이었다. 그래서 살았다. 그 말 하나로.)' },
+      { who:'hero', text:'(그리고 아버님의 그 말. “아버님께서 보낸 자들이겠지.” 그때는 알아듣지 못했다. 이제는 안다.)' },
+      { cast:[ 'hero', 'cheonghwa' ], who:'cheonghwa', text:'잠이 오지 않으십니까.' },
+      { who:'hero', text:'…도장도요?' },
+      { who:'cheonghwa', text:'대주가 깨어 있는데 대사형이 잘 수야 있겠습니까.' },
+      { who:'cheonghwa', text:'내일 구후를 만나면, 무슨 일이 있어도 곁에 있겠습니다. 칼을 쥔 손이 떨리면, 제가 잡겠습니다.' },
+      { who:'hero', text:'…고마워요, 도장.', textM:'…고맙습니다.', textF:'…고마워요, 도장.' },
+    ],
+    next:'lk_arrival',
   },
   lk_arrival: {
     chapter:'제7장',
@@ -7360,6 +7612,32 @@ Object.assign(SCENES, {
     ],
     sortie:'luoyang_under',
   },
+  lk_after: {
+    chapter:'제7장',
+    place:'개방 총타 · 언덕',
+    bg:'mk_gbt',
+    cast:[ 'hero', 'cheolmyeong' ],
+    script:[
+      { who:'narr', text:'구후가 쓰러진 밤. 낙양 성 밖, 개방 총타 뒤편의 언덕.' },
+      { who:'cheolmyeong', text:'여기 있었구려.' },
+      { who:'hero', text:'위지 대협.' },
+      { who:'cheolmyeong', text:'원수를 갚으면 무엇이 남을 줄 알았소?' },
+      {
+        who:'hero',
+        text:'…모르겠어요. 울 줄 알았는데, 눈물이 안 나요. 그냥… 조용해요.',
+        textM:'…모르겠습니다. 시원할 줄 알았는데, 아무것도 없습니다. 그냥… 조용합니다.',
+        textF:'…모르겠어요. 울 줄 알았는데, 눈물이 안 나요. 그냥… 조용해요.',
+      },
+      { who:'cheolmyeong', text:'나도 그랬소. 양양의 그 관원이 처형되던 날. 사 년을 기다린 날이었는데, 그날 밤 술만 퍼마셨지.' },
+      { who:'cheolmyeong', text:'그런데 다음 날 아침에도 길은 그대로 있더이다. 그대들이 그 길 위에 서 있었고.' },
+      { who:'hero', text:'(길.)' },
+      { who:'cheolmyeong', text:'원수는 끝나도 길은 끝나지 않소. 그게 다행이라는 걸, 한참 뒤에야 알게 되오.' },
+      { cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'cheonghwa', text:'두 분, 여기 계셨군요. 석운 소협이 개방 형제들과 국밥을 끓였답니다. 식기 전에 오시랍니다.' },
+      { who:'hero', text:'…가요. 갑자기 배가 고프네요.', textM:'…가지요. 갑자기 배가 고프군요.', textF:'…가요. 갑자기 배가 고프네요.' },
+      { who:'narr', text:'십 년 만에 처음으로, 맛을 느끼며 먹은 밥이었다.' },
+    ],
+    next:'ty_arrival',
+  },
   ty_arrival: {
     chapter:'제7장',
     place:'무림맹 총단',
@@ -7367,13 +7645,20 @@ Object.assign(SCENES, {
     cast:[ 'jegal_hyeon', 'hero', 'jegal_yun' ],
     script:[
       { who:'jegal_hyeon', text:'천면객의 품에서 나온 명부요. 중원에 숨은 천교 밀정들의 이름이 빼곡하구려. 그리고 그 끝에… 태항산.' },
-      { who:'jegal_yun', text:'태항산 협곡 끝에 천교가 요새를 쌓았습니다. 사대호법의 하나, 현무호법 사마강이 지킨다고요.' },
+      { who:'jegal_hyeon', text:'그리고 이것. 명부 사이에 끼어 있던 쪽지요. 천면객이 교주에게 띄우려던 전서인 듯하오.' },
+      { who:'narr', text:'쪽지 — “십 년 전 천씨세가. 교주의 명은 아이 둘을 산 채로 데려오라는 것이었으나, 구후가 명을 어기고 불을 놓음. 하나는 불에 삼켜지고, 하나는 달아남. 구후는 그 뒤 십 년, 그 아이를 죽이려 쫓았음.”' },
+      { who:'hero', text:'…산 채로, 데려오라.' },
+      { only:'m', who:'hero', text:'(그 사람은 우리를 데려가려 했다. 명화를 삼킨 것은 구후의 불이었고… 그 불을 부른 것은, 그 사람의 하늘이었다.)' },
+      { only:'f', who:'hero', text:'(그 사람은 우리를 데려가려 했다. 오라버니를 삼킨 건 구후의 불이었고… 그 불을 부른 건, 그 사람의 하늘이었다.)' },
+      { who:'jegal_yun', text:'대주…' },
+      { who:'hero', text:'괜찮아요. 누구 명이었든, 달라지는 건 없어요.', textM:'괜찮습니다. 누구의 명이었든, 달라지는 건 없습니다.', textF:'괜찮아요. 누구 명이었든, 달라지는 건 없어요.' },
+      { who:'jegal_yun', text:'태항산 협곡 끝에 천교가 요새를 쌓았습니다. 사대천왕의 하나, 현무천왕 사마강이 지킨다고요.' },
       { who:'hero', text:'중원에 남은 천교의 마지막 거점이군요.' },
       { who:'jegal_hyeon', text:'그 요새가 무너지면 천교는 중원에서 발을 뺄 수밖에 없소. 무림맹의 이름으로 부탁하오.' },
     ],
     end:{ bg:'mk_ml', cast:[ 'hero', 'jegal_hyeon', 'jegal_yun' ] },
     npcs:[
-      { id:'jegal_hyeon', x:66, y:64, line:'현무호법은 거북처럼 단단하오. 철벽을 두르면 잠시 물러났다 치시오.' },
+      { id:'jegal_hyeon', x:66, y:64, line:'현무천왕은 거북처럼 단단하오. 철벽을 두르면 잠시 물러났다 치시오.' },
       { id:'jegal_yun', x:82, y:64, line:'술사들의 독 안개는 세 칸에 퍼집니다. 흩어져 다가가십시오.' },
     ],
     sortie:'taihang',
@@ -7391,7 +7676,43 @@ Object.assign(SCENES, {
       { who:'guo', text:'{name} {소협|소저}, 구후의 일은 들었소. …잘 견뎌 주었소.' },
       { who:'hero', text:'아직 끝이 아니에요. 살아서 끝을 보겠습니다.', textM:'아직 끝이 아닙니다. 끝이 날 때까지 멈추지 않겠습니다.', textF:'아직 끝이 아니에요. 살아서 끝을 보겠습니다.' },
     ],
+    next:'tg_ch7b',
+  },
+  tg_ch7b: {
+    chapter:'제7장',
+    place:'구천궁 천명전',
+    bg:'mk_jt',
+    cast:[ 'cheonmu', 'taeheo', 'haranseol' ],
+    script:[
+      { who:'narr', text:'구천궁. 중원에서 쫓겨 온 천교도들의 소식이 하나둘 닿고 있었다.' },
+      { who:'taeheo', text:'낙양이 무너졌습니다. 구후는… 손주님의 손에 쓰러졌습니다.' },
+      { who:'cheonmu', text:'…….' },
+      { who:'taeheo', text:'그리고 천면객이 쓰러지기 전에 띄운 전서구가 이제야 닿았습니다. 그 밤, 아이들을 산 채로 데려오라는 명을 어기고 불을 지른 것이 구후였다고.' },
+      { who:'haranseol', text:'그 개가…!' },
+      { who:'cheonmu', text:'알고 있었다.' },
+      { who:'haranseol', text:'…주인님?' },
+      { who:'cheonmu', text:'십 년 전에도 알았다. 불탄 장원에서 아이 하나의 뼈가 모자랐으니까. 구후가 그 아이를 몰래 쫓는다는 것도 알았다.' },
+      { who:'taeheo', text:'그런데도 두셨습니까.' },
+      { who:'cheonmu', text:'구후의 칼끝도 피하지 못할 아이라면, 이 하늘을 이을 그릇이 아니지.' },
+      { who:'haranseol', text:'……' },
+      { who:'cheonmu', text:'그 아이는 살아남았다. 그리고 그 밤의 빚을 제 손으로 받아 냈다. …그거면 됐다.' },
+      { fb:true, bg:'yangyang_manor', cast:[], who:'narr', text:'— 사십 년 전. 혈교와 백도의 싸움이 한창이던 여름밤, 천씨세가의 장원.' },
+      { who:'npc', name:'정파 연합 장로', text:'천 가주, 혈교의 주력이 이 장원을 노리고 있소. 장원을 지켜 주시오. 원군은 해시에 닿을 것이오.' },
+      { who:'npc', name:'젊은 천무극', text:'해시라… 믿겠소. 부인, 소연이를 데리고 안채에 있으시오.' },
+      { who:'npc', name:'부인', text:'꼭 돌아와요. 소연이가 아버지 오시면 연등 날린다고, 등을 접어 놓고 기다리고 있어요.' },
+      { who:'narr', text:'해시가 지나고, 자시가 지나고, 축시가 지났다. 원군은 오지 않았다.' },
+      { who:'narr', text:'그 시각 백도의 본대는, 천씨의 장원을 미끼로 비워 둔 혈교의 본진을 치고 있었다.' },
+      { who:'npc', name:'젊은 천무극', text:'부인…! 소연아……!' },
+      { who:'narr', text:'새벽. 불탄 안채에서 그는 반쯤 타다 남은 연등 하나를 주웠다.' },
+      { fb:false, bg:'mk_jt', cast:[ 'cheonmu', 'taeheo', 'haranseol' ], who:'cheonmu', text:'그날 아침 정파의 어른들은 말했다. 천씨의 희생으로 혈교를 무너뜨렸다고. 대의였다고.' },
+      { who:'cheonmu', text:'하늘이 여럿이면, 누군가의 하늘은 반드시 미끼가 된다. 그래서 하늘은 하나여야 한다.' },
+      { who:'haranseol', text:'(주인님…)' },
+      { who:'cheonmu', text:'하란설. 사대천왕을 동해로 모아라. 혈교도 마교도, 머지않아 무너질 것이다.' },
+      { who:'haranseol', text:'혈교와 마교를… 버리시는 겁니까?' },
+      { who:'cheonmu', text:'처음부터 불쏘시개였다. 불은 장작을 아까워하지 않는다.' },
+    ],
     next:'gz_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -7442,7 +7763,7 @@ Object.assign(BATTLES, {
       gold:2900,
       suryeon:4600,
       exp:55,
-      next:'gbt_arrival',
+      next:'ml_camp',
     },
   },
   bukmang: {
@@ -7485,7 +7806,7 @@ Object.assign(BATTLES, {
       gold:3000,
       suryeon:4800,
       exp:55,
-      next:'lk_arrival',
+      next:'tg_ch7a',
     },
   },
   luoyang_under: {
@@ -7527,14 +7848,14 @@ Object.assign(BATTLES, {
       gold:3100,
       suryeon:5000,
       exp:60,
-      next:'ty_arrival',
+      next:'lk_after',
     },
   },
   taihang: {
     name:'제7장 · 태항산 천교 요새',
     map:'029',
     turnLimit:22,
-    goal:'승리: 현무호법 사마강 격파 · 패배: 주인공이 쓰러짐',
+    goal:'승리: 현무천왕 사마강 격파 · 패배: 주인공이 쓰러짐',
     loseIfDown:[ 'hero' ],
     allies:[ { id:'hero', x:16, y:13 }, { id:'cheonghwa', x:17, y:13 }, { id:'cheolmyeong', x:15, y:13 } ],
     picks:[ { x:16, y:14 }, { x:16, y:12 } ],
@@ -7618,6 +7939,15 @@ Object.assign(UNITS, {
   jiangshi_captain: { name:'혈강시 대장', job:'혈교', level:1, move:4, skills:[ '시강 독조' ], face:'mk_hm_c', foe:true },
   blood_assassin: { name:'혈영 살수', job:'혈교', level:1, move:5, skills:[ '섬영살' ], face:'mk_hg_rogue', foe:true },
 });
+BONDS.push({
+  id:'fist_and_hand',
+  name:'주먹과 손',
+  members:[ 'hyegong', 'jeongsim' ],
+  from:'ship_night',
+  when:'adj',
+  eff:{ hyegong:{ dmgCut:0.05 }, jeongsim:{ regenPct:0.03 } },
+  text:'혜공 받는 피해 -5% · 정심 턴 시작마다 체력 3% 회복',
+});
 // 천교 무리 (인연 '같은 원수' 의 피해 +10% 대상)
 Object.assign(UNIT_FACTION, { gwido:'천교', pirate_blade:'천교', pirate_harpoon:'천교', sea_assassin:'천교', iron_pirate:'천교', saho:'천교', man_poison:'천교', gudok_shaman:'천교', poison_dragon:'천교', man_ironbone:'천교', hongryeon:'천교', blood_fish:'천교', blood_wolf:'천교', blood_ghost:'천교', blood_armor:'천교', hyeolcheonma:'천교', palace_guard:'천교', blood_highpriest:'천교', jiangshi_captain:'천교', blood_assassin:'천교' });
 // 장면
@@ -7642,6 +7972,28 @@ Object.assign(SCENES, {
     ],
     sortie:'pirate_isle',
     unlock:'hub',
+  },
+  ship_night: {
+    chapter:'제8장',
+    place:'남해 · 전선 갑판',
+    bg:'mk_nh',
+    cast:[ 'dangsoso', 'hero', 'hyegong' ],
+    script:[
+      { who:'narr', text:'혈해로 가는 바닷길이 열린 밤. 담 도독의 전선이 해남도를 향해 물살을 갈랐다.' },
+      { who:'dangsoso', text:'혜공 스님, 또 난간 붙잡고 있어요? 소림의 무승도 뱃멀미는 못 이기나 봐요.' },
+      { who:'hyegong', text:'아미타불… 소승의 위장은… 아직 수행이 덜 되었소…' },
+      { cast:[ 'jeongsim', 'hero', 'hyegong' ], who:'jeongsim', text:'소소 언니, 놀리지 마요. …스님, 이거 드세요. 생강 달인 물이에요.' },
+      { who:'hyegong', text:'고맙소, 정심 소저.' },
+      { who:'jeongsim', text:'스님. 하나만 여쭤봐도 돼요?' },
+      { who:'hyegong', text:'말씀하시오.' },
+      { who:'jeongsim', text:'해적섬에서 다친 사람들을 치료하다가 생각했어요. 그 사람들, 우리가 다치게 한 거잖아요. 살리려고 배운 손이… 다치게 하는 일에도 쓰이고 있어요. 부처님께서 용서하실까요?' },
+      { who:'hyegong', text:'…소승도 숭산을 내려올 때 같은 것을 여쭸소. 방장께서는 이리 답하셨지. “막지 않아서 죽는 이들도, 네 손이 죽인 것이다.”' },
+      { who:'hyegong', text:'그래서 소승은 권을 쓰오. 죽이지 않으려고 쥔 주먹이, 더 많은 이를 살리기를 바라며.' },
+      { who:'jeongsim', text:'……. 그럼 저는, 다친 사람을 더 많이 살릴게요. 그게 제 몫이에요.' },
+      { who:'hero', text:'(살리려는 손과 막으려는 주먹. 성화대에는 이런 사람들이 있다. 그래서 내가 길을 잃지 않는 거겠지.)' },
+      { cast:[ 'dangsoso', 'hero', 'jeongsim' ], who:'dangsoso', text:'아, 진지한 얘기 끝났으면 나 좀 도와줘요. 독침 상자가 바닷물에 홀딱 젖었단 말이에요!' },
+    ],
+    next:'hn_arrival',
   },
   hn_arrival: {
     chapter:'제8장',
@@ -7714,7 +8066,30 @@ Object.assign(SCENES, {
       { who:'jegal_yun', text:'그때가 되면… 천명은 스스로 모습을 드러낼 수밖에 없습니다.' },
       { who:'hero', text:'남녕으로 갑시다.' },
     ],
+    next:'tg_ch8',
+  },
+  tg_ch8: {
+    chapter:'제8장',
+    place:'십만대산 천마전',
+    bg:'mk_tmd',
+    cast:[ 'dokgocheon', 'gwicheonbyeok' ],
+    script:[
+      { who:'narr', text:'같은 무렵. 십만대산 깊은 곳, 마교 백 년의 심장 천마전.' },
+      { who:'gwicheonbyeok', text:'교주님. 혈마궁이 불탔습니다. 혈천마도 죽었다 합니다.' },
+      { who:'dokgocheon', text:'그래. 그리고 천명은 원군 하나 보내지 않았겠지.' },
+      { who:'gwicheonbyeok', text:'…예.' },
+      { who:'dokgocheon', text:'사십 년 전 백도가 천씨에게 한 짓을, 이번엔 천명이 혈교에 했구나. 미끼로 쓰고 버렸다.' },
+      { who:'gwicheonbyeok', text:'그렇다면 마교도…' },
+      { who:'dokgocheon', text:'다음은 우리다. 천명에게 손을 내민 건 너희 형제였지. 나는 처음부터 그자를 믿지 않았다.' },
+      { who:'dokgocheon', text:'십 년 전 양양에서 그 피 냄새를 맡았을 때 알았다. 제 아들을 베는 자는, 결국 누구든 벤다.' },
+      { who:'gwicheonbyeok', text:'지금이라도 천교와 손을 끊으시면—' },
+      { who:'dokgocheon', text:'늦었다. 천마신교가 한 번 잡은 깃발이다. 백 년 마교가 무릎을 꿇고 살 수는 없지.' },
+      { who:'dokgocheon', text:'성화대가 오거든 막아라. 그리고 그 아이는, 내 앞까지 오게 해라.' },
+      { who:'gwicheonbyeok', text:'교주님 앞까지요?' },
+      { who:'dokgocheon', text:'핏줄마저 벤 자의 손주가 어떤 눈으로 칼을 드는지, 이 천마가 직접 봐야겠다.' },
+    ],
     next:'nn_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -7761,7 +8136,7 @@ Object.assign(BATTLES, {
       gold:3400,
       suryeon:5400,
       exp:60,
-      next:'hn_arrival',
+      next:'ship_night',
     },
   },
   wuxi_man: {
@@ -7942,6 +8317,15 @@ Object.assign(UNITS, {
   five_elder: { name:'마교 오대장로', job:'천마전', level:1, move:4, skills:[ '마운장' ], face:'mk_tmd_c', foe:true },
   demon_shadow: { name:'천마의 그림자', job:'천마전', level:1, move:5, skills:[ '섬영살' ], face:'mk_tmd_d', foe:true },
 });
+BONDS.push({
+  id:'later_tears',
+  name:'나중에 울 약속',
+  members:[ 'seokun', 'jegal_yun' ],
+  from:'ridge_night',
+  when:'deploy',
+  eff:{ seokun:{ hit:4 }, jegal_yun:{ eva:4 } },
+  text:'석운 명중 +4 · 제갈윤 회피 +4',
+});
 // 천교 무리 (인연 '같은 원수' 의 피해 +10% 대상)
 Object.assign(UNIT_FACTION, { muka:'천교', demon_recon:'천교', mount_panther:'천교', needle_squad:'천교', hill_guard:'천교', hyeokmussang:'천교', ridge_patrol:'천교', horse_archer:'천교', demon_giant:'천교', soul_witch:'천교', gwicheonbyeok:'천교', black_guard:'천교', elder_disciple:'천교', iron_squad:'천교', blood_kill:'천교', dokgocheon:'천교', heavenly_guard:'천교', mirror_keeper:'천교', five_elder:'천교', demon_shadow:'천교' });
 // 장면
@@ -7988,6 +8372,30 @@ Object.assign(SCENES, {
     ],
     sortie:'demon_ridge',
   },
+  ridge_night: {
+    chapter:'제9장',
+    place:'천마령 아래 · 야영지',
+    bg:'mk_tl',
+    cast:[ 'seokun', 'hero', 'jegal_yun' ],
+    script:[
+      { who:'narr', text:'천마령의 관문이 열린 밤. 협곡 아래 야영지에 모닥불이 타올랐다.' },
+      { who:'seokun', text:'대주, 혁무쌍이 마지막에 그랬다면서요? 천마도 천명을 안 믿었다고. 그럼 대체 천명을 믿은 놈은 누구요?' },
+      { who:'jegal_yun', text:'믿은 게 아니라 두려워한 거겠지요. 두려움으로 묶은 자들은, 무너질 때 한꺼번에 무너집니다.' },
+      { who:'seokun', text:'역시 제갈 가주는 말이 어렵소.' },
+      { who:'jegal_yun', text:'…석운 소협. 저는 가끔 소협이 부럽습니다.' },
+      { who:'seokun', text:'나를? 거지를?' },
+      { who:'jegal_yun', text:'아버님이 쓰러지신 날부터 저는 가주였습니다. 울 틈도 없었지요. 소협은 웃고 싶을 때 웃고, 화날 때 화를 내지 않습니까.' },
+      { who:'seokun', text:'…헤헤. 개방이 원래 그렇소. 거지는 잃을 게 없으니까.' },
+      { who:'seokun', text:'근데 제갈 가주. 울고 싶으면 여기서 울어도 되오. 성화대는 그런 데요.' },
+      { who:'jegal_yun', text:'……. 나중에요. 다 끝나면.' },
+      { who:'seokun', text:'약속이오! 그날은 내가 술 사겠소.' },
+      { who:'hero', text:'(나중에, 다 끝나면. 모두가 그 말을 품고 걷는다.)' },
+      { who:'hero', text:'(할아버님은… 어떤 얼굴일까. 사십 년을 울지 못한 사람은, 어떤 얼굴이 될까.)' },
+      { who:'jegal_yun', text:'대주. 마교가 무너지면, 천명은 더는 숨을 곳이 없습니다. 그때가 오면… 칼을 드실 수 있겠습니까.' },
+      { who:'hero', text:'…아버님이 끝내 들지 않으신 칼이에요. 이번엔 제가 들게요.', textM:'…아버님께서 끝내 들지 않으신 칼입니다. 이번엔 제가 들겠습니다.', textF:'…아버님이 끝내 들지 않으신 칼이에요. 이번엔 제가 들게요.' },
+    ],
+    next:'mc_arrival',
+  },
   mc_arrival: {
     chapter:'제9장',
     place:'천마신교 총단 앞',
@@ -8030,7 +8438,35 @@ Object.assign(SCENES, {
       { who:'jegal_yun', text:'마지막 싸움에는 젊은 검이 더 필요하다고 하셨습니다. 영파에서 기다린다 합니다.' },
       { who:'hero', text:'동해로 갑시다. 천명대, 그리고 구천궁으로.' },
     ],
+    next:'tg_ch9',
+  },
+  tg_ch9: {
+    chapter:'제9장',
+    place:'봉래 천명대',
+    bg:'mk_th',
+    cast:[ 'cheonmu', 'haranseol', 'sanggwanhyeok', 'hahugyeol' ],
+    script:[
+      { who:'narr', text:'동해, 봉래의 천명대. 사대천왕 가운데 남은 셋이 천명 앞에 무릎을 꿇었다.' },
+      { who:'sanggwanhyeok', text:'마교까지 무너졌습니다. 흐흐, 이제 천교에 남은 건 저희뿐이군요.' },
+      { who:'hahugyeol', text:'현무가 태항산에서 꺾였을 때 알아봤어야 했소. 그 불씨는 작지 않소.' },
+      { who:'cheonmu', text:'그래서 너희를 동해에 모은 것이다.' },
+      { who:'haranseol', text:'주인님. 성화대가 영파에 닿았습니다. 무림맹이 후기지수들까지 보냈다 합니다.' },
+      { who:'cheonmu', text:'젊은 검들이 모이는군. …좋다. 봉래의 해안, 선궁, 그리고 이 천명대. 너희 셋이 하나씩 지켜라.' },
+      { who:'sanggwanhyeok', text:'손주님은 어찌할까요? 산 채로 모셔 올까요, 흐흐.' },
+      { who:'cheonmu', text:'너희를 넘지 못하면 그뿐이다. 넘는다면, 구천궁으로 가는 길을 열어 주어라.' },
+      { who:'hahugyeol', text:'…지도를 내주라는 말씀이오?' },
+      { who:'cheonmu', text:'하늘에 오를 자격이 있는 자에게는.' },
+      { cast:[ 'haranseol' ], who:'narr', text:'천왕들이 물러간 뒤에도, 하란설은 오래도록 천명대에 남아 있었다.' },
+      { who:'haranseol', text:'(스무 해 전. 백도의 싸움에 휘말려 불탄 마을. 잿더미 속에서 나를 꺼낸 것이 주인님이었다.)' },
+      { fb:true, cast:[], who:'narr', text:'— 스무 해 전. 이름도 남지 않은 강가의 마을.' },
+      { who:'cheonmu', text:'울지 마라. 너를 버린 것은 하늘이 여럿이기 때문이다.' },
+      { who:'npc', name:'어린 하란설', text:'…하늘이요?' },
+      { who:'cheonmu', text:'내가 하늘을 하나로 만들면, 다시는 아무도 버려지지 않는다. 따라오겠느냐.' },
+      { fb:false, cast:[ 'haranseol' ], who:'haranseol', text:'(주인님께 버려진 자는 없었다. …그 아들 하나를 빼면.)' },
+      { who:'haranseol', text:'그 아이가 오거든, 이 하란설이 먼저 보겠습니다. 주인님의 하늘을 물려받을 그릇인지.' },
+    ],
     next:'nb_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -8113,7 +8549,7 @@ Object.assign(BATTLES, {
       gold:4100,
       suryeon:6400,
       exp:65,
-      next:'mc_arrival',
+      next:'ridge_night',
     },
   },
   demon_hq: {
@@ -8452,6 +8888,35 @@ Object.assign(SCENES, {
     sortie:'zhoushan',
     unlock:'hub',
   },
+  nb_night: {
+    chapter:'제10장',
+    place:'영파 제독부 · 뒤뜰',
+    bg:'mk_nb',
+    cast:[ 'paeng_soho', 'hero', 'hwasan_hyeonjeok' ],
+    script:[
+      { who:'narr', text:'주산 군도를 되찾은 밤. 영파 제독부 뒤뜰에 성화대의 술상이 차려졌다.' },
+      { who:'paeng_soho', text:'자, 현적 소협! 화산 사람은 술도 매화처럼 곱게 마신다던데, 정말이오?' },
+      { who:'hwasan_hyeonjeok', text:'크하하, 누가 그런 헛소리를! 화산의 술은 매화가 아니라 벼락이오!' },
+      { cast:[ 'hwasan_hyeonwon', 'hero', 'hwasan_hyeonjeok' ], who:'hwasan_hyeonwon', text:'현적. 사부님께서 술은 석 잔까지라 하셨다.' },
+      { who:'hwasan_hyeonjeok', text:'사형, 여긴 동해요. 사부님 귀는 화산에 있소.' },
+      { cast:[ 'namgung_jin', 'hero', 'namgung_seol' ], who:'namgung_seol', text:'오라버니도 한잔 해요. 성화대에 온 첫 싸움인데, 무사히 돌아왔잖아요.' },
+      { who:'namgung_jin', text:'…나는 술을 못 한다.' },
+      { who:'namgung_seol', text:'거짓말! 아버님 몰래 가주전 술독 비운 거, 저 다 알아요.' },
+      { who:'namgung_jin', text:'설아.' },
+      {
+        who:'hero',
+        text:'(남궁진의 귀가 붉어졌다. …나에게도 저렇게 투닥거릴 오라버니가 있었는데.)',
+        textM:'(남궁진의 귀가 붉어졌다. …명화가 살아 있었다면, 저렇게 나를 놀렸을까.)',
+        textF:'(남궁진의 귀가 붉어졌다. …나에게도 저렇게 투닥거릴 오라버니가 있었는데.)',
+      },
+      { cast:[ 'haun', 'hero', 'cheolmyeong' ], who:'haun', text:'위지 대협. 곤륜에서 비무할 때, 대협의 화살이 발끝 앞에 꽂힐 때마다 걸음이 끊겼소. 그게 아직도 분하오.' },
+      { who:'cheolmyeong', text:'하하, 그날 하 소협의 검이 반 치만 빨랐어도 내가 졌소.' },
+      { who:'haun', text:'반 치라. …그 반 치를 채우러 성화대에 왔소.' },
+      { who:'cheolmyeong', text:'그럼 봉래 해안에서 누가 먼저 닿나 겨뤄 봅시다.' },
+      { who:'hero', text:'(작은 불씨 하나가 들판을 태운다. 곽 대협의 말이 이제야 실감이 났다. 성화대는 더는 나 혼자의 복수가 아니었다.)' },
+    ],
+    next:'bt_arrival',
+  },
   bt_arrival: {
     chapter:'제10장',
     place:'보타문 보제사',
@@ -8460,7 +8925,7 @@ Object.assign(SCENES, {
     script:[
       { who:'narr', text:'주산 군도의 작은 섬, 보타산. 관음 도량의 종소리가 바다 위로 울려 퍼졌다.' },
       { who:'jaun', text:'보타문 장문 제자 자운이에요. 봉래로 가는 길을 찾는다고요?' },
-      { who:'hero', text:'천교의 사대천왕이 봉래에 있다 들었습니다.' },
+      { who:'hero', text:'남은 사대천왕 셋이 봉래에 있다 들었습니다.' },
       { who:'jaun', text:'봉래는 신기루에 가려진 섬이에요. 보타문은 대대로 그 신기루가 걷히는 물때를 알고 있지요. 제가 배를 안내할게요.' },
       { who:'jeongsim', text:'자운 사저, 고마워요.' },
       { who:'jaun', text:'아미와 보타는 한 집안이나 마찬가지예요. …조심해요. 봉래 해안은 청룡천왕 하후결이 지켜요.' },
@@ -8520,7 +8985,36 @@ Object.assign(SCENES, {
       { who:'cheonghwa', text:'물론입니다.' },
       { who:'cheolmyeong', text:'당연한 소리를.' },
     ],
+    next:'tg_ch10',
+  },
+  tg_ch10: {
+    chapter:'제10장',
+    place:'구천궁 천명전 · 밤',
+    bg:'mk_jt',
+    cast:[ 'cheonmu', 'taeheo' ],
+    script:[
+      { who:'narr', text:'구천궁 천명전. 사대천왕이 모두 쓰러졌다는 소식이 닿은 밤.' },
+      { who:'taeheo', text:'주작까지 쓰러졌습니다. 하란설은 마지막에 지도를 내주었다 하더군요.' },
+      { who:'cheonmu', text:'…하란설답구나.' },
+      { who:'taeheo', text:'이제 구천궁에 남은 것은 교주님과 이 늙은이뿐입니다.' },
+      { who:'narr', text:'천명은 대답 대신, 소매에서 낡은 것 하나를 꺼냈다. 반쯤 타다 남은 연등의 살이었다.' },
+      { who:'taeheo', text:'사십 년을 품고 계셨군요.' },
+      { who:'cheonmu', text:'…십 년 전, 내 아들도 이것을 보았지.' },
+      { fb:true, bg:'yangyang_manor', cast:[], who:'narr', text:'— 십 년 전. 양양, 천씨세가의 사당.' },
+      { who:'npc', name:'천씨 가주', text:'…아버님? 살아 계셨습니까. 삼십 년을… 대체 어디에…' },
+      { who:'cheonmu', text:'함께 가자. 백도는 우리 천씨를 미끼로 버렸다. 네 어미와 누이를 태운 그 하늘을, 이제 내가 바꾸겠다.' },
+      { who:'npc', name:'천씨 가주', text:'어머님과 누이의 일은 저도 압니다. 저도 백도를 용서하지 못합니다.' },
+      { who:'npc', name:'천씨 가주', text:'하지만 아버님. 하늘을 하나로 만드는 칼은, 결국 또 다른 누군가를 미끼로 삼습니다.' },
+      { who:'npc', name:'천씨 가주', text:'천씨의 칼은 그 하늘을 위해 들지 않겠습니다. 그것이 제 대답입니다.' },
+      { who:'cheonmu', text:'……. 그렇다면 천씨는, 나 하나로 족하다.' },
+      { fb:false, bg:'mk_jt', cast:[ 'cheonmu', 'taeheo' ], who:'taeheo', text:'후회하십니까.' },
+      { who:'cheonmu', text:'하늘은 후회하지 않는다.' },
+      { who:'taeheo', text:'(그렇다면 어찌하여, 그 연등을 아직 놓지 못하시는가.)' },
+      { who:'taeheo', text:'외전은 이 늙은이가 지키겠습니다. 사십 년 전 교주님께 마공을 가르친 자로서, 그 마공의 끝이 어디인지 제 눈으로 보고 싶습니다.' },
+      { who:'cheonmu', text:'…그리하라.' },
+    ],
     next:'yc_arrival',
+    pov:'천교',
   },
 });
 // 전투
@@ -8570,7 +9064,7 @@ Object.assign(BATTLES, {
       gold:4600,
       suryeon:7000,
       exp:70,
-      next:'bt_arrival',
+      next:'nb_night',
     },
   },
   penglai_shore: {
@@ -8598,7 +9092,7 @@ Object.assign(BATTLES, {
     victory:{
       bossDown:'e1',
       retreat:{ who:'e1', line:'크흐… 청룡이… 꺾이다니. 선궁의 백호가… 너희를 기다린다……', all:true, msg:'봉래의 수비병들이 선궁 쪽으로 물러납니다.' },
-      talk:[ { who:'hero', text:'사대천왕 하나.' } ],
+      talk:[ { who:'hero', text:'태항산의 현무에 이어 청룡까지. 사대천왕 둘.' } ],
       loot:[ '보물상자', '중급 영약', '현철' ],
       gold:4700,
       suryeon:7200,
@@ -8646,7 +9140,7 @@ Object.assign(BATTLES, {
     victory:{
       bossDown:'e1',
       retreat:{ who:'e1', line:'크윽… 백호의 권이… 주작께서… 천명대에서 지도를 지키고 계신다……', all:true, msg:'선궁의 시위들이 천명대 쪽으로 물러납니다.' },
-      talk:[ { who:'hero', text:'사대천왕 둘. 남은 것은 주작천왕입니다.' } ],
+      talk:[ { who:'hero', text:'사대천왕 셋. 남은 것은 주작천왕입니다.' } ],
       loot:[ '보물상자', '중급 영약', '천잠사' ],
       gold:4800,
       suryeon:7400,
@@ -8676,7 +9170,7 @@ Object.assign(BATTLES, {
       { id:'cheongyo_priestess', x:20, y:8, level:'hero-1', hold:2 },
     ],
     intro:[
-      { who:'e1', text:'청룡과 백호를 꺾은 불씨로구나. 주인님의 손주.' },
+      { who:'e1', text:'현무와 청룡, 백호를 꺾은 불씨로구나. 주인님의 손주.' },
       { who:'hero', text:'그자를 주인이라 부르지 마시오. 그자는 천씨를 스스로 끊은 자요.' },
       { who:'e1', text:'주인님은 하늘을 하나로 만들려 하실 뿐이다. 그 길에 핏줄 따위가 무슨 상관이냐.' },
     ],
@@ -8770,6 +9264,47 @@ Object.assign(SCENES, {
       { cast:[ 'seolran', 'hero', 'jincheongang' ], who:'seolran', text:'빙벽의 얼음은 북해의 것과 닮았어요. 냉천은 빙궁을 떠난 배교자예요. 빙궁의 이름으로 제가 앞장설게요.' },
       { who:'jincheongang', text:'원정대의 마지막 짐은 성화대 막사에 옮겨 두었소. 채비가 되면 말해 주시오.' },
     ],
+    next:'yc_night',
+  },
+  yc_night: {
+    chapter:'최종장',
+    place:'원정 진영 · 성화대의 모닥불',
+    bg:'mk_yc',
+    cast:[ 'namgung_seol', 'hero', 'jegal_yun' ],
+    script:[
+      { who:'narr', text:'원정 진영의 마지막 밤. 성화대의 모닥불 둘레로 하나둘 사람들이 모여들었다.' },
+      { who:'namgung_seol', text:'대주, 다 끝나면 뭐 할 거예요? 저는 남궁세가로 돌아가서 아버님한테 자랑할 거예요. 천교를 무너뜨린 게 남궁의 딸이라고!' },
+      { who:'jegal_yun', text:'무너뜨린 건 성화대지요.' },
+      { who:'namgung_seol', text:'그러니까, 성화대의 남궁설!' },
+      { who:'jegal_yun', text:'저는 아버님 묘소에 가겠습니다. …그리고 그때 울겠습니다. 석운 소협과 약속했거든요.' },
+      { cast:[ 'seokun', 'hero', 'dangsoso' ], who:'seokun', text:'헤헤, 그 약속 꼭 지키시오, 제갈 가주. 나는 황 방주님께 성화대 이야기를 사흘 밤낮 떠들 거요.' },
+      { who:'dangsoso', text:'나는 당가로 돌아가서, 만독문 같은 놈들이 다시는 안 나오게 할 거예요. 정심, 너는?' },
+      { cast:[ 'jeongsim', 'hero', 'hyegong' ], who:'jeongsim', text:'아미로 돌아가서… 의방을 열고 싶어요. 다친 사람이 언제든 찾아올 수 있게요.' },
+      { who:'hyegong', text:'아미타불. 소승은 숭산으로 돌아가 면벽을 하겠소. 이번 길에서 쥔 주먹들을, 하나하나 다시 펴 봐야겠소.' },
+      { cast:[ 'seolran', 'hero', 'baraka' ], who:'seolran', text:'저는 북해로 돌아가요. 궁주님께, 바깥에도 차를 나눠 마실 사람들이 있다고 전할 거예요.' },
+      { who:'baraka', text:'짐승들을 데리고 밀림으로 가겠소. 그리고 가끔은, 성도에 내려와 술을 얻어먹겠소.' },
+      { cast:[ 'hyeondo', 'hero', 'haun' ], who:'hyeondo', text:'나는 종남으로 돌아가서 사부님께 혼날 거요. 너무 오래 나와 있었으니!' },
+      { who:'haun', text:'나는 곤륜의 길을 지키겠소. 다음에 성화대가 곤륜을 지날 때는, 비무 없이 열어 드리지.' },
+      { cast:[ 'paeng_soho', 'hero', 'namgung_jin' ], who:'paeng_soho', text:'하하, 나는 아버님 술독을 지켜야지!' },
+      { who:'namgung_jin', text:'…나는 남궁의 담을 더 높이 쌓겠소. 다시는 누구도 넘지 못하게. 그리고 설이가 넘어 나갈 문 하나쯤은 남겨 두겠소.' },
+      { cast:[ 'hwasan_hyeonwon', 'hero', 'hwasan_hyeonjeok' ], who:'hwasan_hyeonwon', text:'화산으로 돌아가 매화당에 화원파의 이름을 새기겠소. 소운이라는 아이의 이름도 함께.' },
+      { who:'hwasan_hyeonjeok', text:'크하하, 그리고 위지 대협을 화산의 객경으로 모셔야지!' },
+      { cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'cheolmyeong', text:'객경이라니, 활 쏘는 늙은이한테 과분하오.' },
+      { who:'narr', text:'웃음소리가 잦아들 무렵, 모닥불 곁에는 세 사람만 남았다.' },
+      { who:'cheonghwa', text:'{name} {소협|소저}. 내일이면… 그분을 만나게 됩니다.' },
+      { who:'hero', text:'…네.', textM:'…예.', textF:'…네.' },
+      { who:'hero', text:'(할아버님. 그 사람을 그렇게 부를 수 있을까. 칼을 겨누면서.)' },
+      { who:'cheolmyeong', text:'대주. 내일 그 사람 앞에서 칼이 무거우면, 내 화살이 먼저 가겠소.' },
+      { who:'hero', text:'…아니에요. 이건 제 몫이에요.', textM:'…아닙니다. 이건 제 몫입니다.', textF:'…아니에요. 이건 제 몫이에요.' },
+      { who:'cheonghwa', text:'그렇다면 저희는 대주의 등을 지키겠습니다. 그 사람 말고는 아무도, 대주께 닿지 못하게.' },
+      {
+        who:'hero',
+        text:'처음엔 살아남으려고 걸었어요. 그다음엔 원수를 갚으려고요. 이제는… 이 사람들 곁에 있으려고 걸어요.',
+        textM:'처음엔 살아남으려고 걸었습니다. 그다음엔 원수를 갚으려고 걸었고요. 이제는… 이 사람들과 함께 걸으려고 걷습니다.',
+        textF:'처음엔 살아남으려고 걸었어요. 그다음엔 원수를 갚으려고요. 이제는… 이 사람들 곁에 있으려고 걸어요.',
+      },
+      { who:'narr', text:'설원의 하늘에 별이 가득했다. 그 가운데 작은 별 하나가, 유난히 밝았다.' },
+    ],
     end:{ bg:'mk_yc', cast:[ 'hero', 'guo', 'jincheongang' ] },
     npcs:[
       { id:'guo', x:66, y:64, line:'천명은 사십 년 동안 마공을 쌓은 자요. 그의 앞에서는 한 사람의 힘이 아니라, 성화대의 힘으로 맞서시오.' },
@@ -8827,12 +9362,20 @@ Object.assign(SCENES, {
       { who:'cheonmu', text:'왔느냐. 내 손주야.' },
       { who:'hero', text:'…천무극.' },
       { who:'cheonmu', text:'할아비라 부르지 않는구나. 그것도 네 아비를 닮았다.' },
-      { who:'cheonmu', text:'사십 년 전, 혈교와의 싸움에서 백도는 내 장원을 미끼로 던졌다. 내 아내와 딸은 그 밤 불길 속에서 죽었지. 무림맹은 그것을 대의라 불렀다.' },
+      { who:'cheonmu', text:'사십 년 전, 혈교와의 싸움에서 백도는 내 장원을 미끼로 던졌다. 내 아내와 딸은 그 밤 불길 속에서 죽었지. 백도는 그것을 대의라 불렀다.' },
       { who:'cheonmu', text:'그래서 깨달았다. 하늘이 여럿이면 누군가는 반드시 버려진다. 하늘은 하나여야 한다.' },
       { who:'cheonmu', text:'네 아비에게 함께 가자 했다. 그 아이는 거절했지. 백도를 위해서도, 백도를 무너뜨리기 위해서도 칼을 들 수는 없다고.' },
       { shake:true, who:'cheonmu', text:'그래서 본보기를 보였다. 천씨는 나 하나로 족하다.' },
-      { who:'hero', text:'그 본보기에 어머님이, 오라버니가, 식솔들이 죽었어요.', textM:'그 본보기에 어머님이, 명화가, 식솔들이 죽었습니다.', textF:'그 본보기에 어머님이, 오라버니가, 식솔들이 죽었어요.' },
-      { who:'cheonmu', text:'그 불길 속에서 네가 살아남은 것은 하늘의 뜻이었다. 이리 오너라, 천씨의 마지막 불씨야. 나와 함께 하늘을 하나로 만들자.' },
+      { who:'hero', text:'그 본보기에 아버님과 어머님이, 오라버니가, 식솔들이 죽었어요.', textM:'그 본보기에 아버님과 어머님이, 명화가, 식솔들이 죽었습니다.', textF:'그 본보기에 아버님과 어머님이, 오라버니가, 식솔들이 죽었어요.' },
+      { who:'cheonmu', text:'그 불길 속에서 네가 살아남은 것은 하늘의 뜻이었다.' },
+      {
+        who:'hero',
+        text:'하늘의 뜻이 아니에요. 구후가 불을 질렀어요. 당신이 산 채로 데려오라던 아이들을. 그리고 당신은 그걸 알면서도 십 년을 내버려 뒀어요.',
+        textM:'하늘의 뜻이 아닙니다. 구후가 불을 질렀습니다. 당신이 산 채로 데려오라던 아이들을. 그리고 당신은, 그걸 알고도 십 년을 두었습니다.',
+        textF:'하늘의 뜻이 아니에요. 구후가 불을 질렀어요. 당신이 산 채로 데려오라던 아이들을. 그리고 당신은 그걸 알면서도 십 년을 내버려 뒀어요.',
+      },
+      { who:'cheonmu', text:'그래. 구후의 칼끝도 피하지 못할 아이라면, 이 하늘을 이을 그릇이 아니었을 테니.' },
+      { who:'cheonmu', text:'너는 넘었다. 구후도, 혈교도, 마교도, 사대천왕도… 내게 마공을 가르친 태허까지. 이리 오너라, 천씨의 마지막 불씨야. 나와 함께 하늘을 하나로 만들자.' },
       {
         cast:[ 'hero', 'cheonmu', 'cheolmyeong' ],
         who:'hero',
@@ -8848,6 +9391,7 @@ Object.assign(SCENES, {
       },
       { who:'cheolmyeong', text:'화원파의 사제들도 그 불빛 속에 있소. 당신이 버린 자들도 말이오.' },
       { cast:[ 'hero', 'cheonmu', 'cheonghwa' ], who:'cheonghwa', text:'사람은 핏줄이 아니라 걷는 길로 이름이 남습니다. {name} {소협|소저}의 길은, 당신의 길이 아닙니다.' },
+      { who:'narr', text:'천명의 소매 끝에서, 반쯤 타다 남은 연등의 살 하나가 흔들렸다.' },
       { who:'cheonmu', text:'…어리석은 것들. 좋다. 네 아비처럼, 그 대답의 값을 치르거라.' },
     ],
     fight:'final',
@@ -8860,9 +9404,10 @@ Object.assign(SCENES, {
     script:[
       { who:'narr', text:'천명이 쓰러지던 그 시각, 설원을 에워쌌던 천교의 군세도 깃발을 내렸다.' },
       { who:'guo', text:'{name} {소협|소저}. 수고하셨소. 정말로… 수고하셨소.' },
-      { who:'hero', text:'곽 대협. 그분은… 마지막에 아버님을 불렀습니다.' },
+      { who:'hero', text:'곽 대협. 그분은… 마지막에 제 아버님을 불렀습니다.' },
       { who:'guo', text:'…그랬구려. 사십 년 동안 그도 그 밤에 갇혀 있었던 게요. 그대가 그 밤을 끝낸 거요.' },
-      { who:'huang', text:'무림맹도 할 일이 생겼지. 사십 년 전 천씨의 장원을 버린 일, 이제는 덮어 둘 수 없을 테니까.' },
+      { who:'huang', text:'무림맹도 할 일이 생겼지. 사십 년 전 백도가 천씨의 장원을 버린 일, 이제는 덮어 둘 수 없을 테니까.' },
+      { who:'narr', text:'천명전의 옥좌 아래에서는 반쯤 타다 남은 연등의 살 하나가 발견되었다. 성화대의 대주는 말없이 그것을 품에 넣었다.' },
       { cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'cheolmyeong', text:'화원파를 다시 세워야겠소. 이번엔 활 쏘는 문파로 말이오. 하하.' },
       { who:'cheonghwa', text:'저는 무당산으로 돌아가 사조님께 말씀드리려 합니다. 작은 별 하나가 하늘을 지켰다고요.' },
       { who:'hero', text:'작은 별이라니요.' },
@@ -8870,7 +9415,17 @@ Object.assign(SCENES, {
       { cast:[ 'hero', 'seokun', 'namgung_seol' ], who:'seokun', text:'대주! 성화대는 이제 어떻게 되는 거요? 설마 여기서 해산이오?' },
       { who:'namgung_seol', text:'강호에 불씨가 남아 있는 한 성화대도 남아야죠. 그렇죠, 대주?' },
       { who:'hero', text:'…그래요. 꺼지지 않는 불이 되어야죠.', textM:'…그렇습니다. 꺼지지 않는 불이 되겠습니다.', textF:'…그래요. 꺼지지 않는 불이 되어야죠.' },
-      { bg:'mk_cd', cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'narr', text:'몇 달 뒤, 성도 망강루. 성화대의 깃발 아래로 다시 사람들이 모여들었다.' },
+      { bg:'yangyang_manor', cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'narr', text:'몇 달 뒤, 양양. 십 년 만에 다시 세운 천씨세가의 사당에, 연등 두 개가 걸렸다.' },
+      { who:'narr', text:'하나는 사십 년 전 그 여름밤을 위한 것, 하나는 십 년 전 양양이 불타던 밤을 위한 것이었다.' },
+      {
+        who:'hero',
+        text:'아버님, 어머님. 오라버니. …그리고 할아버님, 할머님, 고모님. 이제 다 끝났어요.',
+        textM:'아버님, 어머님. 명화야. …그리고 할아버님, 할머님, 고모님. 이제 다 끝났습니다.',
+        textF:'아버님, 어머님. 오라버니. …그리고 할아버님, 할머님, 고모님. 이제 다 끝났어요.',
+      },
+      { who:'cheolmyeong', text:'…연등이 잘 타는구려.' },
+      { who:'cheonghwa', text:'이번엔 아무도, 미끼가 되지 않았습니다.' },
+      { bg:'mk_cd', cast:[ 'hero', 'cheonghwa', 'cheolmyeong' ], who:'narr', text:'그리고 다시 몇 달 뒤, 성도 망강루. 성화대의 깃발 아래로 다시 사람들이 모여들었다.' },
       { who:'narr', text:'천씨세가의 마지막 불씨는 더는 복수를 위해 타지 않았다. 강호의 밤길을 밝히는 작은 별이 되어.' },
       { who:'narr', text:'— 강호록 : 작은 별 · 끝 —' },
     ],
@@ -9467,15 +10022,26 @@ function applyGive(g){
   }
   return got;
 }
+// 회상 · 시점 표시 : 장면의 flashback:true (처음부터 회상) · pov:'천교' (적의 시점), 대사 줄의 fb:true / false (회상 들어가기 · 나오기)
+let storyFb = false;
+function setStoryMood(sc, fb){
+  const ss = document.getElementById('story-screen'), bd = document.getElementById('story-badge');
+  ss.classList.toggle('fb', !!fb);
+  if (!bd) return;
+  const pov = sc && sc.pov, t = fb ? (pov ? pov+' 시점 · 회상' : '회상') : (pov ? pov+' 시점' : '');
+  bd.textContent = t; bd.classList.toggle('on', !!t); bd.classList.toggle('pov', !!pov);
+}
 function advanceTo(i){
   const line = curScript()[i];
+  if (line.fb !== undefined) storyFb = !!line.fb;
   if (line.join) joinParty(line.join);
   if (line.give){ const got = applyGive(line.give); if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 300); }
   if (line.bg){
     storyBusy = true;
-    fadeSwap(()=>{ setStoryBg(line.bg); if (line.cast) setCast(line.cast); }, ()=>{ storyBusy = false; showLine(i); });
+    fadeSwap(()=>{ setStoryBg(line.bg); if (line.cast) setCast(line.cast); setStoryMood(SCENES[curScene], storyFb); }, ()=>{ storyBusy = false; showLine(i); });
     return;
   }
+  if (line.fb !== undefined) setStoryMood(SCENES[curScene], storyFb);
   if (line.cast) setCast(line.cast);
   showLine(i);
 }
@@ -9505,6 +10071,7 @@ function resetStoryScreen(sc){
   const ss = document.getElementById('story-screen');
   ss.style.display = ''; ss.classList.remove('ended');
   setStoryBg(sc.bg); setCast(sc.cast);
+  storyFb = !!sc.flashback; setStoryMood(sc, storyFb);
   document.getElementById('top-menu-wrap').classList.add('hidden');
   document.getElementById('hub-open-wrap').classList.add('hidden');
   document.getElementById('snpc-box').style.display = 'none';
