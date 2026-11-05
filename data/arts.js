@@ -159,6 +159,17 @@ const ARTS_LINE_NAMES = ['공격', '범위', '호신'];
   evo('빙심결',    '빙심결 · 설심',       { guard:{ def:20 }, selfHeal:0.06, mp:12 }, '자신 · 다음 턴까지 방어 +20, 체력 6% 회복');
 })();
 
+/* ---------- 5. 심법 (이야기에서 받음 · 늘 적용) ----------
+   장면 대사 줄의 give:{ simbeop:'자하공', to:'cheolmyeong' } 로 받음 — 효과는 수련도 심법과 똑같이 더해짐
+   effect : mpRegen 아군 턴마다 내공 + · hpRegen 체력 + · dmgCut 받는 피해 감소 · counterPow 반격 위력 + */
+const SIMBEOP = {
+  '자하공':     { effect:{ mpRegen:15, hpRegen:30, dmgCut:0.05 }, desc:'화산의 근본 심법 — 몸 안에 자줏빛 노을 같은 기운을 피움 (청송진인에게 받음)' },
+  '순양무극공': { effect:{ mpRegen:10, hpRegen:40, dmgCut:0.07 }, desc:'무당의 근본 심법 — 순한 양기가 끝없이 돌아 몸을 지킴 (장삼봉에게 받음)' },
+};
+
+// 주인공이 정심에게 배우는 치유 (운기요상은 옆 칸, 이건 두 칸 안)
+SKILLS['관음 연화수'] = { range:2, area:'ally', heal:0.3, mp:16, desc:'2칸 안 아군 하나 · 체력 30% 회복 — 연꽃처럼 멀리 뻗는 아미의 치유 (정심에게 배움)' };
+
 // 수련도 기본 판의 무공 이름 바꾸기 (남궁진 : 남궁설과 같은 창궁검법에서 시작 · 제왕검형은 둘째 초식부터)
 (function(){
   const fix = (id, nid, skill)=>{ const n = (TRAIN_TREE[id] || []).find(x=> x.id===nid); if (n){ n.skill = skill; n.name = skill; } };

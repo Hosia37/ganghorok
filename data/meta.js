@@ -46,7 +46,7 @@ const META_NPCS = {
     { id:'zhang', x:34, y:64, kiyeon:'ky_taegeuk', cond:{ member:'cheonghwa', realm:['cheonghwa','절정 초입'] },
       talk:[
         { who:'zhang',     text:'청화야. 숭산까지 오느라 고생이 많았구나.' },
-        { who:'cheonghwa', text:'사조님! 무당을 떠나 이곳까지 어인 일로…' },
+        { who:'cheonghwa', text:'사조님! 화산에서 뵌 뒤로 처음입니다.' },
         { who:'zhang',     text:'늙은이도 가끔은 산을 내려온다. 네 검이 얼마나 자랐는지 보고 싶었다.' },
         { who:'zhang',     text:'검이 막히거든 손을 써라. 구름이 손을 따라 흐르듯 — 운수(雲手)다. 이것도 태극이다.', give:true },
         { who:'cheonghwa', text:'…명심하겠습니다, 사조님.' },
@@ -127,11 +127,11 @@ const META_NPCS = {
   bo_arrival: [
     { id:'jeongsim', x:34, y:64,
       talk:[
-        { who:'jeongsim',  text:'청화 소저, 앞에서 늘 맞는 걸 보면 마음이 쓰여요. 아미에서 달인 금창고예요.' },
-        { who:'cheonghwa', text:'이렇게 귀한 걸… 정심 소저가 쓰셔야 하지 않아요?' },
-        { who:'jeongsim',  text:'남을 지키는 사람일수록 자기 상처는 모른 척해요. 그러니까 꼭 쓰세요.', give:true },
+        { who:'jeongsim',  text:'{name} {소협|소저}, 늘 맨 앞에 서시잖아요. 다쳐도 옆에 누가 올 때까지 버티기만 하고요.' },
+        { who:'hero',      text:'아미의 치유술을… 제가 배워도 괜찮아요?', textM:'아미의 치유술을… 제가 배워도 되겠습니까?', textF:'아미의 치유술을… 제가 배워도 괜찮아요?' },
+        { who:'jeongsim',  text:'남을 낫게 하는 손은 누가 가져도 좋은 손이에요. 관음수를 조금 고쳐 봤어요, 두 칸 떨어진 사람한테도 닿게. 자, 숨을 이렇게.', give:true },
       ],
-      give:{ items:[ { item:'금창고', n:3 }, '청심환' ] },
+      give:{ skill:'관음 연화수', to:'hero' },
       after:'다쳤을 때는 자기부터 낫게 하세요. 그래야 남도 지켜요.' },
   ],
   gbt_arrival: [

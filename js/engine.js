@@ -155,6 +155,7 @@ function elixirCount(st, name){
 function treeEffects(id){
   const e = { mpRegen:0, hpRegen:0, counterPow:0, dmgCut:0 };
   unlockedNodes(id).forEach(n=>{ if (n.effect) for (const k in n.effect) e[k] = (e[k]||0) + n.effect[k]; });
+  if (typeof artsSimbeopEffects==='function') artsSimbeopEffects(id, e);   // 이야기에서 받은 심법 (자하공 등 · js/arts.js)
   e.dmgCut = Math.min(0.6, e.dmgCut);                       // 받는 피해 감소는 최대 60%
   return e;
 }
@@ -292,6 +293,11 @@ function applyGive(g){
     if (st){ st.learned = st.learned || []; if (!st.learned.includes(g.skill)) st.learned.push(g.skill);
              got.push(nameOf(id)+josa(nameOf(id),'이','가')+' 무공 「'+g.skill+'」'+josa(g.skill,'을','를')+' 익힘');
              if (typeof artsAfterLearn==='function') artsAfterLearn(id, g.skill); }
+  }
+  if (g.simbeop && typeof SIMBEOP !== 'undefined' && SIMBEOP[g.simbeop]){        // 심법 (data/arts.js 의 SIMBEOP)
+    const id = g.to || 'hero', st = memberState(id);
+    if (st){ st.simbeop = st.simbeop || []; if (!st.simbeop.includes(g.simbeop)) st.simbeop.push(g.simbeop);
+             got.push(nameOf(id)+josa(nameOf(id),'이','가')+' 심법 「'+g.simbeop+'」'+josa(g.simbeop,'을','를')+' 깨우침'); }
   }
   return got;
 }
@@ -1437,7 +1443,7 @@ function makeHero(){
   const msg = document.getElementById('name-msg');
   if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
   HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
-  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; HERO.arts = null; delete HERO.train;
+  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; HERO.arts = null; HERO.simbeop = []; delete HERO.train;
   equipFixedGear('hero', 0);                                   // 무기 · 방어구 : 인물마다 고정 (주인공 철검 · 천옷)
   resetParty();
   PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0; PLAYER.meta = {};
@@ -1469,7 +1475,7 @@ function makeSnapshot(){
   const sceneId = (saveCtx && saveCtx.scene) || curScene, sc = SCENES[sceneId];
   const snap = { v:1, rv:2, time:Date.now(), chapter:sc.chapter, place:sc.place, scene:sceneId, pos:(saveCtx && saveCtx.pos) || 'end',
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
-                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}), arts:HERO.arts ? JSON.parse(JSON.stringify(HERO.arts)) : null },
+                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}), arts:HERO.arts ? JSON.parse(JSON.stringify(HERO.arts)) : null, simbeop:(HERO.simbeop||[]).slice() },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
            player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0), meta:JSON.parse(JSON.stringify(PLAYER.meta || {})) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
@@ -1525,8 +1531,10 @@ function learnCatchUp(scene, passed){
   Object.keys(SCENES).forEach(id=>{
     const i = storyIdx(id); if (i < 0 || i >= lim) return;
     (SCENES[id].script || []).forEach(l=>{
-      const g = l.give; if (!g || !g.skill || !SKILLS[g.skill]) return;
+      const g = l.give; if (!g) return;
       const to = g.to || 'hero', st = memberState(to); if (!st || !isParty(to)) return;
+      if (g.simbeop && typeof SIMBEOP !== 'undefined' && SIMBEOP[g.simbeop]){ st.simbeop = st.simbeop || []; if (!st.simbeop.includes(g.simbeop)) st.simbeop.push(g.simbeop); }
+      if (!g.skill || !SKILLS[g.skill]) return;
       st.learned = st.learned || []; if (!st.learned.includes(g.skill)) st.learned.push(g.skill);
     });
   });
@@ -1552,6 +1560,7 @@ function applySnapshot(s){
   HERO.tree = (s.hero.tree || []).slice(); HERO.learned = (s.hero.learned || []).slice(); HERO.elixir = (s.hero.elixir && typeof s.hero.elixir === 'object') ? Object.assign({}, s.hero.elixir) : (s.hero.elixir || 0);
   HERO.attr = Object.assign({ mu:0, ne:0, sin:0 }, s.hero.attr || {});
   HERO.arts = s.hero.arts ? JSON.parse(JSON.stringify(s.hero.arts)) : null;     // 무공 칸 (예전 저장은 처음에 저절로 채움)
+  HERO.simbeop = (s.hero.simbeop || []).slice();
   PARTY = (s.party && s.party.length) ? s.party.slice() : ['hero'];
   MEMBERS = JSON.parse(JSON.stringify(s.members || {}));
   Object.keys(MEMBERS).forEach(id=>{ const m = MEMBERS[id]; m.realm = keepRealm(m.realm, m.level); m.equip = Object.assign(emptyEquip(), m.equip||{});
@@ -2052,7 +2061,7 @@ function skillText(d, ms){
   ms = ms || {};
   const star = ms.star > 1 ? ' · '+ms.star+'성' : '';
   if (d.area==='self') return '자신 · 다음 턴까지 방어 +'+(((d.guard||{}).def||0) + (ms.guard||0))+(d.selfHeal ? ' · 체력 '+Math.round(d.selfHeal*100)+'% 회복' : '')+' · 내공 '+d.mp+star;
-  if (d.area==='ally') return '자신 · 옆 아군 · 체력 '+Math.round(((d.heal||0) + (ms.heal||0))*100)+'% 회복 · 내공 '+d.mp+star;
+  if (d.area==='ally') return ((d.range||1) > 1 ? d.range+'칸 안 자신 · 아군' : '자신 · 옆 아군')+' · 체력 '+Math.round(((d.heal||0) + (ms.heal||0))*100)+'% 회복 · 내공 '+d.mp+star;
   return d.desc+' · 거리 '+(d.minRange ? d.minRange+'~'+d.range : d.range)+' · 위력 공격×'+(+(d.power + (ms.power||0)).toFixed(2))+' · 내공 '+d.mp+star;
 }
 // 수련도 노드 효과 설명
@@ -2626,7 +2635,7 @@ function renderTreeInfo(){
   const ms = treeMastery(id);
   const sk = memberSkills(id).map(s=> s + (ms[s] && ms[s].star > 1 ? ' '+ms[s].star+'성' : ''));
   // 심법 : 지난 경지에서 익힌 것까지 (같은 심법의 윗 경지 노드는 하나로)
-  const pas = Array.from(new Set(unlockedNodes(id).filter(x=>x.type==='passive').map(x=>{ const base = treeBase(id).find(b=>b.id===x.id.replace(/^r\d+:/,'')); return base ? base.name : x.name; })));
+  const pas = Array.from(new Set(unlockedNodes(id).filter(x=>x.type==='passive').map(x=>{ const base = treeBase(id).find(b=>b.id===x.id.replace(/^r\d+:/,'')); return base ? base.name : x.name; }).concat((memberState(id)||{}).simbeop || [])));
   const done = all.filter(x=>on.includes(x.id)).length;
   const sum = '<div class="ti-sum">'+memberRealm(id)+' 수련도 <b>'+done+' / '+all.length+'</b><br>무공 : <b>'+(sk.join(', ') || '없음')+'</b><br>심법 : <b>'+(pas.join(', ') || '없음')+'</b></div>';
   if (!n){                                                                    // 경지 상승 화면
@@ -3384,7 +3393,7 @@ function openSkillList(u){
     b.className = 'sk-btn' + ((u.mp < d.mp || !skillHasTarget(u, name)) ? ' off' : '');
     const ms = (u.mastery && u.mastery[name]) || null;
     const area = d.area==='self' ? '자신 방어 +'+(((d.guard||{}).def||0) + ((ms && ms.guard)||0))
-               : d.area==='ally' ? '체력 '+Math.round(((d.heal||0) + ((ms && ms.heal)||0))*100)+'% 회복 · 자신/옆 아군'
+               : d.area==='ally' ? '체력 '+Math.round(((d.heal||0) + ((ms && ms.heal)||0))*100)+'% 회복 · '+((d.range||1) > 1 ? d.range+'칸 안' : '자신/옆 아군')
                : String(d.desc||'').split(' · ')[0];
     b.innerHTML = (typeof artsSkillTag==='function' ? artsSkillTag(name, u) : '') + name + (ms && ms.star>1 ? ' '+ms.star+'성' : '') + '<small>내공 ' + d.mp + ' · ' + area + '</small>';   // 좁은 메뉴 : 내공을 앞에
     b.addEventListener('click', ev=>{ ev.stopPropagation(); startSkill(u, name); });

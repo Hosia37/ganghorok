@@ -224,20 +224,94 @@ Object.assign(SCENES, {
     ],
     sortie:'hwasan_rescue',
   },
+  // 화산 매화당 : 위지렴에게 화산의 다음 장문을 청함 · 장삼봉이 조문하러 와 청화를 무당의 다음 장문으로 천명 (v124)
   hs_after: {
     chapter:'제5장',
     place:'화산 매화당',
     bg:'mk_hs',
     cast:[ 'hwasan_munju', 'hero', 'cheolmyeong' ],
     script:[
+      { who:'narr', text:'귀검대가 물러간 화산. 매화당 제단에는 새 위패 다섯 개가 놓였다.' },
       { who:'hwasan_munju', text:'위지 문주.' },
       { who:'cheolmyeong', text:'청송진인.' },
       { who:'hwasan_munju', text:'사 년 전 화원파가 무너질 때 오지 못한 화산을, 오늘 화원파의 문주가 구했네. …이 은혜를 무엇으로 갚겠나.' },
       { who:'cheolmyeong', text:'갚을 것 없소. 화원파는 화산의 이름 아래 살았소. 오늘은 그 이름을 지킨 것뿐이오.' },
       { who:'hwasan_munju', text:'화원파의 이름은 화산의 매화당에 영원히 걸어 두겠네.' },
       { who:'cheolmyeong', text:'……. 그거면 됐소.' },
-      { who:'hwasan_munju', text:'하나 더 있네. 화원파가 배운 것은 화산의 검이었지. 이제 그 검리를 화살에 실어 보게.' },
-      { who:'hwasan_munju', text:'매화낙영(梅花落英). 꽃잎이 지듯 쏟아지는 검을, 그대라면 화살로 쏠 수 있을 걸세.' },
+      { who:'hwasan_munju', text:'허나 염치없이, 하나 더 청할 것이 있네.' },
+      { who:'hwasan_munju', text:'천교와 손잡은 귀검대가 서봉을 넘던 밤, 장로 다섯이 산문을 지키다 갔네.' },
+      { who:'hwasan_munju', text:'남은 건 이 늙은이와 아직 어린 제자들뿐일세. 현원과 현적은 검은 곧으나, 문파를 짊어지기엔 이르네.' },
+      { who:'hwasan_munju', text:'위지 문주. 화산의 다음 장문을 맡아 주게.' },
+      { cast:[ 'hwasan_hyeonwon', 'hwasan_munju', 'hwasan_hyeonjeok' ], who:'hwasan_hyeonjeok', text:'사부님?!' },
+      { who:'hwasan_hyeonwon', text:'…사제, 조용히.' },
+      { cast:[ 'hwasan_munju', 'hero', 'cheolmyeong' ], who:'cheolmyeong', text:'…나는 사 년 동안 화산을 원망하던 사람이오. 그런 자에게 화산의 문을 맡기겠다는 거요?' },
+      { who:'hwasan_munju', text:'원망할 줄 아는 사람이라야, 다시는 그런 밤을 만들지 않네.' },
+      { who:'cheolmyeong', text:'……생각할 시간을 주시오.' },
+      { who:'hwasan_munju', text:'얼마든지. 매화는 기다릴 줄 아는 꽃일세.' },
+      { cast:[ 'zhang', 'hwasan_munju', 'cheonghwa' ], who:'narr', text:'그때 매화당 문간에서 낯익은 웃음소리가 들려왔다.' },
+      { who:'zhang', text:'허허, 화산의 매화가 아직 지지 않았구먼.' },
+      { who:'cheonghwa', text:'사조님!' },
+      { who:'hwasan_munju', text:'장 진인… 무당에서 여기까지 몸소 오셨습니까.' },
+      { who:'zhang', text:'도가의 벗이 다섯이나 먼저 갔다는데, 늙은이가 향 한 대 올리지 않을 수 있나.' },
+      { who:'narr', text:'장삼봉은 위패 앞에 향을 올리고, 한참을 말없이 서 있었다.' },
+      { who:'zhang', text:'…청송. 후계는 자네만 정하라는 법이 있나. 이 늙은이도 백 살을 넘겼네.' },
+      { cast:[ 'zhang', 'hero', 'cheonghwa' ], who:'zhang', text:'청화야. 무당의 다음 장문은 너다. 화산의 매화 앞에서 이 늙은이가 천명하마.' },
+      { who:'cheonghwa', text:'사조님, 저는… 산을 내려와서야 겨우 길을 보기 시작한 사람입니다.' },
+      { who:'zhang', text:'그러니 너다. 무당의 검은 산 위가 아니라 길 위에서 빛난다 했지. 길 위에서 빛난 검이라야 산을 지킨다.' },
+      { who:'zhang', text:'장문에게만 전하는 것이 있다. 산을 내려갈 때 네게 맡긴 그 검의 끝, 만류귀종이다.' },
+      { give:{ skill:'태극검 · 만류귀종', to:'cheonghwa' }, who:'cheonghwa', text:'(모든 물줄기가 바다로 돌아가듯… 끊겨 있던 검로가 하나로 이어졌다.)' },
+      { who:'zhang', text:'검만으로는 장문이 못 된다. 무당의 근본, 순양무극공도 함께 가져가거라. 검이 흔들릴 때 숨이 너를 붙잡아 줄 게다.' },
+      { give:{ simbeop:'순양무극공', to:'cheonghwa' }, who:'cheonghwa', text:'…받들겠습니다. 무당의 이름으로.' },
+      { who:'hero', text:'(두 문파의 내일이, 내 눈앞에서 정해지고 있었다.)' },
+    ],
+    next:'hs_night',
+  },
+  // 화산 고갯길 · 밤 : 위지렴의 망설임 → 주인공이 권함 → 받아들임 (v124)
+  hs_night: {
+    chapter:'제5장',
+    place:'화산 고갯길 · 밤',
+    bg:'mk_hs',
+    cast:[ 'cheolmyeong', 'hero' ],
+    script:[
+      { who:'narr', text:'그날 밤, 위지렴은 화산으로 넘어오는 고갯길에 홀로 서 있었다. 사 년 전 소운의 검을 찾았던 그 길이었다.' },
+      { who:'hero', text:'여기 계셨네요.', textM:'여기 계셨습니까.', textF:'여기 계셨네요.' },
+      { who:'cheolmyeong', text:'대주. …저 바위 밑이었소. 소운의 검이 꽂혀 있던 데가.' },
+      { who:'cheolmyeong', text:'화산의 장문이라. 사 년을 원망한 문의 열쇠를 이제 와서 쥐라는구려.' },
+      { who:'hero', text:'내키지 않으세요?', textM:'내키지 않으십니까?', textF:'내키지 않으세요?' },
+      { who:'cheolmyeong', text:'내키지 않는 게 아니라… 겁이 나오. 사제들이 뭐라 하겠소. 우리를 버린 문의 주인이 되었다고.' },
+      { who:'cheolmyeong', text:'그리고 나는 양양으로 돌아가 화원파를 다시 세우고 싶었소. 열다섯 식구의 이름을 다시 산문에 걸고.' },
+      { who:'hero', text:'그러니까 더더욱이요. 화산의 장문이 되면 화원파도 화산의 이름으로 다시 세울 수 있잖아요. 이번엔 누구도 버려지지 않게.',
+        textM:'그러니 더더욱입니다. 화산의 장문이 되시면 화원파도 화산의 이름으로 다시 세울 수 있지 않습니까. 이번엔 누구도 버려지지 않게.',
+        textF:'그러니까 더더욱이요. 화산의 장문이 되면 화원파도 화산의 이름으로 다시 세울 수 있잖아요. 이번엔 누구도 버려지지 않게.' },
+      { who:'hero', text:'소운이 끝내 닿지 못한 길을, 이번엔 화산이 먼저 달려가게 만들 수 있어요. 화원파 식구들을 위해서라도, 장문이 되시는 거 어때요?',
+        textM:'소운이 끝내 닿지 못한 길을, 이번엔 화산이 먼저 달려가게 만들 수 있습니다. 화원파 식구들을 위해서라도, 장문을 맡으시는 게 어떻습니까.',
+        textF:'소운이 끝내 닿지 못한 길을, 이번엔 화산이 먼저 달려가게 만들 수 있어요. 화원파 식구들을 위해서라도, 장문이 되시는 거 어때요?' },
+      { who:'cheolmyeong', text:'……화산이 먼저 달려가게라.' },
+      { who:'cheolmyeong', text:'…하하. 대주는 꼭 아픈 데만 골라 찌르는구려. 소운이 들었으면 냉큼 그러라 했을 거요. 문주 사형은 늘 한 발 늦는다고 투덜대던 놈이었으니.' },
+      { who:'cheolmyeong', text:'받겠소. 화원파 식구들을 위해서라도.' },
+      { who:'hero', text:'(고갯길 아래로 화산의 등불이 하나둘 켜지고 있었다.)' },
+    ],
+    night:true,
+    next:'hs_heir',
+  },
+  // 화산 매화당 · 새벽 : 위지렴을 화산의 다음 장문으로 천명 · 자하공과 매화낙영전 (v124)
+  hs_heir: {
+    chapter:'제5장',
+    place:'화산 매화당 · 새벽',
+    bg:'mk_hs',
+    cast:[ 'hwasan_munju', 'hero', 'cheolmyeong' ],
+    script:[
+      { who:'narr', text:'이튿날 새벽, 매화당의 종이 아홉 번 울렸다.' },
+      { who:'cheolmyeong', text:'청송진인. 답을 가져왔소.' },
+      { who:'cheolmyeong', text:'화산의 장문, 받겠소. 단 하나만 약조해 주시오. 화원파를 화산의 이름으로 다시 세우는 것. 그리고 다시는 화산이 속가를 버리지 않는 것.' },
+      { who:'hwasan_munju', text:'그 약조, 개파조사의 이름을 걸고 하겠네.' },
+      { who:'hwasan_munju', text:'화산의 제자들은 들으라. 오늘부로 화원파의 위지렴을 화산의 다음 장문으로 삼는다.' },
+      { cast:[ 'hwasan_hyeonwon', 'cheolmyeong', 'hwasan_hyeonjeok' ], who:'hwasan_hyeonjeok', text:'크하하! 그럼 이제 사형이라 불러야겠구려! 장문 사형!' },
+      { who:'hwasan_hyeonwon', text:'장문 사형. 화산의 검을 부탁하오.' },
+      { who:'cheolmyeong', text:'사형이라니… 활 쏘는 사형이라 미안하구려.' },
+      { cast:[ 'hwasan_munju', 'hero', 'cheolmyeong' ], who:'hwasan_munju', text:'장문에게만 전하는 것이 둘 있네. 하나는 화산의 근본, 자하공. 몸 안에 자줏빛 노을을 피우는 심법일세.' },
+      { give:{ simbeop:'자하공', to:'cheolmyeong' }, who:'cheolmyeong', text:'(숨을 고르자, 가슴 안쪽에서 노을 같은 기운이 천천히 번졌다.)' },
+      { who:'hwasan_munju', text:'또 하나는 매화검리의 끝일세. 이십사수매화검법의 마지막 초식, 매화낙영(梅花落英). 꽃잎이 지듯 쏟아지는 검을, 그대라면 화살로 쏠 수 있을 걸세.' },
       { give:{ skill:'매화낙영전', to:'cheolmyeong' }, who:'cheolmyeong', text:'…소운에게 보여 주고 싶었던 검이오. 받겠소.' },
       { cast:[ 'hyeondo', 'hero', 'hwasan_hyeonjeok' ], who:'hyeondo', text:'대주, 종남의 원군은 이제 화산을 지키고, 나는 성화대를 따라가겠소. 마교 놈들 외성까지 가야 직성이 풀리겠소!' },
       { join:'hyeondo', give:{ skill:'태을검 · 귀일', to:'hyeondo' }, who:'hero', text:'환영합니다, 현도 소협.' },
@@ -458,3 +532,16 @@ Object.assign(BATTLES, {
     },
   },
 });
+// 기록 (집무실 → 인물 · 세력) : 화산의 장문 · 무당의 장문 (v124)
+(function(){
+  const add = (kind, id, note)=>{ const e = ((typeof CODEX !== 'undefined' && CODEX[kind]) || []).find(x=> x.id===id); if (e) (e.notes = e.notes || []).push(note); };
+  add('people', 'cheonghwa',    { from:'hs_after', text:'화산 매화당에서 장삼봉에게 무당의 다음 장문으로 천명받고, 만류귀종과 무당의 근본 심법 순양무극공을 이어받았다.' });
+  add('people', 'cheolmyeong',  { from:'hs_after', text:'귀검대에 장로 다섯을 잃은 청송진인에게서, 화산의 다음 장문을 맡아 달라는 청을 받았다.' });
+  add('people', 'cheolmyeong',  { from:'hs_heir',  text:'소운의 검을 찾았던 고갯길에서 마음을 정해 화산의 다음 장문이 되었다. 화원파를 화산의 이름으로 다시 세우겠다는 약조를 받고, 자하공과 매화낙영전을 이어받았다.' });
+  add('people', 'zhang',        { from:'hs_after', text:'화산의 장로들을 조문하러 왔다가, 매화당에서 청화를 무당의 다음 장문으로 천명했다.' });
+  add('people', 'hwasan_munju', { from:'hs_after', text:'귀검대와의 싸움에서 장로 다섯을 잃었다. 제자들이 아직 어리다며 위지렴에게 화산의 다음 장문을 청했다.' });
+  add('people', 'hwasan_munju', { from:'hs_heir',  text:'위지렴을 화산의 다음 장문으로 천명하고, 다시는 화산이 속가를 버리지 않겠다고 개파조사의 이름으로 약조했다.' });
+  add('factions', 'hwasan',     { from:'hs_after', text:'천교와 손잡은 귀검대가 서봉을 넘던 밤, 장로 다섯이 산문을 지키다 죽었다.' });
+  add('factions', 'hwasan',     { from:'hs_heir',  text:'화원파의 위지렴이 다음 장문으로 정해졌다.' });
+  add('factions', 'hwawon',     { from:'hs_heir',  text:'화산의 다음 장문이 된 위지렴이, 화원파를 화산의 이름으로 다시 세우기로 했다.' });
+})();

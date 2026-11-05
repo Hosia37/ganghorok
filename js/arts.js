@@ -124,6 +124,13 @@ function artsMasteryCarry(id, m){
   return m;
 }
 
+// 이야기에서 받은 심법 (data/arts.js 의 SIMBEOP) : treeEffects 가 부름
+function artsSimbeop(id){ const st = memberState(id); return ((st && st.simbeop) || []).filter(n=> typeof SIMBEOP !== 'undefined' && SIMBEOP[n]); }
+function artsSimbeopEffects(id, e){
+  artsSimbeop(id).forEach(n=>{ const ef = SIMBEOP[n].effect || {}; for (const k in ef) e[k] = (e[k]||0) + ef[k]; });
+  return e;
+}
+
 /* ---------------- 3. 주인공 무공 칸 ---------------- */
 function isJeolgi(s){ return typeof JEOLGI !== 'undefined' && JEOLGI.includes(s); }
 function heroArts(){
@@ -238,8 +245,11 @@ function artsMemberHtml(id){
 function artsTabHtml(m){
   const id = m.key; if (!isParty(id)) return null;
   let wpn;
-  const passive = ()=>{ const pas = unlockedNodes(id).filter(n=>n.type==='passive').map(n=>n.name);
-    return pas.length ? '<div class="sk-card passive"><b>심법 <em>'+pas.length+'개</em></b><small>'+nodeEffectText({ effect:treeEffects(id) })+'<br>'+pas.join(' · ')+'</small></div>' : ''; };
+  const passive = ()=>{ const pas = unlockedNodes(id).filter(n=>n.type==='passive').map(n=>n.name), sb = artsSimbeop(id);
+    const n = pas.length + sb.length; if (!n) return '';
+    return '<div class="sk-card passive"><b>심법 <em>'+n+'개</em></b><small>'+nodeEffectText({ effect:treeEffects(id) })+'<br>'+
+           sb.map(x=> '<span class="ar-sb">'+x+'</span>').join(' · ')+(sb.length && pas.length ? ' · ' : '')+pas.join(' · ')+'</small>'+
+           sb.map(x=> '<small class="ar-sbd">'+x+' — '+SIMBEOP[x].desc.split(' — ')[1]+' · '+nodeEffectText({ effect:SIMBEOP[x].effect })+'</small>').join('')+'</div>'; };
   const lose = wpnOk(wpn = unitWpnId(id)) ? WPN_ORDER.find(k=> WPN[k].beats===wpn) : null;
   const wl = wpnOk(wpn) ? '<div class="ar-wpn">'+wpnTag(wpn)+'<b>'+WPN[wpn].name+'</b><small>'+wpnTag(WPN[wpn].beats)+WPN[WPN[wpn].beats].name+'에 강함 · '+wpnTag(lose)+WPN[lose].name+'에 약함</small></div>' : '';
   const body = id==='hero' ? artsHeroHtml() : artsMemberHtml(id);
