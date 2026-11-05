@@ -241,7 +241,7 @@ function achValue(kind){
   const m = metaState(), st = m.stats;
   switch (kind){
     case 'realm':    return realmIndex(memberRealm('hero'));
-    case 'jeolgi':   { const set = new Set(); PARTY.forEach(id=> memberSkills(id).forEach(s=>{ if (JEOLGI_NAMES.includes(s)) set.add(s); })); return set.size; }
+    case 'jeolgi':   { const set = new Set(); PARTY.forEach(id=> (typeof memberSkillsAll==='function' ? memberSkillsAll(id) : memberSkills(id)).forEach(s=>{ if (JEOLGI_NAMES.includes(s)) set.add(s); })); return set.size; }
     case 'missions': return Object.values(PLAYER.missions || {}).filter(v=> v==='done').length;
     case 'bq':       return Object.keys(m.bq).length;
     case 'kiyeon':   return Object.keys(m.kiyeon).length;

@@ -71,8 +71,10 @@ function realmBoard(id, ri){
       const he = (typeof HIT_EVA_SCALE !== 'undefined') ? HIT_EVA_SCALE : 1;      // 명중 · 회피는 경지 배율을 이만큼만 (data/training.js)
       if (b.stat){ n.stat = {}; for (const k in b.stat) n.stat[k] = Math.max(1, Math.round(b.stat[k] * ((k==='hit' || k==='eva') ? 1 + (cfg.stat-1)*he : cfg.stat))); }
       if (b.type==='skill'){
-        const d = SKILLS[b.skill] || {};
-        n.type = 'master'; n.skill = b.skill; n.name = b.skill+' '+(ri+1)+'성';
+        const ev = (typeof artsBoardSkill==='function') ? artsBoardSkill(id, ri, b.skill) : null;   // 동료 무공 진화 (js/arts.js)
+        const sk = ev ? ev.skill : b.skill, d = SKILLS[sk] || {};
+        if (ev && ev.evo){ n.type = 'skill'; n.skill = sk; n.evo = ev.evo; n.name = '진화 · '+sk; }
+        else { n.type = 'master'; n.skill = sk; n.name = sk+' '+(ri+1)+'성'; }
         if (d.area==='self') n.guard = Math.max(1, Math.round(M.guard * cfg.stat));
         else if (d.area==='ally') n.heal = M.heal;                 // 회복 무공 : 회복량 +5%
         else n.power = areaSkill(d) ? M.line3 : M.single;
@@ -161,9 +163,9 @@ function treeSkills(id){ return unlockedNodes(id).filter(n=>n.type==='skill' && 
 function treeMastery(id){
   const m = {};
   treeSkills(id).forEach(s=>{ m[s] = { power:0, guard:0, heal:0, star:1 }; });
-  unlockedNodes(id).forEach(n=>{ if (n.type!=='master') return; const o = m[n.skill] || (m[n.skill] = { power:0, guard:0, heal:0, star:1 });
+  unlockedNodes(id).forEach(n=>{ if (n.type!=='master' && !n.evo) return; const o = m[n.skill] || (m[n.skill] = { power:0, guard:0, heal:0, star:1 });
     o.power += n.power||0; o.guard += n.guard||0; o.heal += n.heal||0; o.star++; });
-  return m;
+  return typeof artsMasteryCarry==='function' ? artsMasteryCarry(id, m) : m;
 }
 // 경지 상승 : 지금 판을 모두 채우고 다음 경지 레벨이 되면
 function boardDone(id){ const on = treeUnlocked(id), b = treeNodes(id); return b.length>0 && b.every(n=>on.includes(n.id)); }
@@ -288,7 +290,8 @@ function applyGive(g){
   if (g.skill && SKILLS[g.skill]){
     const id = g.to || 'hero', st = memberState(id);
     if (st){ st.learned = st.learned || []; if (!st.learned.includes(g.skill)) st.learned.push(g.skill);
-             got.push(nameOf(id)+josa(nameOf(id),'이','가')+' 무공 「'+g.skill+'」'+josa(g.skill,'을','를')+' 익힘'); }
+             got.push(nameOf(id)+josa(nameOf(id),'이','가')+' 무공 「'+g.skill+'」'+josa(g.skill,'을','를')+' 익힘');
+             if (typeof artsAfterLearn==='function') artsAfterLearn(id, g.skill); }
   }
   return got;
 }
@@ -516,12 +519,14 @@ function joinParty(id, silent){
   if (!silent) showToast(d.name+josa(d.name,'이','가')+' 아군으로 합류했습니다');
 }
 function resetParty(){ PARTY = ['hero']; MEMBERS = {}; }
-// 아군의 무공 = 원래 무공 + 따로 배운 무공(learned) + 수련도에서 해금한 무공
-function memberSkills(id){
+// 아군이 익힌 무공 전부 = 원래 무공 + 따로 배운 무공(learned) + 수련도에서 해금한 무공
+function memberSkillsAll(id){
   const st = memberState(id) || {};
   const base = id==='hero' ? (HERO.skills || []) : ((UNITS[id] || {}).skills || []);
   return Array.from(new Set(base.concat(st.learned || [], treeSkills(id)))).filter(n=>SKILLS[n]);
 }
+// 전투에 가지고 나가는 무공 — 주인공은 무공 칸, 동료는 세 갈래의 맨 위 무공 + 절기 (js/arts.js)
+function memberSkills(id){ return typeof artsActive==='function' ? artsActive(id) : memberSkillsAll(id); }
 // 전투 밖에서 경험치 받기 (전투 보상 등) — 오른 레벨 수를 돌려줌
 function grantExp(id, amount){
   const st = memberState(id); if (!st || amount<=0) return 0;
@@ -1029,6 +1034,7 @@ function renderSortie(){
   }
   document.getElementById('sp-team').innerHTML = h;
   document.getElementById('sp-bench').innerHTML = cands.map(id=> card(id, 'cand' + (spSel.includes(id) ? ' on' : ''), spSel.includes(id) ? '출전' : '')).join('');
+  if (typeof artsSortieDecor==='function') artsSortieDecor();                 // 적의 무기 · 주인공 무공 칸 (js/arts.js)
   const team = fixed.concat(spSel);                                  // 이 편성으로 맺어지는 인연
   const bs = bondList().filter(x=> bondOpen(x) && x.members.every(m=> team.includes(m))).map(x=> x.name + (x.when==='adj' ? ' (이웃하면)' : ''));
   document.getElementById('sp-bond').textContent = bs.length ? '인연 — ' + bs.join(' · ') : '';
@@ -1431,7 +1437,7 @@ function makeHero(){
   const msg = document.getElementById('name-msg');
   if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
   HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
-  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; delete HERO.train;
+  HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; HERO.arts = null; delete HERO.train;
   equipFixedGear('hero', 0);                                   // 무기 · 방어구 : 인물마다 고정 (주인공 철검 · 천옷)
   resetParty();
   PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0; PLAYER.meta = {};
@@ -1463,7 +1469,7 @@ function makeSnapshot(){
   const sceneId = (saveCtx && saveCtx.scene) || curScene, sc = SCENES[sceneId];
   const snap = { v:1, rv:2, time:Date.now(), chapter:sc.chapter, place:sc.place, scene:sceneId, pos:(saveCtx && saveCtx.pos) || 'end',
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
-                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}) },
+                  tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}), arts:HERO.arts ? JSON.parse(JSON.stringify(HERO.arts)) : null },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
            player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0), meta:JSON.parse(JSON.stringify(PLAYER.meta || {})) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
@@ -1545,6 +1551,7 @@ function applySnapshot(s){
   HERO.equip = Object.assign(emptyEquip(), s.hero.equip || {});
   HERO.tree = (s.hero.tree || []).slice(); HERO.learned = (s.hero.learned || []).slice(); HERO.elixir = (s.hero.elixir && typeof s.hero.elixir === 'object') ? Object.assign({}, s.hero.elixir) : (s.hero.elixir || 0);
   HERO.attr = Object.assign({ mu:0, ne:0, sin:0 }, s.hero.attr || {});
+  HERO.arts = s.hero.arts ? JSON.parse(JSON.stringify(s.hero.arts)) : null;     // 무공 칸 (예전 저장은 처음에 저절로 채움)
   PARTY = (s.party && s.party.length) ? s.party.slice() : ['hero'];
   MEMBERS = JSON.parse(JSON.stringify(s.members || {}));
   Object.keys(MEMBERS).forEach(id=>{ const m = MEMBERS[id]; m.realm = keepRealm(m.realm, m.level); m.equip = Object.assign(emptyEquip(), m.equip||{});
@@ -1567,6 +1574,7 @@ function applySnapshot(s){
   learnCatchUp(s.scene, s.pos!=='start');                                   // 지나온 장면에서 익혔어야 할 절기 (이야기가 늘어나기 전 저장)
   catchUpMembers();                                                         // 뒤처진 동료 따라잡기 (v117 전 저장)
   if (typeof metaOnLoad==='function') metaOnLoad();                          // 업적 · 도감 (v122 전 저장 맞추기)
+  if (typeof artsOnLoad==='function') artsOnLoad();                          // 무공 칸 · 비전 (v123 전 저장 맞추기)
   if (s.pos==='battle' && s.battle && BATTLES[s.battle.id]){        // 전투 중 저장 → 그 턴부터 이어서
     const ts = document.getElementById('title-screen');
     if (ts.style.display !== 'none'){ ts.classList.add('leaving'); setTimeout(()=>{ ts.style.display='none'; }, 750); }
@@ -1764,6 +1772,7 @@ function renderTab(){
   const dot = document.getElementById('sd-pt-dot'); if (dot) dot.style.display = attrLeft(m.key) > 0 ? '' : 'none';
   renderSlots(m);
   if (stTab==='stat'){ body.innerHTML = statTabHtml(m); bindStatTab(m); }
+  else if (stTab==='skill' && typeof artsTabHtml==='function' && artsTabHtml(m) !== null){ body.innerHTML = artsTabHtml(m); bindArtsTab(m, renderTab); }   // 무공 칸 · 갈래 (js/arts.js)
   else if (stTab==='skill'){
     const party = isParty(m.key), ms = party ? treeMastery(m.key) : {};
     const pas = party ? unlockedNodes(m.key).filter(n=>n.type==='passive').map(n=>n.name) : [];
@@ -2042,7 +2051,7 @@ function skillText(d, ms){
   if (!d) return '';
   ms = ms || {};
   const star = ms.star > 1 ? ' · '+ms.star+'성' : '';
-  if (d.area==='self') return '자신 · 다음 턴까지 방어 +'+(((d.guard||{}).def||0) + (ms.guard||0))+' · 내공 '+d.mp+star;
+  if (d.area==='self') return '자신 · 다음 턴까지 방어 +'+(((d.guard||{}).def||0) + (ms.guard||0))+(d.selfHeal ? ' · 체력 '+Math.round(d.selfHeal*100)+'% 회복' : '')+' · 내공 '+d.mp+star;
   if (d.area==='ally') return '자신 · 옆 아군 · 체력 '+Math.round(((d.heal||0) + (ms.heal||0))*100)+'% 회복 · 내공 '+d.mp+star;
   return d.desc+' · 거리 '+(d.minRange ? d.minRange+'~'+d.range : d.range)+' · 위력 공격×'+(+(d.power + (ms.power||0)).toFixed(2))+' · 내공 '+d.mp+star;
 }
@@ -2055,6 +2064,7 @@ function nodeEffectText(n){
   if (e.hpRegen)    out.push('아군 턴마다 체력 +'+e.hpRegen);
   if (e.counterPow) out.push('반격 위력 +'+Math.round(e.counterPow*100)+'%');
   if (e.dmgCut)     out.push('받는 피해 -'+Math.round(e.dmgCut*100)+'%');
+  if (n.evo) out.push('무공 진화 「'+n.evo+'」 → 「'+n.skill+'」 · 숙련은 그대로 이어짐');
   if (n.type==='skill' && SKILLS[n.skill]) out.push(skillText(SKILLS[n.skill]));
   if (n.type==='master') out.push(n.skill+' '+(n.guard ? '방어 +'+n.guard : n.heal ? '회복 +'+Math.round(n.heal*100)+'%' : '위력 +'+n.power));
   return out.join(' · ');
@@ -2529,11 +2539,12 @@ function nodeState(id, n){
   return ((memberState(id).level||1) < n.level) ? 'lvlock' : 'avail';
 }
 function nodeIcon(n){
+  if (n.evo) return '進';
   if (n.type==='skill' || n.type==='master') return '武';
   if (n.type==='passive') return '心';
   return STAT_ICON[Object.keys(n.stat||{})[0]] || '修';
 }
-function nodeShort(n){ return n.type==='master' ? (n.name.split(' ').pop()) : Object.values(n.stat||{}).map(v=>'+'+v).join(' '); }
+function nodeShort(n){ return n.evo ? '진화' : n.type==='master' ? (n.name.split(' ').pop()) : Object.values(n.stat||{}).map(v=>'+'+v).join(' '); }
 const TYPE_NAME = { stat:'능력치', skill:'무공', passive:'심법', master:'무공 숙련' };
 function openTraining(){
   if (!isParty(trWho)) trWho = 'hero';
@@ -2601,7 +2612,7 @@ function renderTraining(){
     const st = nodeState(trWho, n), p = pos[n.id], d = document.createElement('div');
     d.className = 'tn '+st+' t-'+n.type+(trSel===n.id ? ' sel' : '')+(trJust===n.id ? ' just' : '');
     d.style.cssText = at(p[0], p[1])+';--c:'+TREE_BRANCHES[n.branch].color;
-    d.innerHTML = '<i>'+nodeIcon(n)+'</i>'+((n.type==='stat' || n.type==='master') ? '<em>'+nodeShort(n)+'</em>' : '');
+    d.innerHTML = '<i>'+nodeIcon(n)+'</i>'+((n.type==='stat' || n.type==='master' || n.evo) ? '<em>'+nodeShort(n)+'</em>' : '');
     d.title = n.name;
     d.onclick = ()=>{ trSel = n.id; trJust = null; renderTraining(); };
     tree.appendChild(d);
@@ -2673,7 +2684,8 @@ function unlockNode(id, n){
   PLAYER.suryeon -= n.cost; st.tree = (st.tree || []).concat([n.id]);
   PLAYER.trainCnt = PLAYER.trainCnt || {}; PLAYER.trainCnt[id] = trainUsed(id) + 1;
   sfx(n.type==='stat' ? 'heal' : 'levelup');
-  showToast(nameOf(id)+' : '+n.name+(n.type==='skill' ? ' — 무공을 익혔습니다' : n.type==='passive' ? ' — 심법을 깨우쳤습니다' : ' 해금'));
+  showToast(nameOf(id)+' : '+(n.evo ? '「'+n.evo+'」 → 「'+n.skill+'」 무공이 진화했습니다' : n.name+(n.type==='skill' ? ' — 무공을 익혔습니다' : n.type==='passive' ? ' — 심법을 깨우쳤습니다' : ' 해금')));
+  if (n.type==='skill' && typeof artsAfterLearn==='function') artsAfterLearn(id, n.skill);
   trJust = n.id;
   const next = treeNodes(id).find(x=>treeParent(id, x)===n.id && nodeState(id, x)!=='on');   // 다음 노드로 넘어가 둠
   trSel = boardDone(id) ? null : (next ? next.id : n.id);                    // 판을 다 채우면 경지 상승 화면
@@ -2803,6 +2815,7 @@ function showAttackZone(u){
     if (d >= (u.minRange||1) && d <= (u.range||1) && bCells[x+','+y]) bCells[x+','+y].classList.add('atk-zone');
   }
   attackTargets(u).forEach(f=>{ const k=f.x+','+f.y; if (bCells[k]) bCells[k].classList.add('atk-range'); });
+  if (typeof artsMarks==='function') artsMarks(u);                               // 상성 ▲▼
 }
 let bState = { turn:'ally', turnCount:1, selected:null, moveMode:false, attackMode:false, moving:false, over:false };
 let bLastPrev = {}, bLastStart = '';
@@ -2820,7 +2833,7 @@ function makeUnit(cfg){
   const showExp = cfg.side==='ally' && !cfg.friend;
   el.innerHTML = '<div class="hpwrap"><div class="hpfill" style="width:100%"></div></div>'+
                  (showExp ? '<div class="expwrap"><div class="expfill" style="width:0"></div></div>' : '')+
-                 '<div class="ring"><img src="'+cfg.faceSrc+'"></div>'+
+                 '<div class="ring"><img src="'+cfg.faceSrc+'"></div>'+(typeof artsTokenBadge==='function' ? artsTokenBadge(cfg) : '')+
                  '<div class="tname">'+cfg.name+'</div>';
   el.addEventListener('click', (e)=>{ e.stopPropagation(); onUnitClick(cfg); });
   bStage.appendChild(el);
@@ -2978,6 +2991,7 @@ function resetBattle(withIntro){
   const lead = units.hero || aliveOf('ally')[0];
   cam.cx=(lead.x-0.5)*B_TILE; cam.cy=(lead.y-0.5)*B_TILE; applyCam(false);
   if (typeof metaOnBattleStart==='function') metaOnBattleStart();           // 돌발 임무 상자 (js/meta.js)
+  if (typeof artsOnBattleStart==='function') artsOnBattleStart();           // 상성 안내 (처음 한 번)
   if (withIntro===true) startBattleIntro(); else showBanner('아군 턴');
 }
 
@@ -3052,7 +3066,7 @@ function resumeBattle(b){
   autoEndCheck();
 }
 
-function clearHi(){ Object.values(bCells).forEach(c=>c.classList.remove('reachable','atk-range','atk-zone','skill-range','skill-area','heal-range')); }
+function clearHi(){ Object.values(bCells).forEach(c=>c.classList.remove('reachable','atk-range','atk-zone','skill-range','skill-area','heal-range')); if (typeof artsMarks==='function') artsMarks(null); }
 function manhattan(a,b){ return Math.abs(a.x-b.x)+Math.abs(a.y-b.y); }
 
 function bfsReachable(u){
@@ -3127,7 +3141,7 @@ function peekHtml(u){
   const lv = '<span class="lv">Lv'+(u.level||1)+'</span>';
   const rg = ((u.range||1) > 1 || (u.minRange||1) > 1) ? '<span class="job">사거리 '+((u.minRange||1)===(u.range||1) ? u.range : (u.minRange||1)+'~'+u.range)+'</span>' : '';
   const sk = (u.skills||[]).filter(n=>SKILLS[n]);
-  return '<b>'+u.name+'</b>'+lv+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
+  return '<b>'+u.name+'</b>'+lv+(typeof artsPeekTag==='function' ? artsPeekTag(u) : '')+'<span class="job">'+(u.job||'')+'</span>'+(u.realm?'<span class="realm">'+u.realm+'</span>':'')+rg+
          (u.side==='ally' && u.acted && !u.noControl ? '<span class="done">행동 완료</span>' : '')+
          (u.rank && typeof UNIT_RANKS !== 'undefined' && UNIT_RANKS[u.rank] ? '<span class="rank '+u.rank+'">'+UNIT_RANKS[u.rank].label+'</span>' : '')+
          (u.poison ? '<span class="psn">중독 '+u.poison.turns+'턴</span>' : '')+'<br>'+
@@ -3179,6 +3193,7 @@ function openMenu(u){
   document.getElementById('um-info').innerHTML = unitInfoHtml(u);
   unitMenu.classList.add('show');
   unitMenu.classList.remove('ghost');
+  if (typeof artsMarks==='function') artsMarks(u);           // 상성 ▲▼ (일반 공격 기준)
   const hidden = placeMenuSmart(u);                          // 메뉴가 가린 파란 칸 수
   unitMenu.classList.toggle('ghost', !!bState.moveMode && hidden > 0);   // 파란 칸을 가릴 때만 반투명
 }
@@ -3371,7 +3386,7 @@ function openSkillList(u){
     const area = d.area==='self' ? '자신 방어 +'+(((d.guard||{}).def||0) + ((ms && ms.guard)||0))
                : d.area==='ally' ? '체력 '+Math.round(((d.heal||0) + ((ms && ms.heal)||0))*100)+'% 회복 · 자신/옆 아군'
                : String(d.desc||'').split(' · ')[0];
-    b.innerHTML = name + (ms && ms.star>1 ? ' '+ms.star+'성' : '') + '<small>내공 ' + d.mp + ' · ' + area + '</small>';   // 좁은 메뉴 : 내공을 앞에
+    b.innerHTML = (typeof artsSkillTag==='function' ? artsSkillTag(name, u) : '') + name + (ms && ms.star>1 ? ' '+ms.star+'성' : '') + '<small>내공 ' + d.mp + ' · ' + area + '</small>';   // 좁은 메뉴 : 내공을 앞에
     b.addEventListener('click', ev=>{ ev.stopPropagation(); startSkill(u, name); });
     list.appendChild(b);
   });
@@ -3534,6 +3549,7 @@ function startSkill(u, name){
     hint(name+' — 회복할 대상을 고르세요 (초록 칸)'); return;
   }
   skillRangeCells(u, name).forEach(([x,y])=> bCells[x+','+y].classList.add('skill-range'));
+  if (typeof artsMarks==='function') artsMarks(u, name);                         // 상성 ▲▼ (이 무공의 결로)
   hint(dirSkill(d) ? name+' — 방향을 눌러 범위 확인, 한 번 더 누르면 시전'
      : d.area==='volley3' ? name+' — 칸을 눌러 범위 확인, 한 번 더 누르면 시전' : name+' — 대상을 선택하세요');
 }
@@ -3572,7 +3588,9 @@ function castSelf(u, name){
   positionToken(u);
   showBanner(name); sfx('heal');
   floatNum(u, '방어 +'+(g.def||0), 'buff');
-  toast(u.name+' — '+name+' · 다음 턴까지 방어 +'+(g.def||0), 1600, [u]);
+  let healed = 0;
+  if (d.selfHeal && u.hp < u.maxHp){ const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * d.selfHeal))); healed = u.hp - b0; floatNum(u, '+'+healed, 'heal', 350); positionToken(u); }
+  toast(u.name+' — '+name+' · 다음 턴까지 방어 +'+(g.def||0)+(healed ? ' · 체력 +'+healed : ''), 1600, [u]);
   u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
   autoEndCheck();
 }
@@ -3651,13 +3669,16 @@ function castSkill(u, name, x, y){
     const targets = area.map(([cx,cy])=>unitAt(cx,cy,'enemy')).filter(Boolean);
     let hits=0, total=0, kills=0;
     const pw = d.power + ((u.mastery && u.mastery[name] && u.mastery[name].power) || 0);     // 숙련(n성)으로 오른 위력
-    targets.forEach(t=>{ const r = strike(u, t, pw * (u.skillPow || 1), true); if(!r.miss){ hits++; total+=r.dmg; if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });   // 내력 : 무공 위력
+    let adv = 0, dis = 0;
+    if (typeof artsSetSkill==='function') artsSetSkill(name, u);                     // 상성 : 무공의 결 (js/arts.js)
+    targets.forEach(t=>{ const r = strike(u, t, pw * (u.skillPow || 1), true); if(!r.miss){ hits++; total+=r.dmg; if (r.mu) (r.mu.kind==='adv' ? adv++ : dis++); if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });   // 내력 : 무공 위력
+    if (typeof artsSetSkill==='function') artsSetSkill(null);
     sfx(hits ? 'skill' : 'miss');
     const near = [u].concat(targets);
     if (!targets.length) toast(name+'! 범위 안에 적이 없습니다.');
     else if (!hits) toast(name+'! 모두 피했습니다.', 1300, near);
     else { const ex = gainExp(u, (hits-kills)*EXP_GAIN.hit + kills*EXP_GAIN.kill);
-           toast(name+'! '+hits+'명에게 총 '+total+' 데미지'+(kills?' · '+kills+'명 쓰러뜨림':'')+(ex?' · 경험 +'+ex:''), 1300, near); }
+           toast(name+'! '+hits+'명에게 총 '+total+' 데미지'+(adv ? ' · 유리 '+adv : '')+(dis ? ' · 불리 '+dis : '')+(kills?' · '+kills+'명 쓰러뜨림':'')+(ex?' · 경험 +'+ex:''), 1300, near); }
     u.acted = true; u.el.classList.remove('selected'); bState.selected=null;
     const finish = ()=>{ bState.busy = false; checkEnd(); autoEndCheck(); };
     checkEnd(); if (bState.over){ finish(); return; }
@@ -3776,21 +3797,23 @@ function bondSummary(){
 
 // 한 번의 타격: 명중률 = 명중 - 회피 / 피해 = 공격×위력(±10%) - 방어×0.5  (지형은 이동에만 영향)
 function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 쪽에서 (무공)
-  const hitChance = Math.max(5, Math.min(99, atk.hit + bondVal(atk,'hit') - def.eva - bondVal(def,'eva')));     // 인연 : 명중 · 회피
+  const mu = (typeof artsMatch==='function') ? artsMatch(atk, def) : null;   // 상성 (js/arts.js · data/arts.js)
+  const hitChance = Math.max(5, Math.min(99, atk.hit + bondVal(atk,'hit') - def.eva - bondVal(def,'eva') + (mu ? mu.hit : 0)));     // 인연 : 명중 · 회피
   if (Math.random()*100 > hitChance){ floatNum(def, '회피', 'miss'); if (!quiet) sfx('miss'); return { miss:true, hitChance }; }
   const guardDef = (def.guard && def.guard.def) || 0;                       // 방어 무공으로 오른 방어
   const cut = Math.min(0.8, ((def.passive && def.passive.dmgCut) || 0) + bondVal(def,'dmgCut'));   // 심법 · 인연 : 받는 피해 감소
   const up = (1 + bondVal(atk,'atkPct')) * (1 + bondFoe(atk, def));                             // 인연 : 공격 % · 그 소속의 적에게 주는 피해
-  const dmg = Math.max(1, Math.round((atk.atk*up*power*(0.9+Math.random()*0.2) - (def.def+guardDef)*0.5) * (1-cut)));
+  const dmg = Math.max(1, Math.round((atk.atk*up*power*(mu ? mu.dmg : 1)*(0.9+Math.random()*0.2) - (def.def+guardDef)*0.5) * (1-cut)));
   def.hp = Math.max(0, def.hp-dmg);
   if (def.hold) def.roused = true;                                          // 대기하던 적은 맞으면 움직이기 시작
   floatNum(def, '-'+dmg, 'dmg'); if (!quiet) sfx('hit');
+  if (mu) floatNum(def, mu.kind==='adv' ? '▲유리' : '▼불리', 'mu-'+mu.kind, 140);
   positionToken(def);
   def.el.classList.add('flash','shake');
   setTimeout(()=>def.el.classList.remove('flash','shake'), 320);
   if (def.hp<=0){ def.killedBy = atk.id; def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); }   // killedBy : 임무 '처치' 판정
   if (typeof metaOnHit==='function') metaOnHit(atk, def, dmg);              // 기록 · 돌발 임무 (js/meta.js)
-  return { miss:false, dmg, hitChance };
+  return { miss:false, dmg, hitChance, mu };
 }
 // 한 번 치기 (연출 + 피해 + 경험치). kind = 'attack' | 'counter'
 function hitOnce(atk, def, kind, power, done){
@@ -3803,7 +3826,7 @@ function hitOnce(atk, def, kind, power, done){
     if (r.miss) toast((kind==='counter' ? atk.name+'의 반격 — ' : '')+def.name+' 회피! (명중률 '+r.hitChance+'%)', 1400, [atk, def]);
     else {
       const ex = gainExp(atk, def.hp<=0 ? EXP_GAIN.kill : (kind==='counter' ? EXP_GAIN.counter : EXP_GAIN.hit));
-      toast(atk.name+label+def.name+'에게 '+r.dmg+' 데미지'+(def.hp<=0?' · 쓰러뜨림':'')+(ex?' · 경험 +'+ex:''), 1400, [atk, def]);
+      toast(atk.name+label+def.name+'에게 '+r.dmg+' 데미지'+(r.mu ? ' ('+r.mu.label+')' : '')+(def.hp<=0?' · 쓰러뜨림':'')+(ex?' · 경험 +'+ex:''), 1400, [atk, def]);
     }
     if (done) done();
   }, 220);
@@ -4266,7 +4289,7 @@ function enemySkillPick(e){
     const foesIn = cells => cells.map(([x,y])=>unitAt(x,y,'ally')).filter(f=>f && !f.noControl);
     const consider = (x, y)=>{
       const list = foesIn(skillArea(name, x, y, e)); if (!list.length) return;
-      const sc = list.reduce((a,f)=>{ const dm = Math.max(1, e.atk*d.power - f.def*0.5); return a + Math.min(f.hp, dm) + (dm >= f.hp ? 200 : 0) + ((e.focus||[]).includes(f.id) ? 150 : 0)
+      const sc = list.reduce((a,f)=>{ const dm = Math.max(1, e.atk*d.power*(typeof artsDmgMul==='function' ? artsDmgMul(e, f, name) : 1) - f.def*0.5); return a + Math.min(f.hp, dm) + (dm >= f.hp ? 200 : 0) + ((e.focus||[]).includes(f.id) ? 150 : 0)
                                                  + (d.poison && !f.poison ? d.poison.dmg * d.poison.turns * 0.6 : 0); }, 0);   // 중독 : 아직 안 걸린 상대를 노림
       if (!best || sc > best.score) best = { name, x, y, score:sc };
     };
@@ -4294,7 +4317,9 @@ function enemyCastNow(e, name, x, y, done){
     const targets = area.map(([cx,cy])=>unitAt(cx,cy,'ally')).filter(t=>t && !t.noControl);
     let hits = 0, total = 0, kills = 0;
     let poisoned = 0;
+    if (typeof artsSetSkill==='function') artsSetSkill(name, e);
     targets.forEach(t=>{ const r = strike(e, t, d.power, true); if (!r.miss){ hits++; total += r.dmg; if (t.hp<=0) kills++; else if (d.poison){ applyPoison(t, d.poison); poisoned++; } } });
+    if (typeof artsSetSkill==='function') artsSetSkill(null);
     sfx(hits ? 'skill' : 'miss');
     toast(e.name+' — '+name+'! '+(hits ? hits+'명에게 총 '+total+' 데미지'+(kills ? ' · '+kills+'명 쓰러짐' : '')+(poisoned ? ' · 중독 ('+d.poison.turns+'턴 동안 체력 -'+d.poison.dmg+')' : '') : '모두 피했습니다'), 1700, [e].concat(targets));
     checkEnd();
@@ -4321,7 +4346,7 @@ function enemyTurn(){
     if (e.hp<=0){ next(); return; }
     const foes = aliveOf('ally').filter(f=>!f.noControl); if (!foes.length){ next(); return; }
     // 목표 : 길로 가깝고, 때렸을 때 잘 먹히는 아군 (약한 쪽을 노림)
-    const dmgTo = f=> Math.max(1, e.atk - f.def*0.5);
+    const dmgTo = f=> Math.max(1, e.atk * (typeof artsDmgMul==='function' ? artsDmgMul(e, f) : 1) - f.def*0.5);   // 상성까지 쳐서
     let a = null, ad = Infinity;
     foes.forEach(f=>{ const d0 = fieldOf(f)[e.x+','+e.y]; const d = (d0===undefined ? 999+manhattan(e,f) : d0) - dmgTo(f)/5;
                       if (d < ad || (d===ad && f.hp < a.hp)){ a = f; ad = d; } });

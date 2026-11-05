@@ -1114,3 +1114,85 @@
   .mt-faces img, .mt-faces .q { width:28px; height:28px; }
   .set-meta .top-btn { padding:3px 8px; font-size:11px; }
 }
+
+/* ===== v123 : 상성 · 무공 칸 · 무공 진화 (js/arts.js) ===== */
+.wg { display:inline-flex; align-items:center; justify-content:center; width:1.35em; height:1.35em; border-radius:50%; margin-right:3px; vertical-align:-.15em;
+  font-style:normal; font-size:.85em; font-weight:bold; color:#1a120a; background:#cbb88f; flex:none; }
+.wg.w-do, .wpn.w-do { background:#d9734a; } .wg.w-geom, .wpn.w-geom { background:#7fb2e6; } .wg.w-gwon, .wpn.w-gwon { background:#e0b34a; }
+.wg.w-gung, .wpn.w-gung { background:#79c27a; } .wg.w-jang, .wpn.w-jang { background:#b48ad9; }
+/* 토큰 : 왼쪽 위 무기 글자 · 오른쪽 위 상성 표시 */
+.token .wpn { position:absolute; left:3px; top:0; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-style:normal; font-size:10px; font-weight:bold; color:#1a120a; border:1px solid rgba(0,0,0,.55); box-shadow:0 1px 2px rgba(0,0,0,.6); z-index:2; pointer-events:none; }
+.token .mu { position:absolute; right:0; top:-8px; font-style:normal; font-size:19px; font-weight:900; display:none; z-index:3; pointer-events:none;
+  text-shadow:0 0 2px #000, 0 0 3px #000, 1px 1px 0 #000; }
+.token.mu-adv .mu { display:block; color:#7dff8a; animation:muBob 1s ease-in-out infinite; }
+.token.mu-adv .mu::before { content:'▲'; }
+.token.mu-dis .mu { display:block; color:#ff6a5a; }
+.token.mu-dis .mu::before { content:'▼'; }
+.token.mu-adv .ring { box-shadow:0 0 0 2px #7dff8a, 0 2px 6px rgba(0,0,0,.6); }
+.token.dead .wpn, .token.dead .mu { display:none !important; }
+@keyframes muBob { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
+.float-num.mu-adv { color:#7dff8a; font-size:18px; -webkit-text-stroke:0; }
+.float-num.mu-dis { color:#ff9a8a; font-size:18px; -webkit-text-stroke:0; }
+#peek-info .wg { margin-left:5px; }
+.sk-btn .wg { font-size:10px; }
+/* 상태 → 무공 탭 */
+.ar-wrap { display:flex; flex-direction:column; gap:6px; }
+.ar-head { display:flex; justify-content:space-between; align-items:baseline; gap:8px; color:#ffd88a; font-size:12px; margin-top:2px; }
+.ar-head small { color:#a8977a; font-size:10px; text-align:right; }
+.ar-wpn { display:flex; align-items:center; gap:4px; flex-wrap:wrap; padding:4px 8px; border:1px solid #4d4130; border-radius:3px; background:rgba(14,10,6,.6); font-size:12px; color:#f3ead9; }
+.ar-wpn small { color:#b9a982; font-size:10px; margin-left:4px; }
+.ar-slots { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px; }
+#ar-body .ar-slots { grid-template-columns:repeat(4, minmax(0,1fr)); }
+.ar-slot { border:1px solid #6b5a3c; border-radius:3px; padding:4px 6px; background:rgba(20,15,9,.8); cursor:pointer; min-width:0; }
+.ar-slot em { display:block; font-style:normal; font-size:9px; color:#9a8a68; }
+.ar-slot b { display:block; color:#ffe2a8; font-size:12px; font-weight:normal; line-height:1.3; }
+.ar-slot small { display:block; color:#b9a982; font-size:9px; line-height:1.3; max-height:2.6em; overflow:hidden; }
+.ar-slot.jl { border-color:#a07a2c; background:rgba(44,32,12,.85); } .ar-slot.jl em { color:#e0b34a; }
+.ar-slot.empty b { color:#8a7a5c; }
+.ar-slot.sel { border-color:#fff176; box-shadow:0 0 0 2px rgba(255,241,118,.55); }
+.ar-list { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px; }
+.ar-sk { border:1px solid #4d4130; border-radius:3px; padding:4px 7px; background:rgba(14,10,6,.7); cursor:pointer; min-width:0; }
+.ar-sk b { display:block; color:#f3ead9; font-size:12px; font-weight:normal; line-height:1.3; }
+.ar-sk small { display:block; color:#a8977a; font-size:9px; line-height:1.3; max-height:2.6em; overflow:hidden; }
+.ar-sk.on { border-color:#8a7a3c; background:rgba(40,32,14,.85); }
+.ar-sk.off { opacity:.4; }
+.ar-sk em, .ar-slot em.star { font-style:normal; font-size:9px; border-radius:3px; padding:0 3px; }
+.ar-sk em.eq { color:#7dff8a; border:1px solid #4a8a4c; } .ar-sk em.jt { color:#e0b34a; border:1px solid #8a6a2c; }
+em.star { color:#9fd0ff; }
+.ar-line { border:1px solid #4d4130; border-radius:3px; padding:4px 8px 5px; background:rgba(14,10,6,.7); }
+.ar-line > em { font-style:normal; font-size:10px; color:#9a8a68; margin-right:6px; }
+.ar-line.jl { border-color:#7a5c22; } .ar-line.jl > em { color:#e0b34a; }
+.ar-chips { display:inline-flex; flex-wrap:wrap; align-items:center; gap:2px 4px; font-size:11px; }
+.ar-st { color:#8a7a5c; } .ar-st small { font-size:9px; color:#7a6a50; margin-left:3px; border:1px solid #5a4a34; border-radius:3px; padding:0 3px; }
+.ar-st.cur { color:#ffe2a8; font-weight:bold; } .ar-st.past { color:#6d604a; text-decoration:line-through; }
+.ar-st.secret.next { color:#8a6ac0; } .ar-st.secret.cur { color:#e6b8ff; }
+.ar-arr { font-style:normal; color:#6d604a; }
+.ar-cur { margin-top:2px; } .ar-cur b { color:#f3ead9; font-size:12px; font-weight:normal; } .ar-cur small { display:block; color:#a8977a; font-size:9px; }
+.ar-cur.none { color:#7a6a50; font-size:10px; }
+/* 무공 칸 창 (출전 편성에서) */
+#arts-modal { position:absolute; inset:0; z-index:97; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.66); }
+#ar-box { width:min(640px,94%); max-height:92%; display:flex; flex-direction:column; gap:7px; padding:12px 16px; }
+#ar-sub { font-size:12px; color:#c9b98a; }
+#ar-body { overflow-y:auto; min-height:0; flex:1 1 auto; }
+/* 출전 편성 : 적의 무기 */
+#sp-foe { font-size:11px; color:#e8dcc0; min-height:1.1em; } #sp-foe .lbl { color:#c9b98a; } #sp-foe .hint { color:#9fd09a; }
+#sp-foe .wg { font-size:10px; }
+.sp-card .nm .wg { font-size:9px; }
+/* 도움말 : 상성 고리 */
+.ar-cycle { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:2px 4px; margin:2px 0 8px; }
+.ar-cycle .cy { display:inline-flex; flex-direction:column; align-items:center; width:42px; padding:3px 0; border-radius:6px; color:#1a120a; font-weight:bold; font-size:18px; line-height:1.1; }
+.ar-cycle .cy small { font-size:9px; font-weight:normal; }
+.ar-cycle .cy.w-do { background:#d9734a; } .ar-cycle .cy.w-geom { background:#7fb2e6; } .ar-cycle .cy.w-gwon { background:#e0b34a; }
+.ar-cycle .cy.w-gung { background:#79c27a; } .ar-cycle .cy.w-jang { background:#b48ad9; }
+.ar-cycle i { font-style:normal; color:#c9b98a; }
+#tip-body b.up { color:#7dff8a; } #tip-body b.dn { color:#ff6a5a; }
+@media (max-height: 420px){
+  #ar-body .ar-list { grid-template-columns:repeat(3, minmax(0,1fr)); }
+  .ar-slot b, .ar-sk b { font-size:11px; }
+  .ar-slot small, .ar-sk small { display:none; }
+  .ar-cur small { font-size:9px; }
+  .ar-cycle .cy { width:36px; font-size:15px; }
+}
+.ar-head small.pick { color:#fff176; }
+.ar-wpn small .wg { font-size:9px; margin-left:3px; }

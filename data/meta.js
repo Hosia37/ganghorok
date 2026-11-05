@@ -4,13 +4,10 @@
    엔진 쪽은 js/meta.js. 여기는 내용만 — 이름 · 대사 · 보상은 모두 바꾸기 쉬움
    ===================================================================== */
 
-/* ---------- 새 무공 (기연 · 전수로 배움) ---------- */
+/* ---------- 새 무공 (기연 · 전수로 배움) ----------
+   동료의 기연 무공(비전 : 태극권 · 운수 · 타구봉법 · 인자결 · 반야장 · 매화 연환전 · 창궁무애검)은 data/arts.js 의 진화 무공에 있음 */
 Object.assign(SKILLS, {
-  '타구봉법 · 봉자결': { range:2, area:'line2', power:1.6, mp:18, desc:'직진 2칸 · 길을 막아 둘을 한꺼번에 치는 타구봉법의 결 (노유각에게 배움)' },
-  '태극권 · 운수':     { range:1, area:'sweep3', power:1.6, mp:20, desc:'앞쪽 가로 3칸 · 구름이 손을 따라 흐르듯 밀어내는 태극권 (장삼봉에게 배움)' },
   '낙영신검장 · 오화': { range:3, minRange:2, area:'volley3', power:1.5, mp:24, desc:'2~3칸 앞 가로 3칸 · 다섯 송이 꽃잎이 한꺼번에 지는 도화도의 장법 (황용에게 배움)' },
-  '반야장':            { range:1, area:'single', power:2.0, mp:26, desc:'1칸 단일 · 지혜로 마를 누르는 소림 반야당의 장법 (백운에게 배움)' },
-  '매화 연환전':       { range:4, minRange:2, area:'single', power:1.9, mp:22, desc:'2~4칸 단일 · 매화검리를 이어 쏘는 화살 — 꽃이 지기 전에 다음 꽃이 핀다 (청송진인에게 배움)' },
 });
 
 /* ---------- 끝 화면 대화 : 장면의 끝 화면(출정 전)에 인물을 더함 ----------
@@ -27,10 +24,10 @@ const META_NPCS = {
         { who:'noyugak', text:'방주 심부름으로 남궁세가까지 왔네. 자네가 천씨의 아이로군. 절강 분타에서 우리 후개를 지켜 줬다지.' },
         { who:'hero',    text:'석운이 먼저 앞을 막았습니다. 저는 등을 맡았을 뿐입니다.' },
         { who:'noyugak', text:'허허, 겸손하기는. 석운아, 이리 와 보거라. 방주께서 네게 아직 안 보여 주신 결이 하나 있다.' },
-        { who:'seokun',  text:'장로님, 그거… 봉자결 말이오?' },
-        { who:'noyugak', text:'막을 봉(封) 자다. 길을 막고 둘을 한꺼번에 치는 결이지. 지킬 줄 아는 놈한테만 가르친다.', give:true },
+        { who:'seokun',  text:'장로님, 그거… 인자결 말이오?' },
+        { who:'noyugak', text:'끌 인(引) 자다. 덤비는 놈을 끌어들여 한 줄로 쓸어내는 결이지. 지킬 줄 아는 놈한테만 가르친다.', give:true },
       ],
-      give:{ skill:'타구봉법 · 봉자결', to:'seokun', item:'초급 영약' },
+      give:{ skill:'타구봉법 · 인자결', to:'seokun', item:'초급 영약' },
       after:'후개를 잘 부탁하네. 장난이 심해도 속은 깊은 놈이야.' },
   ],
   ng_after: [
@@ -130,11 +127,11 @@ const META_NPCS = {
   bo_arrival: [
     { id:'jeongsim', x:34, y:64,
       talk:[
-        { who:'jeongsim',  text:'청화 소저, 앞에서 늘 맞는 걸 보면 마음이 쓰여요. 관음수를 알려 드릴게요.' },
-        { who:'cheonghwa', text:'아미의 치유술을… 제가 배워도 되나요?' },
-        { who:'jeongsim',  text:'남을 낫게 하는 손은 누가 가져도 좋은 손이에요. 자, 숨을 이렇게.', give:true },
+        { who:'jeongsim',  text:'청화 소저, 앞에서 늘 맞는 걸 보면 마음이 쓰여요. 아미에서 달인 금창고예요.' },
+        { who:'cheonghwa', text:'이렇게 귀한 걸… 정심 소저가 쓰셔야 하지 않아요?' },
+        { who:'jeongsim',  text:'남을 지키는 사람일수록 자기 상처는 모른 척해요. 그러니까 꼭 쓰세요.', give:true },
       ],
-      give:{ skill:'관음수', to:'cheonghwa' },
+      give:{ items:[ { item:'금창고', n:3 }, '청심환' ] },
       after:'다쳤을 때는 자기부터 낫게 하세요. 그래야 남도 지켜요.' },
   ],
   gbt_arrival: [
@@ -171,10 +168,10 @@ const META_NPCS = {
     { id:'namgung_jin', x:34, y:64,
       talk:[
         { who:'namgung_jin',  text:'설아, 이리 와. 아버님이 가르치다 만 걸 마저 가르쳐 주마.' },
-        { who:'namgung_seol', text:'오라버니… 제왕검형을요?' },
-        { who:'namgung_jin',  text:'세 칸 앞까지 한 줄로 베는 남궁의 검이다. 너라면 오라비보다 잘 쓸 거다.', give:true },
+        { who:'namgung_seol', text:'오라버니… 제왕검형의 넷째 초식을요?' },
+        { who:'namgung_jin',  text:'비룡 다음 초식이다. 세 칸 앞까지 한 줄로 베어 넘기지. 너라면 오라비보다 잘 쓸 거다.', give:true },
       ],
-      give:{ skill:'제왕검형', to:'namgung_seol' },
+      give:{ skill:'제왕검형 · 사식', to:'namgung_seol' },
       after:'남궁의 검은 둘이 쓸 때 더 강하다. 아버님 말씀이었지.' },
   ],
   th_arrival: [
