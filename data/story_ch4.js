@@ -212,13 +212,13 @@ BONDS.push({
 const HUB_BASES = [
   { ch:4,  name:'성도 · 성화대 본진',     bg:'hub_seonghwa', home:true,   // home : 엔딩 뒤 돌아오는 거점
     spots:{ office:[49, 25], train:[31, 43], smith:[19, 63], store:[80, 64], pyo:[86, 30] } },
-  { ch:5,  name:'난주 · 용문표국',        bg:'mk_lz' },
-  { ch:6,  name:'막북 객잔',              bg:'mk_mb' },
-  { ch:7,  name:'숭산 · 무림맹 총단',     bg:'mk_ml' },
-  { ch:8,  name:'광주 · 수군 도독부',     bg:'mk_gz' },
-  { ch:9,  name:'남녕 · 토사부',          bg:'mk_nn' },
-  { ch:10, name:'영파 · 수군 제독부',     bg:'mk_nb' },
-  { ch:11, name:'곤륜 설원 · 원정 진영',  bg:'mk_yc' },
+  { ch:5,  name:'난주 · 용문표국',        bg:'mk_lz' , spots:{ office:[14, 32], store:[12, 58], smith:[36, 40], pyo:[42, 64], train:[66, 46] } },
+  { ch:6,  name:'막북 객잔',              bg:'mk_mb' , spots:{ office:[70, 30], store:[55, 58], smith:[92, 62], pyo:[28, 62], train:[7, 50] } },
+  { ch:7,  name:'숭산 · 무림맹 총단',     bg:'mk_ml' , spots:{ office:[67, 22], store:[10, 45], smith:[89, 48], pyo:[45, 41], train:[42, 70] } },
+  { ch:8,  name:'광주 · 수군 도독부',     bg:'mk_gz' , spots:{ office:[76, 22], store:[45, 64], smith:[90, 41], pyo:[70, 66], train:[62, 40] } },
+  { ch:9,  name:'남녕 · 토사부',          bg:'mk_nn' , spots:{ office:[36, 22], store:[54, 44], smith:[29, 40], pyo:[76, 51], train:[14, 50] } },
+  { ch:10, name:'영파 · 수군 제독부',     bg:'mk_nb' , spots:{ office:[62, 37], store:[12, 50], smith:[90, 50], pyo:[75, 56], train:[38, 66] } },
+  { ch:11, name:'곤륜 설원 · 원정 진영',  bg:'mk_yc' , spots:{ office:[72, 38], store:[16, 46], smith:[7, 62], pyo:[83, 58], train:[50, 66] } },
 ];
 // 천교 무리 (인연 '같은 원수' 의 피해 +10% 대상)
 Object.assign(UNIT_FACTION, { mandok_munju:'천교', mandok_disciple:'천교', dokin:'천교', gold_toad:'천교', centipede:'천교', yasu_gungju:'천교', beast_tamer:'천교', black_panther:'천교', jungle_python:'천교', nanman_warrior:'천교', myocheonsu:'천교', qc_jiangshi:'천교', hyeol_sisulsa:'천교', gochung:'천교', hyeolyeong:'천교', hyeolgeom:'천교', hyeol_jiangshi:'천교', hyeol_priest:'천교', myohyeolrang:'천교' });

@@ -116,7 +116,7 @@ const BATTLES = {
         talk:[ { who:'arrival', text:'산 아래에서 지원이 왔다! 계속 밀어붙여라!' } ] },
       { turn:8, spawn:[ { id:'sapa_musa', x:9, y:17 }, { id:'sapa_musa', x:10, y:19 } ],
         talk:[ { who:'arrival', text:'애송이 둘한테 뭘 그리 꾸물대나! 한꺼번에 덮쳐라!' } ] },
-      { turn:13, arrive:{ id:'zhang', x:16, y:5 },
+      { turn:13, arrive:{ id:'zhang', x:11, y:6 },          // 산문 가운데 문에서 걸어 나옴 (v120 : 예전 16,5 는 담 위)
         talk:[ { who:'zhang', text:'물러서라! 무당의 산문 앞에서 더는 소란을 허락하지 않겠다.' } ],
         // 태극혜검 (무공 컷인 taegeuk) → 사파 우두머리 '암살에 실패한 건가…!' → 사파가 모두 쓰러짐
         ultimate:{ by:'zhang', name:'태극혜검', lineBy:'e1', fallLine:'암살에 실패한 건가…!' },

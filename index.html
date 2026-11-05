@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="css/game.css?v=v120">
+<link rel="stylesheet" href="css/game.css?v=v121">
 </head>
 <body>
 <div id="boot" style="position:fixed;inset:0;z-index:9999;background:#0b0805;color:#d8a24a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:serif;letter-spacing:6px;font-size:22px">강호록 : 작은 별<small style="font-size:13px;letter-spacing:3px;color:#b9a982">불러오는 중…</small></div>
@@ -221,11 +221,12 @@
 
   <div id="hub-screen">
     <div id="hub-stage" data-bg="bg.hub">
-      <div class="top-btn hub-btn" style="left:83.7%; top:31.5%" id="hub-office">집무실</div>
-      <div class="top-btn hub-btn" style="left:31.1%; top:60%"   data-npc="store">잡화점</div>
-      <div class="top-btn hub-btn" style="left:84.3%; top:58.5%" data-npc="smith">대장간</div>
-      <div class="top-btn hub-btn" style="left:92%; top:70%" id="hub-pyo">표국</div>
-      <div class="top-btn hub-btn" style="left:29.3%; top:32%"   id="hub-train">훈련장</div>
+      <!-- 양양 · 천씨 장원 (hub) : 본채 = 집무실 · 왼쪽 누각 = 훈련장 · 오른쪽 물가 정자 = 잡화점 · 오른쪽 안채 = 대장간 · 돌다리 = 표국 -->
+      <div class="top-btn hub-btn" style="left:42%; top:31%"   id="hub-office">집무실</div>
+      <div class="top-btn hub-btn" style="left:92%; top:47%"   data-npc="store">잡화점</div>
+      <div class="top-btn hub-btn" style="left:80%; top:37%"   data-npc="smith">대장간</div>
+      <div class="top-btn hub-btn" style="left:69%; top:57%"   id="hub-pyo">표국</div>
+      <div class="top-btn hub-btn" style="left:13%; top:42%"   id="hub-train">훈련장</div>
     </div>
     <div id="hub-base-name"></div>
     <div class="top-btn" id="hub-back">← 돌아가기</div>
@@ -296,34 +297,34 @@
 </div>
 
 <!-- 데이터 (내용) : 이 파일들만 고치면 게임 내용이 바뀝니다 -->
-<script src="data/assets.js?v=v120"></script>
-<script src="data/mk_assets.js?v=v120"></script>
-<script src="data/growth.js?v=v120"></script>
-<script src="data/units.js?v=v120"></script>
-<script src="data/skills.js?v=v120"></script>
-<script src="data/items.js?v=v120"></script>
-<script src="data/training.js?v=v120"></script>
-<script src="data/terrain.js?v=v120"></script>
-<script src="data/maps.js?v=v120"></script>
-<script src="data/scenes.js?v=v120"></script>
-<script src="data/battles.js?v=v120"></script>
-<script src="data/missions.js?v=v120"></script>
-<script src="data/pyoguk.js?v=v120"></script>
-<script src="data/codex.js?v=v120"></script>
-<script src="data/story_ch3.js?v=v120"></script>
-<script src="data/story_ch4.js?v=v120"></script>
-<script src="data/story_ch5.js?v=v120"></script>
-<script src="data/story_ch6.js?v=v120"></script>
-<script src="data/story_ch7.js?v=v120"></script>
-<script src="data/story_ch8.js?v=v120"></script>
-<script src="data/story_ch9.js?v=v120"></script>
-<script src="data/story_ch10.js?v=v120"></script>
-<script src="data/story_ch11.js?v=v120"></script>
-<script src="data/jeolgi.js?v=v120"></script>
-<script src="data/server.js?v=v120"></script>
+<script src="data/assets.js?v=v121"></script>
+<script src="data/mk_assets.js?v=v121"></script>
+<script src="data/growth.js?v=v121"></script>
+<script src="data/units.js?v=v121"></script>
+<script src="data/skills.js?v=v121"></script>
+<script src="data/items.js?v=v121"></script>
+<script src="data/training.js?v=v121"></script>
+<script src="data/terrain.js?v=v121"></script>
+<script src="data/maps.js?v=v121"></script>
+<script src="data/scenes.js?v=v121"></script>
+<script src="data/battles.js?v=v121"></script>
+<script src="data/missions.js?v=v121"></script>
+<script src="data/pyoguk.js?v=v121"></script>
+<script src="data/codex.js?v=v121"></script>
+<script src="data/story_ch3.js?v=v121"></script>
+<script src="data/story_ch4.js?v=v121"></script>
+<script src="data/story_ch5.js?v=v121"></script>
+<script src="data/story_ch6.js?v=v121"></script>
+<script src="data/story_ch7.js?v=v121"></script>
+<script src="data/story_ch8.js?v=v121"></script>
+<script src="data/story_ch9.js?v=v121"></script>
+<script src="data/story_ch10.js?v=v121"></script>
+<script src="data/story_ch11.js?v=v121"></script>
+<script src="data/jeolgi.js?v=v121"></script>
+<script src="data/server.js?v=v121"></script>
 <!-- 엔진 (동작) -->
-<script src="js/sound.js?v=v120"></script>
-<script src="js/engine.js?v=v120"></script>
-<script src="js/cloud.js?v=v120"></script>
+<script src="js/sound.js?v=v121"></script>
+<script src="js/engine.js?v=v121"></script>
+<script src="js/cloud.js?v=v121"></script>
 </body>
 </html>
