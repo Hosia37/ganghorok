@@ -188,8 +188,8 @@ function metaOnMove(u){
     const st = bqState(q); if (st==='ok' || st==='gone') return;
     if (q.until && bState.turnCount > q.until) return;
     const d = Math.abs(u.x-q.at[0]) + Math.abs(u.y-q.at[1]);
-    if (q.hidden && st!=='seen' && d <= 3){ bState.mission['bq:'+q.id] = 'seen'; changed = true; toast('숨은 상자를 찾았습니다 — '+q.title, 1600); sfx('levelup'); }
-    if (d === 0){ bState.mission['bq:'+q.id] = 'ok'; changed = true; toast(u.name+' — '+q.title+' (이기면 챙깁니다)', 1800); sfx('levelup'); }
+    if (q.hidden && st!=='seen' && d <= 3){ bState.mission['bq:'+q.id] = 'seen'; changed = true; toast('숨은 상자를 찾았습니다 — '+q.title, 1600); sfx('item'); }
+    if (d === 0){ bState.mission['bq:'+q.id] = 'ok'; changed = true; toast(u.name+' — '+q.title+' (이기면 챙깁니다)', 1800); sfx('chest'); }
   });
   if (changed){ bqRefresh(); renderMissionHud(); }
 }
@@ -279,7 +279,7 @@ function metaPop(title, body){
     let el = document.getElementById('meta-pop');
     if (!el){ el = document.createElement('div'); el.id = 'meta-pop'; document.body.appendChild(el); el.addEventListener('click', ()=> el.classList.remove('on')); }
     el.innerHTML = '<b>'+it[0]+'</b><span>'+it[1]+'</span>';
-    el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); try { sfx('levelup'); } catch (e) {}
+    el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); try { sfx('achieve'); } catch (e) {}
     setTimeout(()=>{ el.classList.remove('on'); setTimeout(()=>{ metaPopQ.shift(); run(); }, 350); }, 2600);
   };
   run();

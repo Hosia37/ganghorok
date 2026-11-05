@@ -315,6 +315,7 @@ function advanceTo(i){
   const line = curScript()[i];
   if (line.fb !== undefined) storyFb = !!line.fb;
   if (line.join) joinParty(line.join);
+  if (line.bgm) playBgm(line.bgm);                                   // 이 줄부터 곡이 바뀜 (data/music.js)
   if (line.give){ const got = applyGive(line.give); if (got.length) setTimeout(()=>showToast('받았습니다 — '+got.join(' · ')), 300); }
   if (line.bg){
     storyBusy = true;
@@ -341,7 +342,8 @@ function chainScene(next){
   fadeSwap(()=>{
     curScene = next; resetStoryScreen(to); scriptIdx = 0;
     storyTextSpan.textContent = ''; storyName.textContent = ''; storyNext.style.visibility = 'hidden';
-    if (newChapter){ card.innerHTML = '<b>'+to.chapter+'</b><span>'+(to.title || to.place || '')+'</span>'; card.classList.add('on'); }
+    if (newChapter){ card.innerHTML = '<b>'+to.chapter+'</b><span>'+(to.title || to.place || '')+'</span>'; card.classList.add('on'); if (typeof playJingle==='function') playJingle('chapter'); }
+    if (typeof playSceneBgm==='function') playSceneBgm(next);
   }, ()=>{
     const go = ()=>{ storyBusy = false; advanceTo(0); setTimeout(()=>autoSave('start'), 700); };
     if (newChapter) setTimeout(()=>{ card.classList.remove('on'); setTimeout(go, 650); }, 1900); else go();
@@ -360,7 +362,7 @@ function resetStoryScreen(sc){
   document.getElementById('story-box').style.cursor = 'pointer';
 }
 function startScene(name, fromLoad){
-  curScene = name; playBgm('story');
+  curScene = name; if (typeof playSceneBgm==='function') playSceneBgm(name); else playBgm('story');
   if (!fromLoad){ setTimeout(()=>autoSave('start'), 1500); }
   else setTimeout(()=>codexCheck(true), 50);   // 새 이야기 장면 : 표국 귀환 · 승급, 자동 저장
   ['intro-screen','battle-screen','hub-screen','npc-screen'].forEach(id=>{ const el=document.getElementById(id); if (el) el.style.display='none'; });
@@ -563,6 +565,7 @@ function showLine(i){
 // 엔딩 화면 (data/story_ch11.js 의 ending 장면 : ending:true)
 function showEnding(){
   PLAYER.flags = PLAYER.flags || {}; PLAYER.flags.cleared = true;
+  playBgm((typeof MUSIC !== 'undefined' && MUSIC.endingScreen) || 'ending');
   if (typeof achCheck==='function') setTimeout(achCheck, 2500);              // 업적 '작은 별'
   const el = document.getElementById('ending-screen'); if (!el) return;
   const st = document.getElementById('end-stat');
@@ -652,6 +655,7 @@ document.getElementById('btn-hub').addEventListener('click', ()=>{
   if (!tipSeen('hub')) setTimeout(()=>showTips('hub'), 300);
   document.getElementById('story-screen').style.display = 'none';
   document.getElementById('hub-screen').style.display = 'block';
+  playBgm((typeof MUSIC !== 'undefined' && MUSIC.hub) || 'town');                // 거점 곡
   refreshMissionBadges();
 });
 
@@ -791,7 +795,7 @@ function openGoldBox(){
   const B = GOLD_BOX.item;
   if (!takeFromBag(B)) return;
   const [lo, hi] = goldBoxRange(), g = Math.round((lo + Math.random() * (hi - lo)) / 10) * 10;
-  PLAYER.gold += g; sfx('levelup');
+  PLAYER.gold += g; sfx('coin');
   document.querySelector('#box-modal .bx-title').textContent = B + '를 열었습니다';
   document.getElementById('bx-ic').innerHTML = itemIcon(B);
   document.getElementById('bx-nm').textContent = '금 ' + g.toLocaleString();
@@ -807,7 +811,7 @@ function openAllGoldBoxes(){
   const B = GOLD_BOX.item, n = PLAYER.inv[B] || 0; if (!n) return;
   const [lo, hi] = goldBoxRange(); let sum = 0, k = 0;
   for (let i=0;i<n;i++){ if (!takeFromBag(B)) break; k++; sum += Math.round((lo + Math.random() * (hi - lo)) / 10) * 10; }
-  PLAYER.gold += sum; sfx('levelup');
+  PLAYER.gold += sum; sfx('coin');
   document.querySelector('#box-modal .bx-title').textContent = B + ' ' + k + '개를 열었습니다';
   document.getElementById('bx-ic').innerHTML = itemIcon(B);
   document.getElementById('bx-nm').textContent = '금 ' + sum.toLocaleString();
@@ -974,6 +978,7 @@ document.querySelectorAll('.of-tab').forEach(t=> t.addEventListener('click', ()=
 document.getElementById('of-close').addEventListener('click', ()=>{ document.getElementById('office-modal').style.display = 'none'; });
 document.getElementById('hub-back').addEventListener('click', ()=>{
   document.getElementById('hub-screen').style.display = 'none';
+  if (typeof playSceneBgm==='function') playSceneBgm(curScene);
   document.getElementById('story-screen').style.display = '';
 });
 
@@ -1425,7 +1430,7 @@ function endOpening(){
 function openSelect(){
   document.getElementById('intro-skip').style.display = 'none';
   setIntroBg((typeof OPENING !== 'undefined' && OPENING.still) || 'story_inn');
-  playBgm('story');
+  playBgm((typeof MUSIC !== 'undefined' && MUSIC.title) || 'title');
   document.querySelectorAll('.sel-card, .sel-item').forEach(c=>c.classList.remove('on'));
   document.querySelectorAll('.sel-cap').forEach(c=>{ const L = HERO_LOOKS[c.dataset.hero] || {};
     c.innerHTML = '<b>' + (L.name||'') + '</b><small>' + Object.keys(L.stat||{}).map(k=> STAT_NAME[k] + ' +' + L.stat[k]).join(' · ') + '</small>'; });
@@ -1446,7 +1451,7 @@ document.querySelectorAll('.sel-card').forEach(c=>{
 function makeHero(){
   const msg = document.getElementById('name-msg');
   if (!HERO.look){ msg.classList.add('warn'); msg.textContent = '강호에서의 모습을 먼저 선택해주세요'; return; }
-  HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0];
+  HERO.name = heroNameOf(HERO.look); HERO.level = 1; HERO.exp = 0; HERO.realm = REALMS[0]; sfx('select');
   HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; HERO.arts = null; HERO.simbeop = []; delete HERO.train;
   equipFixedGear('hero', 0);                                   // 무기 · 방어구 : 인물마다 고정 (주인공 철검 · 천옷)
   resetParty();
@@ -1606,7 +1611,7 @@ function applySnapshot(s){
 }
 // 서장 대화가 끝난 화면(상단 메뉴)으로 바로 이동
 function goStoryEnd(scene){
-  curScene = (scene && SCENES[scene]) ? scene : FIRST_SCENE; playBgm('story');
+  curScene = (scene && SCENES[scene]) ? scene : FIRST_SCENE; if (typeof playSceneBgm==='function') playSceneBgm(curScene); else playBgm('story');
   const sc = SCENES[curScene];
   ['intro-screen','battle-screen','hub-screen','npc-screen'].forEach(id=>{ const el=document.getElementById(id); if (el) el.style.display='none'; });
   const ss = document.getElementById('story-screen');
@@ -1673,7 +1678,7 @@ function onSlotClick(idx){
       const ok = writeSaves(saves);
       if (typeof cloudSaveSlot === 'function') cloudSaveSlot(idx, saves[idx]);    // 로그인했으면 서버에도 (js/cloud.js)
       renderSaveList();
-      showToast(no+'에 저장했습니다' + (ok ? '' : ' (창을 닫으면 사라짐)'));
+      showToast(no+'에 저장했습니다' + (ok ? '' : ' (창을 닫으면 사라짐)')); sfx('save');
       if (saveCtx && saveCtx.onClose) setTimeout(closeSaveModal, 700);    // 전투 뒤 저장이면 바로 이어서 진행
     };
     if (sv) askConfirm(no+'에 덮어쓰시겠습니까?', doSave); else doSave();
@@ -1938,7 +1943,7 @@ function eatElixir(id, name){
   const E = elixirDef(name || (elixirList()[0] || {}).item), st = memberState(id); if (!st || !E) return false;
   const n = elixirCount(st, E.item); if (n >= E.max){ showToast(nameOf(id)+' — '+E.item+'은 더 먹을 수 없습니다'); return false; }
   if (!takeFromBag(E.item)) return false;
-  st.elixir = st.elixir || {}; st.elixir[E.item] = n + 1; sfx('heal');
+  st.elixir = st.elixir || {}; st.elixir[E.item] = n + 1; sfx('item');
   showToast(nameOf(id) + josa(nameOf(id),'이','가') + ' ' + E.item + josa(E.item,'을','를') + ' 복용했습니다 — ' + Object.keys(E.stat).map(k=>STAT_NAME[k] + ' +' + E.stat[k]).join(' · '));
   renderBag(); return true;
 }
@@ -2128,7 +2133,7 @@ function equipItem(name, who){
   const prev = st.equip[it.type];
   st.equip[it.type] = name;
   if (prev) addToBag(prev);
-  showToast(nameOf(who)+' : '+name+josa(name,'을','를')+' 장착했습니다'+(prev ? ' ('+prev+' → 배낭)' : ''));
+  sfx('equip'); showToast(nameOf(who)+' : '+name+josa(name,'을','를')+' 장착했습니다'+(prev ? ' ('+prev+' → 배낭)' : ''));
   return true;
 }
 function unequipSlot(slot, who){
@@ -2401,7 +2406,7 @@ function doForge(t, mode){
     nn = ex;
   }
   ensureItem(nn); st.equip[t.slot] = nn;
-  sfx('levelup'); showToast(nameOf(t.owner) + ' — ' + t.name + ' → ' + nn + (mode==='enh' ? ' 강화 성공!' : mode==='prom' ? ' 승급 성공! (강화 0단계부터)' : ' 제작 완료!'));
+  sfx('forge'); showToast(nameOf(t.owner) + ' — ' + t.name + ' → ' + nn + (mode==='enh' ? ' 강화 성공!' : mode==='prom' ? ' 승급 성공! (강화 0단계부터)' : ' 제작 완료!'));
   renderForge(mode);
 }
 
@@ -3113,7 +3118,7 @@ function pathTo(destKey){
 function moveAlong(u, destX, destY, onDone){
   const path = pathTo(destX+','+destY);
   if (!path.length){ onDone&&onDone(); return; }
-  bState.moving = true; hideTerrainInfo();
+  bState.moving = true; hideTerrainInfo(); sfx('step');
   let i=0;
   (function step(){
     if (i>=path.length){ bState.moving=false; onDone&&onDone(); return; }
@@ -3371,14 +3376,14 @@ function useItem(u, t, n){
   if (it.cure){                                      // 해독제 : 중독 풀기
     if (!t.poison){ toast(t.name+josa(t.name,'은','는')+' 중독되지 않았습니다.'); bState.itemMode = { u, n }; itemTargets(u).forEach(a=>{ const c = bCells[a.x+','+a.y]; if (c) c.classList.add('heal-range'); }); return; }
     if (!takeFromBag(n)) return;
-    cureUnit(t); floatNum(t, '해독', 'heal'); sfx('heal');
+    cureUnit(t); floatNum(t, '해독', 'heal'); sfx('cure');
     toast(u.name+josa(u.name,'이','가')+' '+n+josa(n,'을','를')+' 썼습니다 — '+t.name+'의 중독이 풀렸습니다  (남은 '+n+' '+(PLAYER.inv[n]||0)+'개)', 1800, [u, t]);
     u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
     autoEndCheck(); return;
   }
   if (!takeFromBag(n)) return;
   const before = t.hp; t.hp = Math.min(t.maxHp, t.hp + it.heal);
-  floatNum(t, '+'+(t.hp-before), 'heal'); sfx('heal');
+  floatNum(t, '+'+(t.hp-before), 'heal'); sfx('item');
   positionToken(t);
   t.el.classList.remove('heal'); void t.el.offsetWidth; t.el.classList.add('heal');
   setTimeout(()=>t.el.classList.remove('heal'), 800);
@@ -3438,7 +3443,7 @@ function gainExp(u, amount){
   positionToken(u);
   const ptUp = ups && isParty(u.key) ? attrTotal(u.level) - attrTotal(u.level - ups) : 0;   // 10레벨마다 능력 점수
   if (ups) setTimeout(()=>{
-    showBanner(u.realm!==oldRealm ? '경지 상승! '+u.realm : u.name+' 레벨 업!'); sfx('levelup');
+    showBanner(u.realm!==oldRealm ? '경지 상승! '+u.realm : u.name+' 레벨 업!'); sfx(u.realm!==oldRealm ? 'realm' : 'levelup');
     toast(u.name+' Lv '+u.level+' — 체력 +'+gain.hp+' · 내공 +'+gain.mp+' · 공격 +'+gain.atk+' · 방어 +'+gain.def+
           (ptUp > 0 ? '\n능력 점수 +'+ptUp+' (상태보기 → 능력)' : '')+
           (gain.heal>0 ? '\n체력 '+Math.round(LEVELUP_HEAL*100)+'% 회복 +'+gain.heal+'  ('+u.hp+'/'+u.maxHp+')' : ''), 2400, [u]);
@@ -3460,7 +3465,7 @@ function doBattleAscend(u){
   u.acted = true; u.el.classList.remove('selected'); bState.selected = null;
   positionToken(u); if (cam.zoom) camTo(u);
   u.el.classList.remove('ascend'); void u.el.offsetWidth; u.el.classList.add('ascend'); setTimeout(()=> u.el.classList.remove('ascend'), 1500);
-  showBanner('경지 상승! '+a.to); sfx('levelup');
+  showBanner('경지 상승! '+a.to); sfx('realm');
   if (gain.heal>0) floatNum(u, '+'+gain.heal, 'heal');
   toast(u.name+' — '+a.from+' → '+a.to+' 경지에 올랐습니다'+(u.level>lv0 ? ' · Lv '+u.level : '')+
         '\n명중 · 회피 상승'+(gain.hp>0 ? ' · 체력 +'+gain.hp : '')+(gain.atk>0 ? ' · 공격 +'+gain.atk : '')+(gain.heal>0 ? ' · 체력 회복 +'+gain.heal : ''), 2600, [u]);
@@ -3599,7 +3604,7 @@ function castSelf(u, name){
   u.mp -= d.mp;
   u.guard = { def:g.def||0 }; u.el.classList.add('guard');
   positionToken(u);
-  showBanner(name); sfx('heal');
+  showBanner(name); sfx('guard');
   floatNum(u, '방어 +'+(g.def||0), 'buff');
   let healed = 0;
   if (d.selfHeal && u.hp < u.maxHp){ const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * d.selfHeal))); healed = u.hp - b0; floatNum(u, '+'+healed, 'heal', 350); positionToken(u); }
@@ -3613,7 +3618,7 @@ function applyPoison(t, p){
   if (!t || t.hp<=0 || !p) return;
   t.poison = { turns:p.turns, dmg:p.dmg };
   t.el.classList.add('poison');
-  floatNum(t, '중독', 'poison', 250);
+  floatNum(t, '중독', 'poison', 250); sfx('poison', { delay:0.2 });
 }
 function cureUnit(t){ if (t && t.poison){ t.poison = null; t.el.classList.remove('poison'); return true; } return false; }
 function poisonTick(list){
@@ -3686,7 +3691,7 @@ function castSkill(u, name, x, y){
     if (typeof artsSetSkill==='function') artsSetSkill(name, u);                     // 상성 : 무공의 결 (js/arts.js)
     targets.forEach(t=>{ const r = strike(u, t, pw * (u.skillPow || 1), true); if(!r.miss){ hits++; total+=r.dmg; if (r.mu) (r.mu.kind==='adv' ? adv++ : dis++); if(t.hp<=0) kills++; else if (d.poison) applyPoison(t, d.poison); } });   // 내력 : 무공 위력
     if (typeof artsSetSkill==='function') artsSetSkill(null);
-    sfx(hits ? 'skill' : 'miss');
+    if (typeof sfxSkillHit==='function') sfxSkillHit(u, hits, kills); else sfx(hits ? 'skill' : 'miss');
     const near = [u].concat(targets);
     if (!targets.length) toast(name+'! 범위 안에 적이 없습니다.');
     else if (!hits) toast(name+'! 모두 피했습니다.', 1300, near);
@@ -3831,12 +3836,12 @@ function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 �
   const dmg = Math.max(1, Math.round((atk.atk*up*power*(mu ? mu.dmg : 1)*(0.9+Math.random()*0.2) - (def.def+guardDef)*0.5) * (1-cut)));
   def.hp = Math.max(0, def.hp-dmg);
   if (def.hold) def.roused = true;                                          // 대기하던 적은 맞으면 움직이기 시작
-  floatNum(def, '-'+dmg, 'dmg'); if (!quiet) sfx('hit');
+  floatNum(def, '-'+dmg, 'dmg'); if (!quiet){ if (typeof sfxImpact==='function') sfxImpact(atk, def, dmg, guardDef, { heavy: !!(mu && mu.kind==='adv') }); else sfx('hit'); }
   if (mu) floatNum(def, mu.kind==='adv' ? '▲유리' : '▼불리', 'mu-'+mu.kind, 140);
   positionToken(def);
   def.el.classList.add('flash','shake');
   setTimeout(()=>def.el.classList.remove('flash','shake'), 320);
-  if (def.hp<=0){ def.killedBy = atk.id; def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); }   // killedBy : 임무 '처치' 판정
+  if (def.hp<=0){ def.killedBy = atk.id; def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); sfx('down', { delay:0.15 }); }   // killedBy : 임무 '처치' 판정
   if (typeof metaOnHit==='function') metaOnHit(atk, def, dmg);              // 기록 · 돌발 임무 (js/meta.js)
   return { miss:false, dmg, hitChance, mu };
 }
@@ -3844,6 +3849,7 @@ function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 �
 function hitOnce(atk, def, kind, power, done){
   const dir = def.x>=atk.x ? 'lunge-r' : 'lunge-l';
   atk.el.classList.add(dir);
+  if (typeof sfxSwing==='function') sfxSwing(atk);                          // 무기마다 휘두르는 소리
   setTimeout(()=>{
     atk.el.classList.remove(dir);
     const r = strike(atk, def, power);
@@ -3961,6 +3967,7 @@ function retreatUnit(u, tx, ty, done, msg){
 }
 function showBattleSummary(){
   bState.intro = true;
+  if (typeof playJingle==='function') playJingle(curBattle.lossOk ? 'lose' : 'win');     // 승리 · (지기로 정해진 전투는) 패배 곡
   const v = curBattle.victory || {};
   const kills = Object.values(units).filter(u=>u.side==='enemy' && u.hp<=0 && !u.fled).length;
   const fled  = Object.values(units).filter(u=>u.side==='enemy' && u.fled).length;
@@ -4044,7 +4051,7 @@ function doTalk(u, e, id){
   runBattleDialog(lines, ()=>{
     bState.mission[id] = 'ok';
     bState.intro = false; document.getElementById('b-end-turn').classList.remove('hidden');
-    renderMissionHud(); sfx('levelup');
+    renderMissionHud(); sfx('mission');
     hint('임무 달성 — '+m.title+' (승리하면 보상)', 2000);
     // 대화는 행동을 쓰지 않음 → 메뉴를 다시 열어 이동 · 공격 · 무공 · 대기를 이어서 (이동 취소는 불가)
     if (u.hp>0 && !u.acted && !bState.over) setTimeout(()=>{ if (bState.turn==='ally' && !bState.over) openMenu(u); }, 350);
@@ -4063,7 +4070,7 @@ function missionDeathCheck(){
     else { bState.mission[id] = 'fail'; failed = missionDB()[id]; }
   });
   if (failed) setTimeout(()=>toast('임무 실패 — '+failed.title, 1800), 900);
-  if (done){ sfx('levelup'); setTimeout(()=>hint('임무 달성 — '+done.title+' (승리하면 보상)', 2000), 900); }
+  if (done){ sfx('mission'); setTimeout(()=>hint('임무 달성 — '+done.title+' (승리하면 보상)', 2000), 900); }
   renderMissionHud();
 }
 document.getElementById('bs-next').addEventListener('click', ()=> leaveBattle(true));
@@ -4076,8 +4083,8 @@ function leaveBattle(askSave){
   const card = document.getElementById('chapter-card');
   const go = ()=> fadeSwap(()=>{
     document.getElementById('b-summary').style.display = 'none';
-    if (newChapter){ card.innerHTML = '<b>'+to.chapter+'</b><span>'+(to.title || to.place || '')+'</span>'; card.classList.add('on'); }
-    if (hasNext) startScene(next); else goStoryEnd(curScene);
+    if (newChapter){ card.innerHTML = '<b>'+to.chapter+'</b><span>'+(to.title || to.place || '')+'</span>'; card.classList.add('on'); if (typeof playJingle==='function') playJingle('chapter'); }
+    if (hasNext) startScene(next); else { goStoryEnd(curScene); if (typeof playSceneBgm==='function') playSceneBgm(curScene); }
     if (newChapter){ storyBusy = true; clearInterval(typeTimer); storyTextSpan.textContent = ''; }
   }, ()=>{
     if (newChapter) setTimeout(()=>{ card.classList.remove('on'); setTimeout(()=>{ storyBusy = false; showLine(0); }, 650); }, 1900);
@@ -4101,7 +4108,7 @@ function scriptedLoss(byTurn){
   };
   if (byTurn && L.finisher && L.finisher.length) runBattleDialog(L.finisher, fall); else fall();
 }
-function showResult(t){ document.getElementById('b-result-text').textContent=t; document.getElementById('b-result').style.display='flex'; }
+function showResult(t){ document.getElementById('b-result-text').textContent=t; document.getElementById('b-result').style.display='flex'; if (typeof playJingle==='function') playJingle('lose'); }
 document.getElementById('b-retry').addEventListener('click', ()=>{ restoreBattleStart(); resetBattle(false); });
 
 // 턴 종료 버튼 → 확인 창 (아직 행동하지 않은 인물 수도 알려 줌)
@@ -4170,7 +4177,7 @@ function runEvent(ev, done){
   if (ev.spawn){
     const made = ev.spawn.map(sp=>{ const c = freeCellNear(sp.x, sp.y); return c ? addEnemy(Object.assign({}, sp, { x:c[0], y:c[1] }), 'e'+(++bState.enemySeq)) : null; }).filter(Boolean);
     made.forEach(u=> u.el.classList.add('spawn'));
-    arrival = made[0];
+    arrival = made[0]; if (made.length) sfx(ev.bq ? 'alarm' : 'turn_enemy');
     if (made.length) toast('적 증원 '+made.length+'명!', 1500);
   }
   if (ev.arrive){
@@ -4210,7 +4217,7 @@ function runEvent(ev, done){
     setTimeout(()=>{
       sBy.el.classList.remove(dir);
       const dmg = target.hp; target.hp = 0; if (target.hold) target.roused = true;
-      floatNum(target, '-'+dmg, 'dmg'); sfx('hit'); positionToken(target);
+      floatNum(target, '-'+dmg, 'dmg'); sfx('hit_heavy'); positionToken(target);
       target.el.classList.add('flash','shake'); setTimeout(()=> target.el.classList.remove('flash','shake'), 320);
       target.killedBy = sBy.id; target.el.classList.add('dead'); setTimeout(()=>{ target.el.style.display = 'none'; }, 900);
       toast(sBy.name + (S.label || '의 일격!') + ' ' + target.name + josa(target.name,'이','가') + ' 쓰러졌습니다', 1500, [sBy, target]);
@@ -4273,7 +4280,7 @@ function castUltimate(ult, done){
         bState.intro = true;
         if (ult.fallLine){                                   // 모두 쓰러짐
           foes.forEach(f=>{ f.el.classList.add('flash','shake'); });
-          setTimeout(()=>{ foes.forEach(f=>{ f.el.classList.remove('flash','shake'); f.hp = 0; f.killedBy = caster ? caster.id : null; f.el.classList.add('dead'); }); sfx('hit'); }, 320);
+          setTimeout(()=>{ foes.forEach(f=>{ f.el.classList.remove('flash','shake'); f.hp = 0; f.killedBy = caster ? caster.id : null; f.el.classList.add('dead'); }); sfx('hit_heavy'); sfx('down', { delay:0.2 }); }, 320);
           setTimeout(()=>{ foes.forEach(f=>{ f.el.style.display = 'none'; }); done(); }, 1300);
           return;
         }
@@ -4345,7 +4352,7 @@ function enemyCastNow(e, name, x, y, done){
     if (typeof artsSetSkill==='function') artsSetSkill(name, e);
     targets.forEach(t=>{ const r = strike(e, t, d.power, true); if (!r.miss){ hits++; total += r.dmg; if (t.hp<=0) kills++; else if (d.poison){ applyPoison(t, d.poison); poisoned++; } } });
     if (typeof artsSetSkill==='function') artsSetSkill(null);
-    sfx(hits ? 'skill' : 'miss');
+    if (typeof sfxSkillHit==='function') sfxSkillHit(e, hits, kills); else sfx(hits ? 'skill' : 'miss');
     toast(e.name+' — '+name+'! '+(hits ? hits+'명에게 총 '+total+' 데미지'+(kills ? ' · '+kills+'명 쓰러짐' : '')+(poisoned ? ' · 중독 ('+d.poison.turns+'턴 동안 체력 -'+d.poison.dmg+')' : '') : '모두 피했습니다'), 1700, [e].concat(targets));
     checkEnd();
     if (bState.over){ setTimeout(done, 650); return; }
@@ -4406,6 +4413,7 @@ function showBanner(text){
     d.classList.add('bhud'); BS.appendChild(d); return d;
   })();
   document.getElementById('turn-banner-txt').textContent = text;
+  if (text === '아군 턴') sfx('turn_ally'); else if (text === '적 턴') sfx('turn_enemy');
   el.classList.add('show');
   const tst = document.getElementById('b-toast');
   if (tst && tst.style.display==='block') tst.classList.add('low');   // 떠 있는 알림은 배너 아래로

@@ -248,7 +248,7 @@ Object.assign(SCENES, {
       { who:'hwasan_munju', text:'원망할 줄 아는 사람이라야, 다시는 그런 밤을 만들지 않네.' },
       { who:'cheolmyeong', text:'……생각할 시간을 주시오.' },
       { who:'hwasan_munju', text:'얼마든지. 매화는 기다릴 줄 아는 꽃일세.' },
-      { cast:[ 'zhang', 'hwasan_munju', 'cheonghwa' ], who:'narr', text:'그때 매화당 문간에서 낯익은 웃음소리가 들려왔다.' },
+      { cast:[ 'zhang', 'hwasan_munju', 'cheonghwa' ], who:'narr', bgm:'sacred', text:'그때 매화당 문간에서 낯익은 웃음소리가 들려왔다.' },
       { who:'zhang', text:'허허, 화산의 매화가 아직 지지 않았구먼.' },
       { who:'cheonghwa', text:'사조님!' },
       { who:'hwasan_munju', text:'장 진인… 무당에서 여기까지 몸소 오셨습니까.' },

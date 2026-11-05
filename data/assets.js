@@ -176,13 +176,76 @@ const ASSETS = {
   video: {
     opening: 'assets/video/opening.mp4?h=9478136862',   // 오프닝 (천씨세가의 밤 → 강호록) · 26초
   },
-  // 배경음 — 음악 파일(mp3 / ogg)을 assets/bgm/ 에 넣고 경로를 적으면 그 화면에서 반복 재생 (비워 두면 조용함)
-  //   예) title 칸에  assets/bgm/title.mp3  를 작은따옴표로 감싸서 적기
+  // 배경음 (v127) — 어느 장면 · 전투에 어떤 곡을 쓸지는 data/music.js. 곡은 tools/music/tracks.py 로 만듦 (고쟁 · 적 · 이호 · 북 등을 합성)
+  //   같은 이름으로 mp3 를 덮어쓰면 그 곡이 바뀜
   bgm: {
-    title:  '',   // 시작 화면
-    story:  '',   // 서사 · 이야기 장면
-    battle: '',   // 전투
+    title:         'assets/bgm/title.mp3?h=08111ebaf2',   // 시작 화면 · 캐릭터 선택
+    road:          'assets/bgm/road.mp3?h=73c62114fc',   // 강호의 길 (낮의 여정)
+    town:          'assets/bgm/town.mp3?h=bc9798a0f8',   // 저잣거리 · 객잔 · 거점
+    tension:       'assets/bgm/tension.mp3?h=4fc50aec6b',   // 음모 · 긴장
+    sorrow:        'assets/bgm/sorrow.mp3?h=3cc01822a0',   // 이별 · 슬픔
+    night:         'assets/bgm/night.mp3?h=07a777bd57',   // 밤
+    resolve:       'assets/bgm/resolve.mp3?h=5419c3600a',   // 결의 · 회합
+    sacred:        'assets/bgm/sacred.mp3?h=e1aebae704',   // 산문 · 장엄
+    west:          'assets/bgm/west.mp3?h=6736e79c3b',   // 서역 · 사막
+    north:         'assets/bgm/north.mp3?h=e3755fcf49',   // 북방 · 설원
+    south:         'assets/bgm/south.mp3?h=d860420c53',   // 남방 · 밀림
+    sea:           'assets/bgm/sea.mp3?h=f0b96c17e7',   // 바다 · 항구
+    villain:       'assets/bgm/villain.mp3?h=50c1be8418',   // 천교 · 악의 본산
+    ending:        'assets/bgm/ending.mp3?h=8f87dffd6c',   // 엔딩
+    battle:        'assets/bgm/battle.mp3?h=e03623d96e',   // 보통 전투
+    battle_boss:   'assets/bgm/battle_boss.mp3?h=cc9d38c758',   // 강적
+    battle_crisis: 'assets/bgm/battle_crisis.mp3?h=89a7afa06e',   // 위기 · 방어
+    battle_duel:   'assets/bgm/battle_duel.mp3?h=896e4b179a',   // 비무
+    battle_demon:  'assets/bgm/battle_demon.mp3?h=f7d39611fa',   // 악의 본산 전투
+    battle_final:  'assets/bgm/battle_final.mp3?h=ce87dd0faf',   // 최종 결전
+    win:           'assets/bgm/win.mp3?h=88b8c6f29f',   // 승리 (짧은 곡)
+    lose:          'assets/bgm/lose.mp3?h=c00bdf808d',   // 패배 (짧은 곡)
+    chapter:       'assets/bgm/chapter.mp3?h=d2b2846c98',   // 장이 바뀔 때 (짧은 곡)
+    story:  '@bgm.road',   // (예전 이름) 이야기 · battle 은 아래
   },
+  // 효과음 (v127) — tools/music/sfx.py 로 만듦. 이름은 js/sound.js 의 sfx('이름')
+  sfx: {
+    achieve:     'assets/sfx/achieve.mp3?h=674bf38609',   // 업적 · 기연
+    alarm:       'assets/sfx/alarm.mp3?h=89b2a7fe8e',   // 강적 나타남
+    atk_do:      'assets/sfx/atk_do.mp3?h=635b99bc63',   // 도 휘두름
+    atk_geom:    'assets/sfx/atk_geom.mp3?h=71272edb4d',   // 검 휘두름
+    atk_gung:    'assets/sfx/atk_gung.mp3?h=9184e16b89',   // 활 · 암기
+    atk_gwon:    'assets/sfx/atk_gwon.mp3?h=9118fead0a',   // 권장
+    atk_jang:    'assets/sfx/atk_jang.mp3?h=9382bdac34',   // 봉 · 창 · 채찍
+    block:       'assets/sfx/block.mp3?h=c1c4cd8ed4',   // 막음
+    chest:       'assets/sfx/chest.mp3?h=cfaa4f4674',   // 상자
+    click:       'assets/sfx/click.mp3?h=4911d5c660',   // 단추
+    close:       'assets/sfx/close.mp3?h=1600cc01b9',   // 창 닫기
+    coin:        'assets/sfx/coin.mp3?h=55e22b9278',   // 금
+    confirm:     'assets/sfx/confirm.mp3?h=9bcb0174c4',   // 확인
+    cure:        'assets/sfx/cure.mp3?h=f4b69013ad',   // 해독
+    cutin:       'assets/sfx/cutin.mp3?h=ddeea52901',   // 컷인
+    down:        'assets/sfx/down.mp3?h=542efd4679',   // 쓰러짐
+    equip:       'assets/sfx/equip.mp3?h=164ef7ab60',   // 장비
+    error:       'assets/sfx/error.mp3?h=123f5366a8',   // 안 됨
+    forge:       'assets/sfx/forge.mp3?h=c474f252ed',   // 강화 · 승급
+    guard:       'assets/sfx/guard.mp3?h=aaa57726dd',   // 방어 무공
+    heal:        'assets/sfx/heal.mp3?h=589cb4ddc2',   // 회복
+    hit:         'assets/sfx/hit.mp3?h=2c02db1342',   // 맞음
+    hit_blade:   'assets/sfx/hit_blade.mp3?h=f8f4b0fa8f',   // 베임
+    hit_blunt:   'assets/sfx/hit_blunt.mp3?h=9a5d9751bd',   // 둔기 · 주먹에 맞음
+    hit_heavy:   'assets/sfx/hit_heavy.mp3?h=8d7350c540',   // 크게 맞음
+    item:        'assets/sfx/item.mp3?h=9f80e57bed',   // 물건 얻음
+    levelup:     'assets/sfx/levelup.mp3?h=08cb2cba8c',   // 레벨 업
+    miss:        'assets/sfx/miss.mp3?h=6c68dbe381',   // 빗나감
+    mission:     'assets/sfx/mission.mp3?h=a8680a72a6',   // 임무 달성
+    open:        'assets/sfx/open.mp3?h=653dbce1d3',   // 창 열기
+    poison:      'assets/sfx/poison.mp3?h=103668ba66',   // 중독
+    realm:       'assets/sfx/realm.mp3?h=04f87b3920',   // 경지 상승
+    save:        'assets/sfx/save.mp3?h=cce3cd6dda',   // 저장
+    select:      'assets/sfx/select.mp3?h=48f340c003',   // 캐릭터 고름
+    skill:       'assets/sfx/skill.mp3?h=ee84677405',   // 무공
+    step:        'assets/sfx/step.mp3?h=3e6fc317d6',   // 이동
+    turn_ally:   'assets/sfx/turn_ally.mp3?h=b43b7d3e69',   // 아군 턴
+    turn_enemy:  'assets/sfx/turn_enemy.mp3?h=759786a3c5',   // 적 턴
+  },
+
   // 물건 그림 (배낭 · 잡화점 · 장비 칸). data/items.js 의 img 에 이 이름을 적음 — 그림이 없는 물건은 글자 아이콘
   item: {
     sword:   'assets/items/sword.webp?h=3a2c3b152d',     // 철검
