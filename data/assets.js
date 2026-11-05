@@ -8,7 +8,8 @@ const ASSETS = {
   // 배경 (이야기 장면, 시작 화면 등)
   bg: {
     title:       'assets/backgrounds/title.webp?h=1e9e8cd1d6',        // 시작 화면
-    intro_army:  'assets/backgrounds/intro_army.webp?h=7d9b5dbdf3',   // 서사 - 군대 행렬
+    intro_army:  'assets/backgrounds/intro_army.webp?h=7d9b5dbdf3',   // 서사 - 군대 행렬 (예전 서사 — 지금은 안 씀)
+    opening_end: 'assets/backgrounds/opening_end.webp?h=13e51c0fd8',  // 오프닝 영상 끝 장면 — 캐릭터 선택 화면 뒤
     story_inn:   'assets/backgrounds/story_inn.avif?h=1a0bccdb37',    // 무한성 저잣거리 (객잔 앞)
     wudang_path: 'assets/backgrounds/wudang_path.avif?h=590b44e57f',  // 무당산 오르는 길
     wudang_gate: 'assets/backgrounds/wudang_gate.avif?h=3a6facecdd',  // 무당파 산문
@@ -170,6 +171,10 @@ const ASSETS = {
     heukrangkan: 'assets/characters/heukrangkan_face.avif?h=ee80d92c6f',   // 흑랑칸
     myohyeolrang: 'assets/characters/myohyeolrang_face.avif?h=8a65627de3',   // 묘혈랑
     musan_shaman: 'assets/characters/musan_shaman_face.avif?h=66566661ff',   // 무산 무녀
+  },
+  // 영상 — 오프닝 (data/scenes.js 의 OPENING 이 'video.opening' 으로 부름)
+  video: {
+    opening: 'assets/video/opening.mp4?h=9478136862',   // 오프닝 (천씨세가의 밤 → 강호록) · 26초
   },
   // 배경음 — 음악 파일(mp3 / ogg)을 assets/bgm/ 에 넣고 경로를 적으면 그 화면에서 반복 재생 (비워 두면 조용함)
   //   예) title 칸에  assets/bgm/title.mp3  를 작은따옴표로 감싸서 적기

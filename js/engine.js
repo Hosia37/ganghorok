@@ -1375,10 +1375,8 @@ document.addEventListener('click', e=>{
 }, true);
 
 
-/* ================= 서사(인트로) → 캐릭터 생성 ================= */
-let introIdx = 0, introTyping = false, introTimer = null;
-const introText = document.getElementById('intro-text'), introNext = document.getElementById('intro-next');
-// 서사 배경 두 겹을 번갈아 쓰며 부드럽게 전환
+/* ================= 오프닝 영상 → 캐릭터 선택 (data/scenes.js 의 OPENING) ================= */
+// 선택 화면 배경 두 겹을 번갈아 쓰며 부드럽게 전환
 let introLayer = 1;
 function setIntroBg(key){
   const cur = document.getElementById('intro-bg'+introLayer);
@@ -1387,36 +1385,47 @@ function setIntroBg(key){
   nx.style.backgroundImage = cssUrl(asset('bg.'+key)); nx.dataset.key = key;
   nx.classList.add('on'); cur.classList.remove('on'); introLayer = nextNo;
 }
-
+const introVideo = document.getElementById('intro-video');
 function startIntro(){
-  introIdx = 0; playBgm('story');
+  playBgm(null);                                              // 영상 소리와 겹치지 않게
   ['intro-bg1','intro-bg2'].forEach(id=>{ const el=document.getElementById(id); el.classList.remove('on'); el.dataset.key=''; });
   const is = document.getElementById('intro-screen');
   is.classList.remove('leaving'); is.style.display = 'block';
   document.getElementById('select-wrap').style.display = 'none';
-  document.getElementById('intro-box').style.display = 'block';
   document.getElementById('intro-skip').style.display = 'block';
-  showIntro(0);
   const ts = document.getElementById('title-screen');
   ts.classList.add('leaving');
   setTimeout(()=>{ ts.style.display = 'none'; }, 750);
+  const v = (typeof OPENING !== 'undefined' && OPENING.video) || '', src = v.includes('/') ? v : asset(v);
+  if (src) playOpening(src); else openSelect();
 }
-function showIntro(i){
-  const it = INTRO[i];
-  setIntroBg(it.bg);
-  introText.textContent = ''; introNext.style.visibility = 'hidden';
-  introTyping = true; let c = 0;
-  clearInterval(introTimer);
-  introTimer = setInterval(()=>{
-    introText.textContent += it.text[c]; c++;
-    if (c>=it.text.length){ clearInterval(introTimer); introTyping=false; introNext.style.visibility='visible'; }
-  }, 45);
+// 누른 바로 그때 재생해야 모바일에서 소리가 남 — 막히면 소리 없이 틀고 '소리 켜기' 를 보여 줌
+function playOpening(src){
+  const v = introVideo, snd = document.getElementById('intro-sound');
+  const vol = SOUND.mute ? 0 : Math.min(1, SOUND.bgm);
+  v.classList.remove('out'); v.style.display = 'block'; snd.style.display = 'none';
+  if (v.getAttribute('src') !== src) v.src = src;
+  try { v.currentTime = 0; } catch (e) {}
+  v.volume = vol; v.muted = vol <= 0;
+  v.onended = endOpening; v.onerror = endOpening;
+  const p = v.play();
+  if (p && p.catch) p.catch(()=>{
+    v.muted = true;
+    v.play().then(()=>{ if (vol > 0) snd.style.display = 'block'; }).catch(endOpening);
+  });
+}
+function endOpening(){
+  const v = introVideo; if (v.style.display === 'none') return;
+  v.onended = v.onerror = null; v.pause();
+  document.getElementById('intro-sound').style.display = 'none';
+  openSelect();
+  v.classList.add('out');
+  setTimeout(()=>{ v.style.display = 'none'; v.classList.remove('out'); }, 950);
 }
 function openSelect(){
-  clearInterval(introTimer);
-  document.getElementById('intro-box').style.display = 'none';
   document.getElementById('intro-skip').style.display = 'none';
-  setIntroBg(INTRO[INTRO.length-1].bg);
+  setIntroBg((typeof OPENING !== 'undefined' && OPENING.still) || 'story_inn');
+  playBgm('story');
   document.querySelectorAll('.sel-card, .sel-item').forEach(c=>c.classList.remove('on'));
   document.querySelectorAll('.sel-cap').forEach(c=>{ const L = HERO_LOOKS[c.dataset.hero] || {};
     c.innerHTML = '<b>' + (L.name||'') + '</b><small>' + Object.keys(L.stat||{}).map(k=> STAT_NAME[k] + ' +' + L.stat[k]).join(' · ') + '</small>'; });
@@ -1424,13 +1433,8 @@ function openSelect(){
   HERO.look = null;
   document.getElementById('select-wrap').style.display = 'flex';
 }
-document.getElementById('intro-box').addEventListener('click', ()=>{
-  if (introTyping){ clearInterval(introTimer); introText.textContent = INTRO[introIdx].text; introTyping=false; introNext.style.visibility='visible'; return; }
-  introIdx++;
-  if (introIdx >= INTRO.length){ openSelect(); return; }
-  showIntro(introIdx);
-});
-document.getElementById('intro-skip').addEventListener('click', openSelect);
+document.getElementById('intro-sound').addEventListener('click', ()=>{ introVideo.muted = false; introVideo.volume = Math.min(1, SOUND.bgm || 0.6); document.getElementById('intro-sound').style.display = 'none'; });
+document.getElementById('intro-skip').addEventListener('click', ()=>{ if (introVideo.style.display === 'block') endOpening(); else openSelect(); });
 document.querySelectorAll('.sel-card').forEach(c=>{
   c.addEventListener('click', ()=>{
     document.querySelectorAll('.sel-card').forEach(x=>{ x.classList.toggle('on', x===c); x.parentNode.classList.toggle('on', x===c); });
