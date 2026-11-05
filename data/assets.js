@@ -298,3 +298,16 @@ const ASSETS = {
     store: 'assets/npcs/store.webp?h=c0966af0b9',
   },
 };
+
+// 컷인 그림의 얼굴 자리 [가로 %, 세로 %] (그림 왼쪽 위 = 0, 0) — 화면 비율이 달라도 얼굴이 띠 안에 보이도록 맞춤
+//   (없으면 data/skills.js 의 cutinPos 를 그대로 씀) · 새 컷인을 넣으면 얼굴 가운데를 재어 적기
+const CUTIN_FACE = {
+  cheonsi_geom:[62,22], cheonsi_geom_f:[65,25], yukhap_gwon:[47,15], mudang_jang:[52,21], hwawon_singung:[35,24],
+  hangryong:[38,24], tagu:[56,26], taegeuk:[60,9],
+  cheonsi_yuseong:[44,23], cheonsi_yuseong_f:[61,24], seonghwa_yowon:[32,25], seonghwa_yowon_f:[25,28],
+  taegeuk_geom:[37,14], maehwa_jeon:[22,22], hangryong_yuhoe:[25,21], jewang_biryong:[46,24], paljin_gwimun:[52,13],
+  geumgang_hangma:[38,16], pogu_ihwa:[37,17], gwaneum_cheonsu:[52,17], taeeul_gwiil:[31,18], bingbaek_seolhwa:[38,20],
+  baeksu_gunmu:[34,15], gwangdo_nanmu:[61,15], jewang_ilgeom:[52,14], maehwa_mangae:[68,19], gwangpung_maehwa:[37,20],
+  unryong_samhyeon:[56,22], cheonmyeong_gwiil:[44,16], gucheon_noein:[37,13], jujak_hwayeom:[41,23],
+  hyeolcheon_magong:[44,12], cheonma_singong:[54,15], hapmagong:[57,25],
+};

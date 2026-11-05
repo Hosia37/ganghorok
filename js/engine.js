@@ -3710,6 +3710,17 @@ function runCounters(atk, defs, done){
 /* 무공 컷인 : SKILLS[name].cutin 그림이 있으면 화면을 가로지르는 그림 + 무공 이름 (누르면 건너뜀)
    설정의 '무공 연출' 을 끄거나 그림이 없으면 바로 done(false) */
 const CUTIN_MS = 1250;
+// 컷인 그림 자리 : 얼굴 [가로 %, 세로 %] 를 띠의 가로 45% · 세로 42% 쯤에 오게 (그림 밖으로는 안 나가게)
+function cutinFitFace(el, img, key){
+  const face = (typeof CUTIN_FACE !== 'undefined') && CUTIN_FACE[key]; if (!face) return;
+  const fit = ()=>{
+    const box = el.querySelector('.ci-pic'), bw = box && box.clientWidth, bh = box && box.clientHeight; if (!bw || !bh) return;
+    const nw = img.naturalWidth || 1280, nh = img.naturalHeight || 720, s = Math.max(bw/nw, bh/nh), dw = nw*s, dh = nh*s;
+    const ox = Math.min(0, Math.max(bw - dw, bw*0.45 - face[0]/100*dw)), oy = Math.min(0, Math.max(bh - dh, bh*0.42 - face[1]/100*dh));
+    img.style.objectPosition = Math.round(ox)+'px '+Math.round(oy)+'px';
+  };
+  if (img.complete && img.naturalWidth) fit(); else img.onload = ()=>{ img.onload = null; fit(); };
+}
 function playCutin(u, name, done){
   const d = SKILLS[name] || {};
   let key = d.cutin || '';
@@ -3728,6 +3739,7 @@ function playCutin(u, name, done){
   el.querySelector('.ci-who').textContent = u.name;
   el.querySelector('.ci-name').textContent = name;
   el.classList.remove('show','out'); void el.offsetWidth; el.classList.add('show');
+  cutinFitFace(el, img, key);                                      // 얼굴이 띠 안에 보이도록 (data/assets.js 의 CUTIN_FACE)
   const tst = document.getElementById('b-toast'); if (tst) tst.style.display = 'none';   // '대상을 선택하세요' 같은 알림은 치움
   sfx('cutin');
   let ended = false, timer = null;
