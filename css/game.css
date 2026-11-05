@@ -1059,3 +1059,58 @@
   .shop-row .sh-ic { width:clamp(34px,calc(8 * var(--vh)),46px); height:clamp(34px,calc(8 * var(--vh)),46px); flex:none; display:flex; align-items:center; justify-content:center;
     border:1px solid #6d5d3f; border-radius:3px; background:rgba(10,8,5,.75); color:#ffd88a; font-size:18px; }
   .shop-row .sh-ic .item-img { width:88%; height:88%; }
+
+/* ===== v122 : 기록 (업적 · 인연 도감 · 보물 도감 · 기연) · 돌발 임무 · 기연 표시 (js/meta.js) ===== */
+#meta-modal { position:absolute; inset:0; z-index:96; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.66); }
+#mt-box { width:min(640px,94%); height:min(92%, 600px); display:flex; flex-direction:column; gap:7px; padding:12px 16px; }
+#mt-sub { font-size:12px; color:#c9b98a; }
+#mt-tabs .of-tab small { font-size:10px; color:#9a8a68; margin-left:2px; }
+#mt-body { display:flex; flex-direction:column; gap:6px; overflow-y:auto; min-height:0; flex:1 1 auto; }
+.mt-ach { display:flex; gap:10px; align-items:center; padding:5px 9px; background:rgba(12,9,6,.85); border:1px solid #5d4f36; border-radius:3px; }
+.mt-ach.done { border-color:#b9913c; background:rgba(48,36,16,.9); }
+.mt-a1 { flex:1 1 auto; display:flex; flex-direction:column; gap:1px; min-width:0; }
+.mt-a1 b { font-size:13px; color:#ffe2a8; } .mt-ach:not(.done) .mt-a1 b { color:#d8cba8; }
+.mt-a1 span { font-size:11px; color:#b9a982; }
+.mt-a2 { flex:0 0 38%; display:flex; flex-direction:column; gap:2px; align-items:flex-end; }
+.mt-a2 small { font-size:10px; color:#c9b98a; } .mt-a2 small.rw { color:#8fe0a8; }
+.mt-bar { width:100%; height:6px; background:#2a2016; border-radius:3px; overflow:hidden; }
+.mt-bar i { display:block; height:100%; background:linear-gradient(90deg,#9a6a22,#ffd88a); }
+.mt-bond { display:flex; gap:10px; align-items:center; padding:5px 9px; background:rgba(12,9,6,.85); border:1px solid #6d5d3f; border-radius:3px; }
+.mt-bond.locked { opacity:.62; border-style:dashed; }
+.mt-faces { display:flex; flex:none; }
+.mt-faces img, .mt-faces .q { width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid #8a7752; margin-right:-8px; background:#1a130b; }
+.mt-faces .q { display:flex; align-items:center; justify-content:center; color:#8a7752; font-size:15px; }
+.mt-b1 { display:flex; flex-direction:column; gap:1px; margin-left:10px; min-width:0; }
+.mt-b1 b { font-size:13px; color:#ffe2a8; } .mt-b1 span { font-size:11px; color:#d8cba8; } .mt-b1 small { font-size:10px; color:#9a8a68; }
+.mt-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(72px, 1fr)); gap:6px; }
+.mt-item { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 3px; background:rgba(12,9,6,.85); border:1px solid #5d4f36; border-radius:3px; cursor:pointer; }
+.mt-item .ic { width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#ffd88a; }
+.mt-item .ic img { width:36px; height:36px; object-fit:contain; }
+.mt-item .nm { font-size:10px; color:#e8dcc0; text-align:center; line-height:1.2; }
+.mt-item.locked { opacity:.45; } .mt-item.locked .ic { color:#6d5d3f; }
+.mt-item.sel { border-color:#ffd88a; box-shadow:0 0 0 1px #ffd88a inset; }
+.mt-info { position:sticky; top:0; z-index:1; padding:6px 9px; background:rgba(30,22,12,.97); border:1px solid #8a7752; border-radius:3px; font-size:11px; color:#d8cba8; display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; }
+.mt-info b { color:#ffe2a8; font-size:13px; } .mt-info .st { color:#8fe0a8; }
+.set-meta { display:flex; gap:6px; flex-wrap:wrap; } .set-meta .top-btn { padding:4px 10px; font-size:12px; }
+/* 업적 · 기연 알림 (전투 중에도 위 가운데) */
+#meta-pop { position:fixed; left:50%; top:10px; z-index:200; transform:translate(-50%,-140%); transition:transform .32s ease; pointer-events:auto; cursor:pointer;
+  max-width:min(560px,92vw); padding:8px 16px; background:linear-gradient(180deg,rgba(70,50,20,.97),rgba(32,23,12,.97)); border:1px solid #d8a24a; border-radius:4px; box-shadow:0 4px 18px rgba(0,0,0,.6);
+  display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; }
+#meta-pop.on { transform:translate(-50%,0); }
+#meta-pop b { color:#ffe2a8; font-size:14px; letter-spacing:1px; } #meta-pop span { color:#e8dcc0; font-size:12px; }
+/* 끝 화면 기연 인물 : 緣 */
+.snpc.kiyeon img { box-shadow:0 0 0 2px #c9a0ff, 0 0 14px rgba(190,140,255,.75); }
+.snpc .mark.ky { background:#7a4ac0; color:#fff; box-shadow:0 0 10px rgba(190,140,255,.9); animation:kyPulse 1.6s ease-in-out infinite; }
+@keyframes kyPulse { 50% { transform:scale(1.18); } }
+/* 돌발 임무 : 상자 · 전투 정보 줄 */
+.bq-chest { position:absolute; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:2; animation:bqGlow 1.4s ease-in-out infinite; }
+.bq-chest img { width:70%; height:70%; object-fit:contain; filter:drop-shadow(0 0 6px rgba(255,216,120,.95)); }
+.bq-chest.hide { display:none; }
+@keyframes bqGlow { 50% { transform:translateY(-3px); } }
+#b-mission .bq { color:#b8e8ff; } #b-mission .bq.ok { color:#8fe0a8; } #b-mission .bq.fail { color:#ff9a7a; }
+@media (max-height:420px){
+  #mt-box { height:96%; padding:7px 12px; gap:4px; }
+  .mt-a2 { flex-basis:42%; } .mt-ach, .mt-bond { padding:3px 7px; }
+  .mt-faces img, .mt-faces .q { width:28px; height:28px; }
+  .set-meta .top-btn { padding:3px 8px; font-size:11px; }
+}

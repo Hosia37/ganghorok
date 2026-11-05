@@ -195,6 +195,7 @@ function ascendRealm(id){
   const st = memberState(id); st.realm = a.to;
   const cap = levelCap(id);                                   // 벽에서 기다리던 경험치 → 바로 레벨업
   while ((st.exp||0) >= EXP_MAX && st.level < cap){ st.exp -= EXP_MAX; st.level++; }
+  if (typeof metaOnRealm==='function') metaOnRealm(id);       // 업적 (js/meta.js)
   return true;
 }
 
@@ -551,6 +552,7 @@ function showLine(i){
 // 엔딩 화면 (data/story_ch11.js 의 ending 장면 : ending:true)
 function showEnding(){
   PLAYER.flags = PLAYER.flags || {}; PLAYER.flags.cleared = true;
+  if (typeof achCheck==='function') setTimeout(achCheck, 2500);              // 업적 '작은 별'
   const el = document.getElementById('ending-screen'); if (!el) return;
   const st = document.getElementById('end-stat');
   if (st) st.textContent = '성화대 ' + PARTY.length + '명 · 주인공 Lv ' + ((memberState('hero') || {}).level || '?');
@@ -1101,7 +1103,7 @@ let snpcTimer = null;
    go 의 'home' = 처음 자리로 (버튼 글 = sc.homeBtn, 없으면 '돌아가기'). 출정 · 거점은 어디서든 누를 수 있음. 불러오면 처음 자리 */
 let curPlace = null;
 function placeOf(sc){ return sc && curPlace && sc.places && sc.places[curPlace] ? sc.places[curPlace] : null; }
-function curNpcs(){ const sc = SCENES[curScene], p = placeOf(sc); return ((p ? p.npcs : sc.npcs) || []); }
+function curNpcs(){ const sc = SCENES[curScene], p = placeOf(sc); return ((p ? p.npcs : sc.npcs) || []).filter(n=> !n.cond || (typeof metaCond==='function' && metaCond(n.cond))); }   // cond : 조건이 맞을 때만 (기연 · data/meta.js)
 function buildPlaceButtons(){
   const sc = SCENES[curScene], p = placeOf(sc), wrap = document.getElementById('place-wrap'), nm = document.getElementById('place-name');
   const go = ((p ? p.go : sc && sc.go) || []).filter(k=> k==='home' || (sc.places && sc.places[k]));
@@ -1134,7 +1136,9 @@ function buildStoryNpcs(){
     const d = document.createElement('div'); d.className = 'snpc' + (isParty(n.id) ? ' ally' : '');
     d.style.left = n.x+'%'; d.style.top = n.y+'%';
     const k = npcKey(n), gift = n.give && !PLAYER.flags['give:'+k], fresh = !PLAYER.flags['talk:'+k];   // 받을 것이 있으면 선물 표시 · 아직 말을 안 걸었으면 !
-    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span>'+(gift || fresh ? '<div class="mark'+(gift ? ' gift' : '')+'">'+(gift ? '贈' : '!')+'</div>' : '');
+    const ky = n.kiyeon && typeof metaKiyeonMet==='function' && !metaKiyeonMet(n.kiyeon);              // 기연 : 緣
+    if (n.kiyeon) d.classList.add('kiyeon');
+    d.innerHTML = '<img src="'+faceOf(n.id)+'"><span>'+nameOf(n.id)+'</span>'+(ky ? '<div class="mark ky">緣</div>' : (gift || fresh ? '<div class="mark'+(gift ? ' gift' : '')+'">'+(gift ? '贈' : '!')+'</div>' : ''));
     d.addEventListener('click', e=>{ e.stopPropagation(); talkStoryNpc(n, d); });
     wrap.appendChild(d);
   });
@@ -1150,6 +1154,7 @@ function talkStoryNpc(n, el){
   clearInterval(snpcTimer);
   const k = npcKey(n), gk = 'give:'+k, tk = 'talk:'+k, first = !PLAYER.flags[tk];
   PLAYER.flags[tk] = true;
+  if (n.kiyeon && typeof metaKiyeonFound==='function') metaKiyeonFound(n);   // 기연 도감 (js/meta.js)
   const giveNow = ()=>{
     if (!n.give || PLAYER.flags[gk]) return;
     PLAYER.flags[gk] = true;
@@ -1220,6 +1225,7 @@ function openSettings(mode){
   setMode = mode || 'story';
   document.getElementById('set-game').style.display = setMode==='title' ? 'none' : 'flex';
   document.getElementById('set-save').style.display = setMode==='battle' ? '' : 'none';
+  ['set-meta-row','set-meta-sec'].forEach(i=>{ const e = document.getElementById(i); if (e) e.style.display = setMode==='title' ? 'none' : ''; });   // 기록 : 업적 · 도감 (게임 중에만)
   syncSettingsUI(); refreshSetButtons();
   if (typeof cloudUI === 'function') cloudUI();      // 계정 · 서버 저장 줄 (js/cloud.js)
   clearInterval(setTimer); if (setMode==='battle') setTimer = setInterval(refreshSetButtons, 300);   // 턴이 바뀌면 버튼 상태도 바뀜
@@ -1428,7 +1434,7 @@ function makeHero(){
   HERO.equip = emptyEquip(); HERO.tree = []; HERO.learned = []; HERO.elixir = {}; HERO.attr = { mu:0, ne:0, sin:0 }; delete HERO.train;
   equipFixedGear('hero', 0);                                   // 무기 · 방어구 : 인물마다 고정 (주인공 철검 · 천옷)
   resetParty();
-  PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0;
+  PLAYER.gold = START_GOLD; PLAYER.suryeon = 0; PLAYER.trainCnt = {}; PLAYER.inv = {}; PLAYER.flags = {}; PLAYER.missions = {}; PLAYER.pyo = null; PLAYER.codex = null; PLAYER.playMs = 0; PLAYER.meta = {};
   startStory();
 }
 document.getElementById('name-make').addEventListener('click', makeHero);
@@ -1459,7 +1465,7 @@ function makeSnapshot(){
            hero:{ name:HERO.name, look:HERO.look, job:HERO.job, level:HERO.level, exp:HERO.exp, realm:HERO.realm, equip:Object.assign({}, HERO.equip),
                   tree:(HERO.tree||[]).slice(), learned:(HERO.learned||[]).slice(), elixir:(typeof HERO.elixir === 'number' ? HERO.elixir : JSON.parse(JSON.stringify(HERO.elixir || {}))), attr:Object.assign({ mu:0, ne:0, sin:0 }, HERO.attr||{}) },
            party:PARTY.slice(), members:JSON.parse(JSON.stringify(MEMBERS)),
-           player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0) } };
+           player:{ gold:PLAYER.gold, suryeon:PLAYER.suryeon||0, trainCnt:Object.assign({}, PLAYER.trainCnt || {}), inv:Object.assign({}, PLAYER.inv), flags:Object.assign({}, PLAYER.flags), missions:Object.assign({}, PLAYER.missions || {}), pyo:PLAYER.pyo ? JSON.parse(JSON.stringify(PLAYER.pyo)) : null, codex:JSON.parse(JSON.stringify(codexState())), playMs:Math.round(PLAYER.playMs||0), meta:JSON.parse(JSON.stringify(PLAYER.meta || {})) } };
   if (saveCtx && saveCtx.battle){ snap.pos = 'battle'; snap.place = battlePlace(); snap.battle = battleSnapshot(); }
   return snap;
 }
@@ -1546,6 +1552,7 @@ function applySnapshot(s){
   PLAYER.playMs = s.player.playMs || 0;                     // 플레이 시간 (예전 저장은 0부터)
   PLAYER.gold = s.player.gold; PLAYER.inv = Object.assign({}, s.player.inv); PLAYER.flags = Object.assign({}, s.player.flags || {});
   PLAYER.missions = Object.assign({}, s.player.missions || {});
+  PLAYER.meta = JSON.parse(JSON.stringify(s.player.meta || {}));             // 업적 · 도감 · 기록 (js/meta.js)
   PLAYER.pyo = s.player.pyo ? JSON.parse(JSON.stringify(s.player.pyo)) : null;
   if (PLAYER.pyo && PLAYER.pyo.sent) PLAYER.pyo.sent.forEach(j=>{ if (!j.at) j.at = s.scene; if (j.reward) j.reward = ITEM_RENAMED[j.reward] || j.reward; });
   if (PLAYER.pyo) delete PLAYER.pyo.offers;
@@ -1559,6 +1566,7 @@ function applySnapshot(s){
   migrateOldTraining('hero', HERO); Object.keys(MEMBERS).forEach(id=> migrateOldTraining(id, MEMBERS[id]));
   learnCatchUp(s.scene, s.pos!=='start');                                   // 지나온 장면에서 익혔어야 할 절기 (이야기가 늘어나기 전 저장)
   catchUpMembers();                                                         // 뒤처진 동료 따라잡기 (v117 전 저장)
+  if (typeof metaOnLoad==='function') metaOnLoad();                          // 업적 · 도감 (v122 전 저장 맞추기)
   if (s.pos==='battle' && s.battle && BATTLES[s.battle.id]){        // 전투 중 저장 → 그 턴부터 이어서
     const ts = document.getElementById('title-screen');
     if (ts.style.display !== 'none'){ ts.classList.add('leaving'); setTimeout(()=>{ ts.style.display='none'; }, 750); }
@@ -2065,7 +2073,9 @@ function bagUsed(){ return Object.keys(PLAYER.inv).filter(k=>PLAYER.inv[k]>0).le
 function addToBag(name, n){
   n = n || 1;
   if (!PLAYER.inv[name] && bagUsed() >= BAG_SIZE) return false;
-  PLAYER.inv[name] = (PLAYER.inv[name]||0) + n; return true;
+  PLAYER.inv[name] = (PLAYER.inv[name]||0) + n;
+  if (typeof metaDex==='function' && metaDex(name) && typeof achCheck==='function') setTimeout(achCheck, 800);   // 보물 도감 (js/meta.js)
+  return true;
 }
 function takeFromBag(name){
   if (!(PLAYER.inv[name] > 0)) return false;
@@ -2967,6 +2977,7 @@ function resetBattle(withIntro){
   battleHudReset();
   const lead = units.hero || aliveOf('ally')[0];
   cam.cx=(lead.x-0.5)*B_TILE; cam.cy=(lead.y-0.5)*B_TILE; applyCam(false);
+  if (typeof metaOnBattleStart==='function') metaOnBattleStart();           // 돌발 임무 상자 (js/meta.js)
   if (withIntro===true) startBattleIntro(); else showBanner('아군 턴');
 }
 
@@ -2984,7 +2995,7 @@ function battleSnapshot(){
   const evs = curBattle.events || [];
   return { id:curBattleId, turnCount:bState.turnCount, enemySeq:bState.enemySeq, zoom:cam.zoom, start:battleStartSave, picks:curPicks ? curPicks.slice() : null,
            fired: bState.fired.map(e=>evs.indexOf(e)).filter(i=>i>=0),
-           expBy: Object.assign({}, bState.expBy), mission: Object.assign({}, bState.mission || {}), goalText: bState.goalText || null,
+           expBy: Object.assign({}, bState.expBy), mission: Object.assign({}, bState.mission || {}), goalText: bState.goalText || null, ms: bState.ms ? Object.assign({}, bState.ms) : null,
            units: Object.keys(units).map(k=>{ const u = units[k];
              return { key:k, id:u.id, side:u.side, friend:!!u.friend, noControl:!!u.noControl,
                       x:u.x, y:u.y, level:u.level, hp:u.hp, mp:u.mp||0, acted:!!u.acted, moved:!!u.moved, fled:!!u.fled, guard:u.guard||null, poison:u.poison ? Object.assign({}, u.poison) : null,
@@ -3005,6 +3016,7 @@ function doBattleSave(){
 // 저장해 둔 전투를 그 턴부터 이어서
 function resumeBattle(b){
   curBattleId = b.id; curBattle = BATTLES[b.id]; curPicks = b.picks || null;
+  const s0ms = b.ms ? Object.assign({}, b.ms) : null;                          // 이 전투의 기록 (js/meta.js)
   if (!loadMap(curBattle.map)) return;
   battleStartSave = b.start || JSON.stringify({ inv:PLAYER.inv, gold:PLAYER.gold, hero:{ level:HERO.level, exp:HERO.exp, realm:HERO.realm }, members:MEMBERS });
   Object.values(units).forEach(u=>{ if(u.el) u.el.remove(); });
@@ -3027,7 +3039,9 @@ function resumeBattle(b){
   const evs = curBattle.events || [];
   newBattleState({ turnCount:b.turnCount||1, expBy:Object.assign({}, b.expBy||{}), mission:Object.assign({}, b.mission||{}), goalText:b.goalText || null,
                    fired:(b.fired||[]).map(i=>evs[i]).filter(Boolean), enemySeq:b.enemySeq||curBattle.enemies.length });
+  if (s0ms) bState.ms = s0ms;                                                // 이 전투의 기록 (js/meta.js)
   battleHudReset();
+  if (typeof metaOnBattleStart==='function') metaOnBattleStart();
   cam.zoom = b.zoom!==false;
   document.getElementById('b-zoom').textContent = cam.zoom ? '🔍 확대 켜짐' : '🔍 확대 꺼짐';
   const lead = (units.hero && units.hero.hp>0) ? units.hero : aliveOf('ally')[0];
@@ -3592,6 +3606,7 @@ function allyTurnStart(){
     if (p.mpRegen && u.mp < u.maxMp){ const b = u.mp; u.mp = Math.min(u.maxMp, u.mp + p.mpRegen); floatNum(u, '내공 +'+(u.mp-b), 'mp', delay); }
     positionToken(u);
   });
+  if (typeof metaOnTurn==='function') metaOnTurn();                         // 돌발 임무 : 상자 시간 · 강적 달아남 (js/meta.js)
 }
 // 회복 무공 : 고를 수 있는 대상 (range 안의 다친 자신 · 아군 · 우군)
 function healTargets(u, name){
@@ -3717,7 +3732,7 @@ function onCellClick(x,y){
   if (!bState.moveMode || !bCells[key].classList.contains('reachable')){ closeMenu(true); return; }
   clearHi(); bState.moveMode=false; unitMenu.classList.remove('show');
   u.prevPos = { x:u.x, y:u.y };                                  // 취소하면 돌아갈 자리
-  moveAlong(u, x, y, ()=>{ u.moved=true; openMenu(u); });
+  moveAlong(u, x, y, ()=>{ u.moved=true; if (typeof metaOnMove==='function') metaOnMove(u); openMenu(u); });   // 돌발 임무 : 상자 (js/meta.js)
 }
 
 // 머리 위로 떠오르는 숫자 / 글자  kind: 'dmg'(피해) · 'miss'(회피) · 'heal'(회복)
@@ -3774,6 +3789,7 @@ function strike(atk, def, power, quiet){       // quiet = 효과음은 부른 �
   def.el.classList.add('flash','shake');
   setTimeout(()=>def.el.classList.remove('flash','shake'), 320);
   if (def.hp<=0){ def.killedBy = atk.id; def.el.classList.add('dead'); setTimeout(()=>{ def.el.style.display='none'; }, 900); }   // killedBy : 임무 '처치' 판정
+  if (typeof metaOnHit==='function') metaOnHit(atk, def, dmg);              // 기록 · 돌발 임무 (js/meta.js)
   return { miss:false, dmg, hitChance };
 }
 // 한 번 치기 (연출 + 피해 + 경험치). kind = 'attack' | 'counter'
@@ -3940,6 +3956,7 @@ function showBattleSummary(){
   document.getElementById('bs-mission-row').style.display = mres.length ? '' : 'none';
   document.getElementById('bs-mission').innerHTML = mres.map(r=>{ const m = missionDB()[r.id];
     return m.title+' '+(r.ok ? '<span class="mok">완료</span><small>'+rewardText(m.reward)+'</small>' : '<span class="mfail">실패</span>'); }).join('<br>');
+  if (typeof metaOnVictory==='function') metaOnVictory();                  // 기록 · 돌발 임무 보상 · 업적 (js/meta.js)
   document.getElementById('b-summary').style.display = 'flex';
 }
 /* ---------- 임무 (전투 중) ---------- */
@@ -3960,7 +3977,7 @@ function missionOk(id){ const c = missionDB()[id].cond, p = missionProgress(id);
 function renderMissionHud(){
   const el = document.getElementById('b-mission'); if (!el) return;
   el.innerHTML = battleMissions().map(id=>{ const m = missionDB()[id], p = missionProgress(id);
-    return '<div class="'+p+'">임무 · '+m.goal+(p==='ok' ? ' ✓' : p==='fail' ? ' ✗ 실패' : '')+'</div>'; }).join('');
+    return '<div class="'+p+'">임무 · '+m.goal+(p==='ok' ? ' ✓' : p==='fail' ? ' ✗ 실패' : '')+'</div>'; }).join('') + (typeof metaHudLines==='function' ? metaHudLines() : '');
 }
 // 이 아군이 지금 대화할 수 있는 상대 [{ id(임무), e(적 유닛) }]
 function talkTargets(u){
