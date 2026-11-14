@@ -1,0 +1,28 @@
+const scope=self.registration.scope, prefix='hoyeon-patch:'+scope+':', name=prefix+version;
+const absolute=p=>new URL(p,scope).href;
+const key=(p,h)=>absolute(p)+'?rev='+h;
+self.addEventListener('install',e=>e.waitUntil((async()=>{
+ const cache=await caches.open(name);
+ for(const [p,h] of Object.entries(hashes)){
+  const k=key(p,h);
+  if(await cache.match(k))continue;
+  let response=await caches.match(k);
+  if(!response){
+   response=await fetch(absolute(p),{cache:'reload'});
+   if(!response.ok)throw Error(p);
+   const digest=await crypto.subtle.digest('SHA-256',await response.clone().arrayBuffer());
+   if(Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')!==h)throw Error(p)
+  }
+  await cache.put(k,response)
+ }
+})()));
+self.addEventListener('message',e=>{if(e.data==='activate')e.waitUntil(self.skipWaiting())});
+self.addEventListener('activate',e=>e.waitUntil((async()=>{
+ for(const n of await caches.keys())if(n.startsWith(prefix)&&n!==name)await caches.delete(n);
+ await self.clients.claim()
+})()));
+self.addEventListener('fetch',e=>{
+ if(e.request.method!=='GET'||!e.request.url.startsWith(scope))return;
+ const p=new URL(e.request.url).pathname.slice(new URL(scope).pathname.length)||'index.html';
+ if(Object.hasOwn(hashes,p))e.respondWith(caches.open(name).then(async c=>(await c.match(key(p,hashes[p])))||fetch(e.request)))
+});
