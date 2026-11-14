@@ -1,4 +1,4 @@
-const version="415b5dab1ad46e95";
+const version="9f9d8bb20e90b206";
 const hashes={
   "assets/battle/0.jpg": "e2d965f43d773cd849a286fb8956d2ca4a53f7a52f62afb4149792e3265155aa",
   "assets/battle/3.jpg": "33953f43e285724e7130fa62938d4dffb7f994eae836d876a5d08b9bf1d2249a",
@@ -307,10 +307,10 @@ const hashes={
   "data/chap.js": "b1c3ccc2148ca75ce57d5e139e6ac54ac78bac34baba9a2169b524d8281772a7",
   "data/combat.js": "ffe0c18c53c3b04b7fe6b7c47be1e63876e85509b39d63fc2f43e7f62572f708",
   "data/players.js": "9c77f785863543f4c5dbb0fc981f2b120684a5d33a0c4ce0a24ff5a68953f920",
-  "game.js": "9f7f90ca0d549e89790c44b01ec129f1750cd61706e2053fc73a4a6f125ab2cc",
+  "game.js": "81c9a70a0519e3659504b6fe17a24faec20f4e549643e52c071201aacd519581",
   "icon-192.png": "79c5787bbb05be52ffa12ce6a54abb0a8f1797d532b8c1efc6e41f73192a6dd6",
   "icon-512.png": "57d8b674f88dd34242b04fe69befb0fb7fac3d54e93d29206c7d6e10cdac29ca",
-  "index.html": "8e32db3a03d3df94b15229f7f7883812f6e1cb501d1051bc6b7ec4143e4ae2dc",
+  "index.html": "77d7eb0c59ab5a72e534c3e6f647df05f9fac3bc1204d31391a19ff6d0238e7c",
   "manifest.webmanifest": "0741162b6679f761a9440adced5cf726620f313bc8d396b46e281039deb6feae"
 };
 const scope=self.registration.scope, prefix='hoyeon-patch:'+scope+':', name=prefix+version;
