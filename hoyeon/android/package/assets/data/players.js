@@ -884,5 +884,109 @@ const players = {
       "assets/players/474/6/4.png",
       "assets/players/474/6/5.png"
     ]
+  ],
+  "487": [
+    "송군 병사",
+    "assets/portraits/song.jpg",
+    [
+      "assets/players/474/2/0.png",
+      "assets/players/474/2/1.png",
+      "assets/players/474/2/2.png",
+      "assets/players/474/2/3.png",
+      "assets/players/474/2/4.png",
+      "assets/players/474/2/5.png"
+    ],
+    "assets/players/474/3.png",
+    "assets/players/474/4.png",
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png"
+    ],
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png",
+      "assets/players/474/6/2.png",
+      "assets/players/474/6/3.png",
+      "assets/players/474/6/4.png",
+      "assets/players/474/6/5.png"
+    ]
+  ],
+  "488": [
+    "송군 병사",
+    "assets/portraits/song.jpg",
+    [
+      "assets/players/474/2/0.png",
+      "assets/players/474/2/1.png",
+      "assets/players/474/2/2.png",
+      "assets/players/474/2/3.png",
+      "assets/players/474/2/4.png",
+      "assets/players/474/2/5.png"
+    ],
+    "assets/players/474/3.png",
+    "assets/players/474/4.png",
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png"
+    ],
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png",
+      "assets/players/474/6/2.png",
+      "assets/players/474/6/3.png",
+      "assets/players/474/6/4.png",
+      "assets/players/474/6/5.png"
+    ]
+  ],
+  "489": [
+    "송군 병사",
+    "assets/portraits/song.jpg",
+    [
+      "assets/players/474/2/0.png",
+      "assets/players/474/2/1.png",
+      "assets/players/474/2/2.png",
+      "assets/players/474/2/3.png",
+      "assets/players/474/2/4.png",
+      "assets/players/474/2/5.png"
+    ],
+    "assets/players/474/3.png",
+    "assets/players/474/4.png",
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png"
+    ],
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png",
+      "assets/players/474/6/2.png",
+      "assets/players/474/6/3.png",
+      "assets/players/474/6/4.png",
+      "assets/players/474/6/5.png"
+    ]
+  ],
+  "490": [
+    "송군 병사",
+    "assets/portraits/song.jpg",
+    [
+      "assets/players/474/2/0.png",
+      "assets/players/474/2/1.png",
+      "assets/players/474/2/2.png",
+      "assets/players/474/2/3.png",
+      "assets/players/474/2/4.png",
+      "assets/players/474/2/5.png"
+    ],
+    "assets/players/474/3.png",
+    "assets/players/474/4.png",
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png"
+    ],
+    [
+      "assets/players/474/5/0.png",
+      "assets/players/474/5/1.png",
+      "assets/players/474/6/2.png",
+      "assets/players/474/6/3.png",
+      "assets/players/474/6/4.png",
+      "assets/players/474/6/5.png"
+    ]
   ]
 };
