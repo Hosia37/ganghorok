@@ -40,13 +40,13 @@ async function raid(){
  g.u.filter(a=>a.hidden&&a.side==='guest').forEach(reveal);battleUI();
  await say(unit(5),'구처기 도인께 들었네. 우리가 돕겠네!',1900);
  await say(unit(6),'뒤채에서 누가 나온다!',1250);
- boss.x=22;boss.y=6;g.u.filter(a=>a.hidden).forEach(reveal);
- const [x,y]=nearest(boss,{x:21,y:5});g.captive={id:24,x,y};battleUI();
+ boss.x=Math.min(22,boardWidth()-2);boss.y=6;g.u.filter(a=>a.hidden).forEach(reveal);
+ const [x,y]=nearest(boss,{x:Math.min(21,boardWidth()-3),y:5});g.captive={id:24,x,y};battleUI();
  await walkTo(boss,...nearest(boss,master),80);face(boss,master.x-boss.x,master.y-boss.y);face(master,boss.x-master.x,boss.y-master.y);battleUI();
  paint(tile(boss).querySelector('img'),boss,'attack');await say(master,'단 장군…… 자네가 어찌!',1300);
  master.hp=0;battleUI();await say(boss,'이걸로 신세는 갚았소. 흐흐.',1850);
  await walkTo(boss,...nearest(boss,g.captive),80);await say(g.captive,'이 손 놓으시오!',1150);
- g.captive.taken=true;battleUI();const exit=nearest(boss,{x:25,y:5});await walkTo(boss,...exit,80);
+ g.captive.taken=true;battleUI();const exit=nearest(boss,{x:boardWidth()-1,y:5});await walkTo(boss,...exit,80);
  boss.hidden=true;delete g.captive;battleUI();await say(hero,'이평 아주머니! 단천덕, 거기 서라!',1650);
  const steps=route(hero,...nearest(hero,{x:exit[0],y:exit[1]}),80).slice(0,3);
  if(steps.length)await walkTo(hero,...steps.at(-1),3);
@@ -194,7 +194,7 @@ function battleUI(){
 }
 
 
-function currentMap(){return g.n===3&&g.mapFormat!==2?T.legacy3:T[g.n]}
+function currentMap(){return [3,4].includes(g.n)&&g.mapFormat!==2?T['legacy'+g.n]:T[g.n]}
 function boardWidth(){return currentMap().width||26}
 function boardHeight(){return currentMap().height||22}
 function combatStats(unit){return currentMap().stats?.[unit.id]||stats[unit.id]}
