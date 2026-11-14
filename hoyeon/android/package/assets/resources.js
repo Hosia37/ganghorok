@@ -48,7 +48,7 @@ function validateResource(release){
    if(name==='stats'&&(!Array.isArray(row)||row.length<7||!row.every(n=>Number.isFinite(n)&&n>=0)))throw Error('잘못된 능력치');
    if(name==='players'&&(!Array.isArray(row)||row.length<7||typeof row[0]!=='string'||!Array.isArray(row[2])||!Array.isArray(row[6])))throw Error('잘못된 인물 데이터');
    if(name==='chap'&&(!Array.isArray(row)||row.length!==groups.chap[id].length||!row.every(r=>Array.isArray(r)&&r.length===5&&Array.isArray(r[2])&&typeof r[3]==='string'&&typeof r[4]==='string')))throw Error('기존 저장과 호환되지 않는 장면');
-   if(name==='terrain'&&(!row||!Array.isArray(row.tiles)||row.tiles.length!==572||!Array.isArray(row.cast)))throw Error('잘못된 전장');
+   if(name==='terrain'&&(!row||!Array.isArray(row.tiles)||row.tiles.length!==(row.width||26)*(row.height||22)||!Array.isArray(row.cast)))throw Error('잘못된 전장');
    if((name==='bg'||name==='battle')&&typeof row!=='string')throw Error('잘못된 배경');
   }
  }

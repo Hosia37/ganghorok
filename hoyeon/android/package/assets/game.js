@@ -55,22 +55,22 @@ async function raid(){
 
 function titleScreen(){closeOrders();$('frame').classList.remove('battle');$('title').hidden=false;$('title').style.backgroundImage='linear-gradient(90deg,#17251ddd,transparent),url('+D.bg.title+')';let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}controls('start',[['새 이야기',()=>{if(saved)popup('기존 저장을 새 이야기로 바꿀까?',[['새로 시작',()=>story(0)],['취소',()=>{}]]);else story(0)}],['이어하기',()=>{g=saved;draw()},!saved],['리소스 업데이트',()=>checkResources(true)],...(typeof window!=='undefined'&&window.hoyeonRegistration?.waiting?[['새 패치 적용',()=>{navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});window.hoyeonRegistration.waiting.postMessage('activate')}]]:[])]);checkResources()}
 function story(ch,i=0){g={mode:'story',ch,i,learned:ch===0?false:!!g.learned};save();draw()}
-function draw(){closeOrders();$('frame').classList.remove('battle');inspectedUnit=null;$('title').hidden=true;$('scene').hidden=g.mode==='battle';$('field').hidden=g.mode!=='battle';if(g.mode==='battle'){battleUI();return}let [bg,place,cast,w,t]=D.chap[g.ch][g.i];if(g.ch===2)bg=place.includes('객잔')?'inn':'west';if(g.ch===3&&bg===129)bg='reed';$('place').textContent=place;$('scene').style.backgroundImage='url('+D.bg[bg]+')';$('scene').replaceChildren();let lay=layouts[bg];for(let [id,x,y,d,pose] of [...cast].sort((a,b)=>(lay[a[0]]?.[1]||0)-(lay[b[0]]?.[1]||0))){let [u,v]=lay[id]||[50,70],im=new Image();let speaker=cast.find(a=>P[a[0]][0]===w),others=cast.filter(a=>a[0]!==id),target=others.find(a=>a===speaker)||others.sort((a,b)=>Math.abs((lay[a[0]]||[50])[0]-u)-Math.abs((lay[b[0]]||[50])[0]-u))[0],lookRight=target?(lay[target[0]]||[50])[0]>u:false;im.className='actor';im.alt=P[id][0];im.src=P[id][2][pose===99?6:(pose===1?1:pose===11?2:0)];im.style.cssText='left:'+u+'%;top:'+v+'%;height:23%;transform:translate(-50%,-100%) scaleX('+(lookRight?-1:1)+')';if(w===P[id][0])im.classList.add('speaking');if(bg===131&&id===146&&t.includes('뒤채로 들었다'))im.classList.add('exitBack');$('scene').append(im)}tools();panel(w||'이야기',t);controls('actions',[['다음 ›',next]]);if(g.mode==='lesson')lessonUI()}
-function next(){if(g.i+1<D.chap[g.ch].length)return story(g.ch,g.i+1);if(g.ch===1)return popup('누구를 구하러 갈까?',[['곽소천',()=>teach(3)],['양철심',()=>teach(2)]]);if([0,3,4].includes(g.ch))return fight(g.ch);popup('이번 분기의 이야기를 마쳤어.',[['갈림길로',()=>story(1)],['제목으로',titleScreen]])}
+function draw(){closeOrders();$('frame').classList.remove('battle');inspectedUnit=null;$('title').hidden=true;$('scene').hidden=g.mode==='battle';$('field').hidden=g.mode!=='battle';if(g.mode==='battle'){battleUI();return}let [bg,place,cast,w,t]=D.chap[g.ch][g.i];if(g.ch===2)bg=place.includes('객잔')?'inn':'west';if(g.ch===3&&bg===129)bg='reed';$('place').textContent=place;$('scene').style.backgroundImage='url('+D.bg[bg]+')';$('scene').replaceChildren();let lay=layouts[bg]||{};for(let [id,x,y,d,pose] of [...cast].sort((a,b)=>(lay[a[0]]?.[1]||0)-(lay[b[0]]?.[1]||0))){let [u,v]=lay[id]||[18+(cast.findIndex(a=>a[0]===id)%6)*12,65+Math.floor(cast.findIndex(a=>a[0]===id)/6)*17],im=new Image();let speaker=cast.find(a=>P[a[0]][0]===w),others=cast.filter(a=>a[0]!==id),target=others.find(a=>a===speaker)||others.sort((a,b)=>Math.abs((lay[a[0]]||[50])[0]-u)-Math.abs((lay[b[0]]||[50])[0]-u))[0],lookRight=target?(lay[target[0]]||[50])[0]>u:false;im.className='actor';im.alt=P[id][0];im.src=P[id][2][pose===99?6:(pose===1?1:pose===11?2:0)];im.style.cssText='left:'+u+'%;top:'+v+'%;height:23%;transform:translate(-50%,-100%) scaleX('+(lookRight?-1:1)+')';if(w===P[id][0])im.classList.add('speaking');if(bg===131&&id===146&&t.includes('뒤채로 들었다'))im.classList.add('exitBack');$('scene').append(im)}tools();panel(w||'이야기',t);controls('actions',[['다음 ›',next]]);if(g.mode==='lesson')lessonUI()}
+function next(){if(g.i+1<D.chap[g.ch].length)return story(g.ch,g.i+1);if(g.ch===1)return popup('누구를 구하러 갈까?',[['곽소천',()=>teach(3)],['양철심',()=>teach(2)]]);if([0,3,4,6,9].includes(g.ch))return fight(g.ch);if([5,7,8].includes(g.ch))return story(g.ch+1);popup('이번 분기의 이야기를 마쳤어.',[['갈림길로',()=>story(1)],['제목으로',titleScreen]])}
 const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),near=(a,b)=>Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y)),live=()=>g.u.filter(u=>u.hp>0&&!u.hidden),at=(x,y)=>live().find(a=>a.x===x&&a.y===y),sel=()=>g.u.find(a=>a.id===g.id),enemy=(a,b)=>(a.side==='foe')!==(b.side==='foe');
-function fight(n){radialSelection=null;g={mode:'battle',n,learned:!!g.learned,turn:1,u:T[n].cast.map(([id,x,y,side,hidden])=>({id,x,y,side,hidden,hp:stats[id][5],max:stats[id][5],mp:stats[id][6],done:false})),id:0,step:'move',log:n===0?'호연을 남쪽 중앙 출구로 보내거나 적을 전멸시키세요.':n===3?'단천덕이 남겨 둔 병사를 모두 격퇴하세요.':'초목대사가 산문을 막아섰다.'};save();draw();sequence(async()=>{let h=sel(),v=g.u.find(a=>a.id===(n===0?146:n===4?32:474));await say(v,n===0?'왕명이다! 반역자를 잡아라!':n===4?'산문을 넘으려거든 나를 먼저 넘으시오.':'역참을 막아라!',1600);await say(h,n===0?'남쪽 길을 엽시다!':n===4?'저는 피를 보러 온 것이 아닙니다!':'단천덕, 각오해라!',1400);})}
-function paths(u,limit){let q=[[u.x,u.y,0]],s=new Map([[u.x+','+u.y,0]]);for(let j=0;j<q.length;j++){let [x,y,c]=q[j];for(let [a,b] of [[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){let i=b*26+a,k=a+','+b;if(a<0||a>=26||b<0||b>=22||T[g.n].tiles[i]===6||s.has(k)||at(a,b))continue;let n=c+1;if(n<=limit){s.set(k,n);q.push([a,b,n])}}}return s}
+function fight(n){radialSelection=null;g={mode:'battle',n,mapFormat:2,learned:!!g.learned,turn:1,u:T[n].cast.map(([id,x,y,side,hidden])=>({id,x,y,side,hidden,hp:(T[n].stats?.[id]||stats[id])[5],max:(T[n].stats?.[id]||stats[id])[5],mp:(T[n].stats?.[id]||stats[id])[6],done:false})),id:0,step:'move',log:n===0?'호연을 남쪽 중앙 출구로 보내거나 적을 전멸시키세요.':n===3?'단천덕의 퇴로를 지키는 송군 8명을 돌파하라.':n===6?'호연과 강남칠괴가 흑풍쌍살을 저지한다.':n===9?'호연을 조작해 동료들과 매초풍을 물리쳐라.':'초목대사가 산문을 막아섰다.'};save();draw();sequence(async()=>{if(n===6||n===9){await chapterBattleIntro(n);return}let h=sel(),v=g.u.find(a=>a.id===(n===0?146:n===4?32:474));await say(v,n===0?'왕명이다! 반역자를 잡아라!':n===4?'산문을 넘으려거든 나를 먼저 넘으시오.':'역참을 막아라!',1600);await say(h,n===0?'남쪽 길을 엽시다!':n===4?'저는 피를 보러 온 것이 아닙니다!':'단천덕, 각오해라!',1400);})}
+function paths(u,limit){let q=[[u.x,u.y,0]],s=new Map([[u.x+','+u.y,0]]);for(let j=0;j<q.length;j++){let [x,y,c]=q[j];for(let [a,b] of [[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){let i=b*boardWidth()+a,k=a+','+b;if(a<0||a>=boardWidth()||b<0||b>=boardHeight()||currentMap().tiles[i]===6||s.has(k)||at(a,b))continue;let n=c+1;if(n<=limit){s.set(k,n);q.push([a,b,n])}}}return s}
 const arts={0:['삼재검법',5],21:['찌르기',4],22:['양가창법',12],23:['전진검법',8]};
 function valid(u,v,spell){if(spell&&u.id===22)return v===u&&live().some(a=>enemy(u,a)&&near(u,a)===1);return v&&enemy(u,v)&&(spell&&u.id===23?near(u,v)===1:dist(u,v)===1)}
-function damage(u,v,boost){if(g.n===4&&g.turn===1&&v.id===32)return 0;let hit=Math.max(8,Math.round(stats[u.id][0]*.70-stats[v.id][1]*.24+boost));v.hp=Math.max(0,v.hp-hit);return hit}
+function damage(u,v,boost){if(g.n===4&&g.turn===1&&v.id===32)return 0;let hit=Math.max(8,Math.round(combatStats(u)[0]*.70-combatStats(v)[1]*.24+boost));v.hp=Math.max(0,v.hp-hit);if([6,9].includes(g.n)&&v.id===34&&v.hp<=v.max*.25){v.hp=Math.max(1,v.hp);v.hidden=true;g.log='매초풍이 상처를 움켜쥐고 어둠 속으로 물러났다.'}return hit}
 function finish(){let u=sel();u.done=true;g.origin=null;g.step='move';if(!win()){let v=live().find(v=>v.side==='ally'&&!v.done);if(v)g.id=v.id;save();battleUI();if(!v)completedTurn()}}
-function win(){let h=g.u.find(x=>x.id===0);if(h.hp===0||g.turn>(g.n===0?12:18)){popup('호연 일행이 돌파하지 못했다.',[['재도전',()=>fight(g.n)],['제목으로',titleScreen]]);return true}if((g.n===0&&h.x>=11&&h.x<=14&&h.y>=18)||(!live().some(v=>v.side==='foe')&&(g.n!==4||g.turn>=2))){popup(g.n===0?'남쪽 길이 열렸다. 연기 속에서 일행이 흩어졌다.':g.n===3?'단천덕의 말이 사라졌다. 발굽 자국이 산사로 이어진다.':'송군이 물러섰다. 호연은 이평을 구하러 동문을 나섰다.',[['이야기 계속',()=>story(g.n===0?1:g.n+1)]]);return true}return false}
+function win(){let h=g.u.find(x=>x.id===0);if(h.hp===0||([6,9].includes(g.n)&&!g.u.find(u=>u.id===(g.n===6?1:36))?.hp)||g.turn>(g.n===0?12:18)){popup('호연 일행이 돌파하지 못했다.',[['재도전',()=>fight(g.n)],['제목으로',titleScreen]]);return true}if((g.n===0&&h.x>=11&&h.x<=14&&h.y>=18)||(!live().some(v=>v.side==='foe')&&(g.n!==4||g.turn>=2))){popup(g.n===0?'남쪽 길이 열렸다. 연기 속에서 일행이 흩어졌다.':g.n===3?'단천덕의 말이 사라졌다. 발굽 자국이 산사로 이어진다.':g.n===6?'진현풍이 무너졌다. 그러나 숲의 혈투는 비극을 남겼다.':g.n===9?'매초풍이 물러났다. 마옥이 오해를 풀기 위해 앞으로 나섰다.':'송군이 물러섰다. 호연은 이평을 구하러 동문을 나섰다.',[['이야기 계속',()=>story(g.n===0?1:g.n+1)]]);return true}return false}
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let animating=false, ticker=0;
 function cancelTimer(){clearTimeout(ticker);ticker=0}
 function completedTurn(){popup('아군이 모두 행동했습니다. 턴을 끝내겠습니까?',[['턴 종료',()=>{cancelTimer();endTurn()}],['자동 종료 취소',cancelTimer]]);const yes=$('modal').querySelector('button');let left=4;function tick(){yes.textContent='턴 종료 ('+left+'초)';if(left--===0){$('modal').hidden=true;endTurn();return}ticker=setTimeout(tick,1000)}tick()}
-function tile(u){return $('map').children[u.y*26+u.x]}
-async function say(u,text,ms=1350){if(!u)return;let cell=tile(u);let b=document.createElement('span');b.className='bubble'+(u.x<4?' left':u.x>21?' right':'');b.textContent=text;cell.append(b);panel(P[u.id][0],text);await sleep(ms);b.remove()}
+function tile(u){return $('map').children[u.y*boardWidth()+u.x]}
+async function say(u,text,ms=1350){if(!u)return;if(ms>=1000)centerSelectedUnit(u);let cell=tile(u);let b=document.createElement('span');b.className='bubble'+(u.x<4?' left':u.x>21?' right':'');b.textContent=text;cell.append(b);panel(P[u.id][0],text);await sleep(ms);b.remove()}
 function route(u,x,y,lim){let costs=paths(u,lim),out=[],c=costs.get(x+','+y);if(c===undefined)return [];while(c>0){out.unshift([x,y]);let prev=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]].find(([a,b])=>costs.get(a+','+b)===c-1);[x,y]=prev;c--}return out}
 async function walkTo(u,x,y,lim){let steps=route(u,x,y,lim);for(let i=0;i<steps.length;i++){let [a,b]=steps[i],dx=a-u.x,dy=b-u.y;face(u,dx,dy);let img=tile(u).querySelector('img');if(img){let flip=paint(img,u,'walk',i);img.style.transition='none';img.style.zIndex='4';img.style.transition='transform 175ms linear';img.getBoundingClientRect();let shift='translate('+dx*tile(u).clientWidth+'px,'+dy*tile(u).clientHeight+'px)';img.style.transform=shift+' scaleX('+flip+')';if(u.id===146&&g.captive?.taken){let c=tile(u).children[1];c.style.transition=img.style.transition;c.style.transform=shift}}await sleep(185);u.x=a;u.y=b;battleUI();}}
 async function blow(u,v,power,label){face(u,v.x-u.x,v.y-u.y);face(v,u.x-v.x,u.y-v.y);battleUI();let im=tile(u).querySelector('img');if(im)paint(im,u,'attack');await say(u,label,330);let amt=damage(u,v,power);await say(v,amt?'−'+amt:'막아냈다',350);battleUI();return amt}
@@ -83,19 +83,19 @@ function inspectRange(unit){
  for(const cell of paths(unit,limit).keys()){
   const [x,y]=cell.split(',').map(Number);
   for(const [a,b] of [[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){
-   if(a>=0&&a<26&&b>=0&&b<22&&T[g.n].tiles[b*26+a]!==6)reach.add(a+','+b);
+   if(a>=0&&a<boardWidth()&&b>=0&&b<boardHeight()&&currentMap().tiles[b*boardWidth()+a]!==6)reach.add(a+','+b);
   }
  }
  return reach
 }
 function unitCard(unit,command=false){
  if(command){openOrders(unit);return}
- const ally=unit.side==='ally',side=ally?'아군':unit.side==='foe'?'적군':'우군';
+ const ally=unit.side==='ally',side=ally?'아군':unit.side==='foe'?'적군':'우군 · 자동 행동';
  const box=document.createElement('section');box.className='unitCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',P[unit.id][0]+' 부대 정보');
  const portrait=new Image();portrait.src=P[unit.id][1];portrait.alt='';
- const head=document.createElement('h2');head.textContent=P[unit.id][0];
+ const head=document.createElement('h2');head.textContent=P[unit.id][0]+' · Lv.'+(currentMap().levels?.[unit.id]||12);
  const faction=document.createElement('small');faction.textContent=side+(ally?(unit.done?' · 행동 완료':' · 행동 가능'):'');
- const detail=document.createElement('p');detail.textContent='체력 '+unit.hp+' / '+unit.max+'　 내공 '+unit.mp+' / '+stats[unit.id][6]+'\n공격력 '+stats[unit.id][0]+'　 방어력 '+stats[unit.id][1]+'\n이동 '+(ally?4:g.n===4&&g.turn===1&&unit.id===32?0:3)+'칸　 일반 공격 상하좌우 1칸';
+ const detail=document.createElement('p');detail.textContent='체력 '+unit.hp+' / '+unit.max+'　 내공 '+unit.mp+' / '+combatStats(unit)[6]+'\n공격력 '+combatStats(unit)[0]+'　 방어력 '+combatStats(unit)[1]+'\n이동 '+(ally?4:g.n===4&&g.turn===1&&unit.id===32?0:3)+'칸　 일반 공격 상하좌우 1칸';
  const body=document.createElement('div');body.append(faction,head,detail);
  const list=document.createElement('div');list.className='orders';
  const close=()=>{$('modal').hidden=true};
@@ -115,8 +115,8 @@ function unitCard(unit,command=false){
 function centerSelectedUnit(unit){
  const field=$('field'),map=$('map');
  // Selection is the only action that recenters the viewport.
- field.scrollLeft=Math.max(0,Math.min(map.clientWidth-field.clientWidth,(unit.x+.5)*map.clientWidth/26-field.clientWidth/2));
- field.scrollTop=Math.max(0,Math.min(map.clientHeight-field.clientHeight,(unit.y+.5)*map.clientHeight/22-field.clientHeight/2));
+ field.scrollLeft=Math.max(0,Math.min(map.clientWidth-field.clientWidth,(unit.x+.5)*map.clientWidth/boardWidth()-field.clientWidth/2));
+ field.scrollTop=Math.max(0,Math.min(map.clientHeight-field.clientHeight,(unit.y+.5)*map.clientHeight/boardHeight()-field.clientHeight/2));
 }
 function clickTile(x,y){if(animating)return;closeOrders();let u=sel(),v=at(x,y);if(inspectedUnit){inspectedUnit=null;battleUI();if(v){centerSelectedUnit(v);unitCard(v)}return}
  const targeting=['attack','skill'].includes(g.step);
@@ -129,13 +129,26 @@ function clickTile(x,y){if(animating)return;closeOrders();let u=sel(),v=at(x,y);
   }else {centerSelectedUnit(v);unitCard(v);}
   return
  }else if(g.step==='move'&&!u.done&&!v&&paths(u,4).has(x+','+y)){sequence(async()=>{g.origin=[u.x,u.y];g.step='act';await walkTo(u,x,y,4);g.step='act';g.log='공격·무공·대기를 선택하세요.';battleUI();unitCard(u,true)})}else if(['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')){sequence(async()=>{let magic=g.step==='skill';if(magic)u.mp-=arts[u.id][1];for(let a of magic&&u.id===22?live().filter(a=>enemy(u,a)&&near(u,a)===1):[v])await clash(u,a,magic?(u.id===0?12:19):6,magic);finish()})}}
-async function ai(u){if(u.hp<=0||(g.n===4&&g.turn===1&&u.id===32))return;let targets=live().filter(v=>enemy(u,v));if(!targets.length)return;let best=[u.x,u.y],score=Infinity;for(let [k,c] of paths(u,3)){let [x,y]=k.split(',').map(Number),s=Math.min(...targets.map(v=>dist({x,y},v)))*10+c;if(s<score){score=s;best=[x,y]}}await walkTo(u,...best,3);let v=targets.filter(a=>dist(u,a)===1).sort((a,b)=>a.hp-b.hp)[0];if(v)await clash(u,v,0)}
+async function ai(u){
+ if(g.n===6&&u.id===1)return;
+ if(g.n===9&&u.id===36&&u.hp>0&&u.hp<u.max*.55){
+  const foes=live().filter(v=>v.side==='foe');
+  if(foes.length){
+   const choices=[...paths(u,3)].map(([key,cost])=>{const [x,y]=key.split(',').map(Number);return {x,y,cost,score:Math.min(...foes.map(v=>dist({x,y},v)))}}).sort((a,b)=>b.score-a.score||a.cost-b.cost);
+   await walkTo(u,choices[0].x,choices[0].y,3);return
+  }
+ }
+ if(g.n===9&&u.id===26&&u.hp>0&&u.mp>=6){
+  const hurt=live().filter(v=>v.side!=='foe'&&v.hp<v.max*.7&&dist(u,v)<=5).sort((a,b)=>a.hp/a.max-b.hp/b.max)[0];
+  if(hurt){u.mp-=6;hurt.hp=Math.min(hurt.max,hurt.hp+90);await say(u,'내공으로 상처를 다스리겠소.',600);await say(hurt,'+90',400);battleUI();return}
+ }
+ if(u.hp<=0||(g.n===4&&g.turn===1&&u.id===32))return;let targets=live().filter(v=>enemy(u,v));if(!targets.length)return;let best=[u.x,u.y],score=Infinity;for(let [k,c] of paths(u,3)){let [x,y]=k.split(',').map(Number),s=Math.min(...targets.map(v=>dist({x,y},v)))*10+c;if(s<score){score=s;best=[x,y]}}await walkTo(u,...best,3);let v=targets.filter(a=>dist(u,a)===1).sort((a,b)=>a.hp-b.hp)[0];if(v)await clash(u,v,0)}
 function reveal(v){let old=at(v.x,v.y);if(old){let pos=[...paths(old,8).keys()].find(k=>k!==old.x+','+old.y&&!g.u.some(a=>a.hidden&&a.x+','+a.y===k));if(pos)[old.x,old.y]=pos.split(',').map(Number)}v.hidden=false}
 async function endTurn(){inspectedUnit=null;cancelTimer();return sequence(async()=>{for(let u of [...live().filter(v=>v.side==='guest'),...live().filter(v=>v.side==='foe')]){await ai(u);if(!g.u.find(a=>a.id===0).hp||!live().some(a=>a.side==='foe'))break}g.turn++;g.u.forEach(v=>v.done=false);g.origin=null;g.id=0;g.step='move';g.log='아군의 차례입니다.';if(g.n===4&&g.turn===2&&sel().hp){await raid()}if(!win()){save();battleUI();}})}
 function teach(dest){let row=D.chap[1].at(-1);g={mode:'lesson',dest,lesson:0,ch:1,i:D.chap[1].length-1};save();draw()}
 function lessonUI(){let lines=[['구처기','떠나기 전에 검 한 수를 주겠소. 삼재검법이라 하오.'],['구처기','천·지·인 세 자세요. 오늘은 자세를 잇는 기초만 익히시오.'],['호연','천, 지, 인…… 발을 디디고 검을 거둔다. 기억하겠습니다.'],['무공 습득','호연이 삼재검법의 기초를 익혔다. 인접한 적 한 명을 공격한다. 소모 내공 5.']];panel(...lines[g.lesson]);controls('actions',[[g.lesson===3?'추격 시작':'다음 ›',()=>{if(g.lesson<3){g.lesson++;save();lessonUI()}else{g.learned=true;story(g.dest)}}]])}
 
-function battleRender(){let u=sel(),m=$('map'),range=!animating&&!u.done&&radialSelection===u.id&&g.step==='move'?paths(u,4):new Map;const threat=!animating&&inspectedUnit?inspectRange(inspectedUnit):null;m.replaceChildren();m.style.width=zoom+'%';m.style.backgroundImage='url('+D.battle[g.n]+')';$('place').textContent=({0:'우가촌 탈출전',3:'역참 추격전',4:'산사의 혈투'}[g.n])+' · '+g.turn+'턴';for(let y=0;y<22;y++)for(let x=0;x<26;x++){let v=at(x,y),b=btn('',()=>clickTile(x,y));b.className='tile'+(!animating&&u===v?' sel':'')+(v?.done?' spent':'')+(v?.side==='foe'?' enemy':v?.side==='guest'?' guest':'')+(!v&&range.has(x+','+y)?' reach':'')+(!animating&&['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')?' hit':'');if(threat)b.className='tile'+(threat.has(x+','+y)?' danger':'')+(v===inspectedUnit?' source':'')+(v?.side==='foe'?' enemy':'');if(g.n===0&&x>=11&&x<=14&&y>=18)b.style.borderBottom='2px solid #ffdb7c';b.setAttribute('aria-label',v?P[v.id][0]+' 체력 '+v.hp:(x+1)+','+(y+1));if(v){let im=new Image;paint(im,v);b.append(im);if(v.id===146&&g.captive?.taken){let c=new Image;c.src=P[24][2][0];c.style.left='-35%';b.append(c)}let i=document.createElement('i');i.style.width=72*v.hp/v.max+'%';b.append(i)}if(g.captive&&!g.captive.taken&&g.captive.x===x&&g.captive.y===y){let c=new Image;c.src=P[24][2][0];b.append(c)}m.append(b)}panel(P[u.id][0],'체력 '+u.hp+'/'+u.max+'　내공 '+u.mp+'\n'+g.log);tools([['배율 '+zoom+'%',()=>{zoom=zoom===150?100:150;battleUI();}],['턴 종료',()=>popup('남은 행동을 마치고 턴을 종료할까?',[['턴 종료',endTurn],['취소',()=>{}]])]]);if(inspectedUnit){panel(P[inspectedUnit.id][0],'붉은 칸은 이동 후 일반 공격이 닿을 수 있는 위치입니다.');controls('tools',[]);controls('actions',[['범위 닫기',()=>{inspectedUnit=null;battleUI();}]]);return}let act=[];if(!u.done){if(g.step==='move'||g.step==='act'){act.push(['공격',()=>{g.step='attack';g.log='인접한 붉은 칸의 적을 선택하세요.';battleUI()},!live().some(v=>valid(u,v,false))]);if(arts[u.id]&&(u.id!==0||(g.learned??g.n!==0)))act.push([arts[u.id][0],()=>{g.step='skill';g.log=u.id===22?'자신의 칸을 눌러 주변 적을 공격하세요.':'대상 칸을 선택하세요.';battleUI()},u.mp<arts[u.id][1]||!live().some(v=>valid(u,v,true))]);act.push(['대기',()=>{g.log=P[u.id][0]+' 대기.';finish()}])}if(g.step!=='move')act.push(['취소',()=>{if(g.step==='act'&&g.origin){[u.x,u.y]=g.origin;g.origin=null;g.step='move'}else g.step=g.origin?'act':'move';g.log='행동을 선택하세요.';battleUI()}])}controls('actions',act)}
+function battleRender(){let u=sel(),m=$('map'),range=!animating&&!u.done&&radialSelection===u.id&&g.step==='move'?paths(u,4):new Map;const threat=!animating&&inspectedUnit?inspectRange(inspectedUnit):null;m.replaceChildren();m.style.width=(zoom*boardWidth()/26)+'%';m.style.aspectRatio=boardWidth()+'/'+boardHeight();m.style.gridTemplate='repeat('+boardHeight()+',1fr)/repeat('+boardWidth()+',1fr)';m.style.backgroundImage='url('+D.battle[g.n]+')';$('place').textContent=({0:'우가촌 탈출전',3:'역참 추격전',4:'산사의 혈투',6:'숲속 흑풍쌍살전',9:'절벽의 오해'}[g.n])+' · '+g.turn+'턴';for(let y=0;y<boardHeight();y++)for(let x=0;x<boardWidth();x++){let v=at(x,y),b=btn('',()=>clickTile(x,y));b.className='tile'+(!animating&&u===v?' sel':'')+(v?.done?' spent':'')+(v?.side==='foe'?' enemy':v?.side==='guest'?' guest':'')+(!v&&range.has(x+','+y)?' reach':'')+(!animating&&['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')?' hit':'');if(threat)b.className='tile'+(threat.has(x+','+y)?' danger':'')+(v===inspectedUnit?' source':'')+(v?.side==='foe'?' enemy':'');if(g.n===0&&x>=11&&x<=14&&y>=18)b.style.borderBottom='2px solid #ffdb7c';b.setAttribute('aria-label',v?P[v.id][0]+' 체력 '+v.hp:(x+1)+','+(y+1));if(v){let im=new Image;paint(im,v);b.append(im);if(v.id===146&&g.captive?.taken){let c=new Image;c.src=P[24][2][0];c.style.left='-35%';b.append(c)}let i=document.createElement('i');i.style.width=72*v.hp/v.max+'%';b.append(i)}if(g.captive&&!g.captive.taken&&g.captive.x===x&&g.captive.y===y){let c=new Image;c.src=P[24][2][0];b.append(c)}m.append(b)}panel(P[u.id][0],'체력 '+u.hp+'/'+u.max+'　내공 '+u.mp+'\n'+g.log);tools([['배율 '+zoom+'%',()=>{zoom=zoom===150?100:150;battleUI();}],['턴 종료',()=>popup('남은 행동을 마치고 턴을 종료할까?',[['턴 종료',endTurn],['취소',()=>{}]])]]);if(inspectedUnit){panel(P[inspectedUnit.id][0],'붉은 칸은 이동 후 일반 공격이 닿을 수 있는 위치입니다.');controls('tools',[]);controls('actions',[['범위 닫기',()=>{inspectedUnit=null;battleUI();}]]);return}let act=[];if(!u.done){if(g.step==='move'||g.step==='act'){act.push(['공격',()=>{g.step='attack';g.log='인접한 붉은 칸의 적을 선택하세요.';battleUI()},!live().some(v=>valid(u,v,false))]);if(arts[u.id]&&(u.id!==0||(g.learned??g.n!==0)))act.push([arts[u.id][0],()=>{g.step='skill';g.log=u.id===22?'자신의 칸을 눌러 주변 적을 공격하세요.':'대상 칸을 선택하세요.';battleUI()},u.mp<arts[u.id][1]||!live().some(v=>valid(u,v,true))]);act.push(['대기',()=>{g.log=P[u.id][0]+' 대기.';finish()}])}if(g.step!=='move')act.push(['취소',()=>{if(g.step==='act'&&g.origin){[u.x,u.y]=g.origin;g.origin=null;g.step='move'}else g.step=g.origin?'act':'move';g.log='행동을 선택하세요.';battleUI()}])}controls('actions',act)}
 let radialSelection=null;
 function closeOrders(){
  $('radialOrders').hidden=true;
@@ -160,8 +173,8 @@ function openOrders(unit){
  menu.hidden=false;
  const field=$('field'),map=$('map');
  const radius=field.clientWidth*.13;
- const centerX=(unit.x+.5)*map.clientWidth/26-field.scrollLeft;
- const centerY=(unit.y+.5)*map.clientHeight/22-field.scrollTop;
+ const centerX=(unit.x+.5)*map.clientWidth/boardWidth()-field.scrollLeft;
+ const centerY=(unit.y+.5)*map.clientHeight/boardHeight()-field.scrollTop;
  menu.style.left=Math.max(radius,Math.min(field.clientWidth-radius,centerX))+'px';
  menu.style.top=(field.offsetTop+Math.max(radius,Math.min(field.clientHeight-radius,centerY)))+'px';
 }
@@ -179,6 +192,30 @@ function battleUI(){
   actions.append(btn('명령',()=>openOrders(sel())));
  }
 }
+
+
+function currentMap(){return g.n===3&&g.mapFormat!==2?T.legacy3:T[g.n]}
+function boardWidth(){return currentMap().width||26}
+function boardHeight(){return currentMap().height||22}
+function combatStats(unit){return currentMap().stats?.[unit.id]||stats[unit.id]}
+async function chapterBattleIntro(n){
+ const unit=id=>g.u.find(u=>u.id===id);
+ if(n===6){
+  await say(unit(5),'흑풍쌍살! 악행을 끝낼 때다. 각오해라!',2200);
+  await say(unit(0),'저도 돕겠습니다. 정아를 지켜 주십시오!',1800);
+  await say(unit(33),'감히 우리를 막겠다고?',1500);
+ }else{
+  await say(unit(0),'매초풍! 여기서 또 무슨 짓이냐!',1900);
+  await say(unit(5),'정아! 더 이상 너를 제자라 할 수 없다. 죽은 사부가 통탄할 것이다!',2800);
+  await say(unit(36),'사부님, 오해입니다! 저는 이 사람에게 배운 적이 없어요!',2300);
+  await say(unit(26),'멈추시오. 이 아이에게 내공을 가르친 사람은 빈도, 마옥이오.',2400);
+  await say(unit(34),'전진교 도사까지 왔구나. 모두 덤벼라!',1800);
+  await say(unit(0),'먼저 매초풍을 막읍시다. 자세한 이야기는 그 뒤에!',2000);
+ }
+}
+layouts.forest={0:[30,77],1:[36,88],5:[18,66],6:[29,62],7:[40,62],8:[51,62],9:[18,85],10:[49,84],11:[60,80],33:[74,64],34:[85,76]};
+layouts.cliff={0:[32,78],36:[52,72],26:[65,65],34:[79,78],5:[17,68],6:[20,85],7:[34,62],8:[46,88],9:[60,88],11:[73,90]};
+layouts['133']={0:[30,78],1:[49,80],36:[49,80],24:[65,68],35:[60,80],5:[15,63],6:[25,60],7:[35,60],8:[45,60],9:[17,88],10:[64,87],11:[76,80]};
 
 bootResources();document.addEventListener('keydown',e=>{if(g.mode==='lesson'&&e.key==='ArrowRight'&&$('modal').hidden&&$('title').hidden){$('actions').querySelector('button').click();return}if(g.mode==='story'&&$('modal').hidden&&$('title').hidden&&e.key==='ArrowRight')next()});
 
