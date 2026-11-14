@@ -3,7 +3,15 @@
 <style>
 .unitCard{color:#efe9ce;border:3px double #bba77a;background:#25332c;box-shadow:0 5px 25px #0009;display:grid;grid-template-columns:10cqw 1fr auto;align-items:center;gap:1.6cqw;text-align:left;padding:1.7cqw;max-width:90cqw}
 .unitCard img{width:10cqw;border:1px solid #aa9874}.unitCard h2{font:700 3cqw serif;margin:.1em 0}.unitCard small{color:#e6c888}.unitCard p{font-size:1.75cqw;line-height:1.6;margin:.3em 0}.orders{display:grid;gap:.35cqw}.orders button{margin:0!important;font-size:1.8cqw;min-height:3.5cqw}.tile.danger{background:#c54b3580;box-shadow:inset 0 0 0 1px #e7a17f}.tile.source{outline:2px solid #ffdd88;z-index:1}
-</style><div id="frame"><main><header><div><b>호연전</b><span id="place"></span></div><div id="tools"></div></header><div id="scene"></div><div id="field" hidden><div id="map"></div></div><section id="dialog"><img id="face" alt="" hidden><div id="words"><b id="who"></b><p id="line"></p></div><div id="actions"></div></section><section id="title"><p>사조영웅전 · 서장</p><h1>절강의 인연</h1><div id="start"></div></section><div id="modal" hidden></div></main></div>
+</style><style>
+#frame.battle #dialog{display:none}
+#frame.battle #field{inset:9% 0 0}
+#radialOrders{position:absolute;width:0;height:0;z-index:4}
+.radialOrder{position:absolute;width:7.6cqw;height:7.6cqw;border-radius:50%;padding:.3em;font-size:1.7cqw;line-height:1.2;border:2px solid #d3bc87;background:radial-gradient(circle at 35% 25%,#536448,#24362c);box-shadow:0 3px 10px #0009;transform:translate(-50%,-50%)}
+.radialOrder.north{left:0;top:-8cqw}.radialOrder.east{left:8cqw;top:0}.radialOrder.south{left:0;top:8cqw}.radialOrder.west{left:-8cqw;top:0}
+.radialOrder:disabled{opacity:1;color:#a5a99c;border-color:#7e816c;background:#3c4338}
+.busy #radialOrders{pointer-events:none}
+</style><div id="frame"><main><header><div><b>호연전</b><span id="place"></span></div><div id="tools"></div></header><div id="scene"></div><div id="field" hidden><div id="map"></div></div><section id="dialog"><img id="face" alt="" hidden><div id="words"><b id="who"></b><p id="line"></p></div><div id="actions"></div></section><section id="title"><p>사조영웅전 · 서장</p><h1>절강의 인연</h1><div id="start"></div></section><div id="radialOrders" role="group" hidden></div><div id="modal" hidden></div></main></div>
 <script src="data/chap.js"></script>
 <script src="data/bg.js"></script>
 <script src="data/players.js"></script>
