@@ -1,4 +1,4 @@
-const installedVersion=6;
+const installedVersion=7;
 let checkingUpdate=false,updateTimer,updateScript,manualUpdate=false;
 function finishUpdateCheck(){
  clearTimeout(updateTimer);checkingUpdate=false;
@@ -16,7 +16,7 @@ function checkUpdate(manual=false){
    return
   }
   if(release.code<=installedVersion){
-   if(manual)popup('현재 최신 버전입니다. (0.1.5)',[['닫기',()=>{}]]);
+   if(manual)popup('현재 최신 버전입니다. (0.1.6)',[['닫기',()=>{}]]);
    return
   }
   popup('최신 버전 '+release.version+'이 있습니다.\n업데이트하시겠습니까?\n새 APK를 받은 뒤 열어 업데이트를 설치해 주세요.',[
