@@ -53,12 +53,12 @@ async function raid(){
  g.log='단천덕이 이평을 데리고 달아났다. 길을 막은 송군을 돌파하라.'
 }
 
-function titleScreen(){$('title').hidden=false;$('title').style.backgroundImage='linear-gradient(90deg,#17251ddd,transparent),url('+D.bg.title+')';let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}controls('start',[['새 이야기',()=>{if(saved)popup('기존 저장을 새 이야기로 바꿀까?',[['새로 시작',()=>story(0)],['취소',()=>{}]]);else story(0)}],['이어하기',()=>{g=saved;draw()},!saved],['리소스 업데이트',()=>checkResources(true)],...(typeof window!=='undefined'&&window.hoyeonRegistration?.waiting?[['새 패치 적용',()=>{navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});window.hoyeonRegistration.waiting.postMessage('activate')}]]:[])]);checkResources()}
+function titleScreen(){closeOrders();$('frame').classList.remove('battle');$('title').hidden=false;$('title').style.backgroundImage='linear-gradient(90deg,#17251ddd,transparent),url('+D.bg.title+')';let saved;try{saved=JSON.parse(localStorage.getItem(key))}catch{}controls('start',[['새 이야기',()=>{if(saved)popup('기존 저장을 새 이야기로 바꿀까?',[['새로 시작',()=>story(0)],['취소',()=>{}]]);else story(0)}],['이어하기',()=>{g=saved;draw()},!saved],['리소스 업데이트',()=>checkResources(true)],...(typeof window!=='undefined'&&window.hoyeonRegistration?.waiting?[['새 패치 적용',()=>{navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});window.hoyeonRegistration.waiting.postMessage('activate')}]]:[])]);checkResources()}
 function story(ch,i=0){g={mode:'story',ch,i,learned:ch===0?false:!!g.learned};save();draw()}
-function draw(){inspectedUnit=null;$('title').hidden=true;$('scene').hidden=g.mode==='battle';$('field').hidden=g.mode!=='battle';if(g.mode==='battle'){battleUI();focusUnit();return}let [bg,place,cast,w,t]=D.chap[g.ch][g.i];if(g.ch===2)bg=place.includes('객잔')?'inn':'west';if(g.ch===3&&bg===129)bg='reed';$('place').textContent=place;$('scene').style.backgroundImage='url('+D.bg[bg]+')';$('scene').replaceChildren();let lay=layouts[bg];for(let [id,x,y,d,pose] of [...cast].sort((a,b)=>(lay[a[0]]?.[1]||0)-(lay[b[0]]?.[1]||0))){let [u,v]=lay[id]||[50,70],im=new Image();let speaker=cast.find(a=>P[a[0]][0]===w),others=cast.filter(a=>a[0]!==id),target=others.find(a=>a===speaker)||others.sort((a,b)=>Math.abs((lay[a[0]]||[50])[0]-u)-Math.abs((lay[b[0]]||[50])[0]-u))[0],lookRight=target?(lay[target[0]]||[50])[0]>u:false;im.className='actor';im.alt=P[id][0];im.src=P[id][2][pose===99?6:(pose===1?1:pose===11?2:0)];im.style.cssText='left:'+u+'%;top:'+v+'%;height:23%;transform:translate(-50%,-100%) scaleX('+(lookRight?-1:1)+')';if(w===P[id][0])im.classList.add('speaking');if(bg===131&&id===146&&t.includes('뒤채로 들었다'))im.classList.add('exitBack');$('scene').append(im)}tools();panel(w||'이야기',t);controls('actions',[['다음 ›',next]]);if(g.mode==='lesson')lessonUI()}
+function draw(){closeOrders();$('frame').classList.remove('battle');inspectedUnit=null;$('title').hidden=true;$('scene').hidden=g.mode==='battle';$('field').hidden=g.mode!=='battle';if(g.mode==='battle'){battleUI();focusUnit();return}let [bg,place,cast,w,t]=D.chap[g.ch][g.i];if(g.ch===2)bg=place.includes('객잔')?'inn':'west';if(g.ch===3&&bg===129)bg='reed';$('place').textContent=place;$('scene').style.backgroundImage='url('+D.bg[bg]+')';$('scene').replaceChildren();let lay=layouts[bg];for(let [id,x,y,d,pose] of [...cast].sort((a,b)=>(lay[a[0]]?.[1]||0)-(lay[b[0]]?.[1]||0))){let [u,v]=lay[id]||[50,70],im=new Image();let speaker=cast.find(a=>P[a[0]][0]===w),others=cast.filter(a=>a[0]!==id),target=others.find(a=>a===speaker)||others.sort((a,b)=>Math.abs((lay[a[0]]||[50])[0]-u)-Math.abs((lay[b[0]]||[50])[0]-u))[0],lookRight=target?(lay[target[0]]||[50])[0]>u:false;im.className='actor';im.alt=P[id][0];im.src=P[id][2][pose===99?6:(pose===1?1:pose===11?2:0)];im.style.cssText='left:'+u+'%;top:'+v+'%;height:23%;transform:translate(-50%,-100%) scaleX('+(lookRight?-1:1)+')';if(w===P[id][0])im.classList.add('speaking');if(bg===131&&id===146&&t.includes('뒤채로 들었다'))im.classList.add('exitBack');$('scene').append(im)}tools();panel(w||'이야기',t);controls('actions',[['다음 ›',next]]);if(g.mode==='lesson')lessonUI()}
 function next(){if(g.i+1<D.chap[g.ch].length)return story(g.ch,g.i+1);if(g.ch===1)return popup('누구를 구하러 갈까?',[['곽소천',()=>teach(3)],['양철심',()=>teach(2)]]);if([0,3,4].includes(g.ch))return fight(g.ch);popup('이번 분기의 이야기를 마쳤어.',[['갈림길로',()=>story(1)],['제목으로',titleScreen]])}
 const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),near=(a,b)=>Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y)),live=()=>g.u.filter(u=>u.hp>0&&!u.hidden),at=(x,y)=>live().find(a=>a.x===x&&a.y===y),sel=()=>g.u.find(a=>a.id===g.id),enemy=(a,b)=>(a.side==='foe')!==(b.side==='foe');
-function fight(n){g={mode:'battle',n,learned:!!g.learned,turn:1,u:T[n].cast.map(([id,x,y,side,hidden])=>({id,x,y,side,hidden,hp:stats[id][5],max:stats[id][5],mp:stats[id][6],done:false})),id:0,step:'move',log:n===0?'호연을 남쪽 중앙 출구로 보내거나 적을 전멸시키세요.':n===3?'단천덕이 남겨 둔 병사를 모두 격퇴하세요.':'초목대사가 산문을 막아섰다.'};save();draw();sequence(async()=>{let h=sel(),v=g.u.find(a=>a.id===(n===0?146:n===4?32:474));await say(v,n===0?'왕명이다! 반역자를 잡아라!':n===4?'산문을 넘으려거든 나를 먼저 넘으시오.':'역참을 막아라!',1600);await say(h,n===0?'남쪽 길을 엽시다!':n===4?'저는 피를 보러 온 것이 아닙니다!':'단천덕, 각오해라!',1400);focusUnit()})}
+function fight(n){radialSelection=null;g={mode:'battle',n,learned:!!g.learned,turn:1,u:T[n].cast.map(([id,x,y,side,hidden])=>({id,x,y,side,hidden,hp:stats[id][5],max:stats[id][5],mp:stats[id][6],done:false})),id:0,step:'move',log:n===0?'호연을 남쪽 중앙 출구로 보내거나 적을 전멸시키세요.':n===3?'단천덕이 남겨 둔 병사를 모두 격퇴하세요.':'초목대사가 산문을 막아섰다.'};save();draw();sequence(async()=>{let h=sel(),v=g.u.find(a=>a.id===(n===0?146:n===4?32:474));await say(v,n===0?'왕명이다! 반역자를 잡아라!':n===4?'산문을 넘으려거든 나를 먼저 넘으시오.':'역참을 막아라!',1600);await say(h,n===0?'남쪽 길을 엽시다!':n===4?'저는 피를 보러 온 것이 아닙니다!':'단천덕, 각오해라!',1400);focusUnit()})}
 function paths(u,limit){let q=[[u.x,u.y,0]],s=new Map([[u.x+','+u.y,0]]);for(let j=0;j<q.length;j++){let [x,y,c]=q[j];for(let [a,b] of [[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){let i=b*26+a,k=a+','+b;if(a<0||a>=26||b<0||b>=22||T[g.n].tiles[i]===6||s.has(k)||at(a,b))continue;let n=c+1;if(n<=limit){s.set(k,n);q.push([a,b,n])}}}return s}
 function focusUnit(){let u=sel()||g.u[0],f=$('field'),m=$('map');f.scrollLeft=(u.x+.5)*m.clientWidth/26-f.clientWidth/2;f.scrollTop=(u.y+.5)*m.clientHeight/22-f.clientHeight/2}
 const arts={0:['삼재검법',5],21:['찌르기',4],22:['양가창법',12],23:['전진검법',8]};
@@ -91,6 +91,7 @@ function inspectRange(unit){
  return reach
 }
 function unitCard(unit,command=false){
+ if(command){openOrders(unit);return}
  const ally=unit.side==='ally',side=ally?'아군':unit.side==='foe'?'적군':'우군';
  const box=document.createElement('section');box.className='unitCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',P[unit.id][0]+' 부대 정보');
  const portrait=new Image();portrait.src=P[unit.id][1];portrait.alt='';
@@ -113,11 +114,16 @@ function unitCard(unit,command=false){
  }
  order('닫기',()=>{});box.append(portrait,body,list);$('modal').replaceChildren(box);$('modal').hidden=false
 }
-function clickTile(x,y){if(animating)return;let u=sel(),v=at(x,y);if(inspectedUnit){inspectedUnit=null;battleUI();if(v)unitCard(v);return}
+function clickTile(x,y){if(animating)return;closeOrders();let u=sel(),v=at(x,y);if(inspectedUnit){inspectedUnit=null;battleUI();if(v)unitCard(v);return}
  const targeting=['attack','skill'].includes(g.step);
  if(v&&!(targeting&&valid(u,v,g.step==='skill'))){
   const command=v.side==='ally'&&!v.done&&((g.step==='move')||(g.step==='act'&&u===v));
-  if(command){g.id=v.id;battleUI()}unitCard(v,command);return
+  if(command){
+   const repeated=radialSelection===v.id&&g.id===v.id;
+   g.id=v.id;radialSelection=v.id;battleUI();
+   if(g.origin||repeated)openOrders(v);
+  }else unitCard(v);
+  return
  }else if(g.step==='move'&&!u.done&&!v&&paths(u,4).has(x+','+y)){sequence(async()=>{g.origin=[u.x,u.y];await walkTo(u,x,y,4);g.step='act';g.log='공격·무공·대기를 선택하세요.';battleUI();unitCard(u,true)})}else if(['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')){sequence(async()=>{let magic=g.step==='skill';if(magic)u.mp-=arts[u.id][1];for(let a of magic&&u.id===22?live().filter(a=>enemy(u,a)&&near(u,a)===1):[v])await clash(u,a,magic?(u.id===0?12:19):6,magic);finish()})}}
 async function ai(u){if(u.hp<=0||(g.n===4&&g.turn===1&&u.id===32))return;let targets=live().filter(v=>enemy(u,v));if(!targets.length)return;let best=[u.x,u.y],score=Infinity;for(let [k,c] of paths(u,3)){let [x,y]=k.split(',').map(Number),s=Math.min(...targets.map(v=>dist({x,y},v)))*10+c;if(s<score){score=s;best=[x,y]}}await walkTo(u,...best,3);let v=targets.filter(a=>dist(u,a)===1).sort((a,b)=>a.hp-b.hp)[0];if(v)await clash(u,v,0)}
 function reveal(v){let old=at(v.x,v.y);if(old){let pos=[...paths(old,8).keys()].find(k=>k!==old.x+','+old.y&&!g.u.some(a=>a.hidden&&a.x+','+a.y===k));if(pos)[old.x,old.y]=pos.split(',').map(Number)}v.hidden=false}
@@ -125,5 +131,51 @@ async function endTurn(){inspectedUnit=null;cancelTimer();return sequence(async(
 function teach(dest){let row=D.chap[1].at(-1);g={mode:'lesson',dest,lesson:0,ch:1,i:D.chap[1].length-1};save();draw()}
 function lessonUI(){let lines=[['구처기','떠나기 전에 검 한 수를 주겠소. 삼재검법이라 하오.'],['구처기','천·지·인 세 자세요. 오늘은 자세를 잇는 기초만 익히시오.'],['호연','천, 지, 인…… 발을 디디고 검을 거둔다. 기억하겠습니다.'],['무공 습득','호연이 삼재검법의 기초를 익혔다. 인접한 적 한 명을 공격한다. 소모 내공 5.']];panel(...lines[g.lesson]);controls('actions',[[g.lesson===3?'추격 시작':'다음 ›',()=>{if(g.lesson<3){g.lesson++;save();lessonUI()}else{g.learned=true;story(g.dest)}}]])}
 
-function battleUI(){let u=sel(),m=$('map'),range=!u.done&&g.step==='move'?paths(u,4):new Map;const threat=inspectedUnit?inspectRange(inspectedUnit):null;m.replaceChildren();m.style.width=zoom+'%';m.style.backgroundImage='url('+D.battle[g.n]+')';$('place').textContent=({0:'우가촌 탈출전',3:'역참 추격전',4:'산사의 혈투'}[g.n])+' · '+g.turn+'턴';for(let y=0;y<22;y++)for(let x=0;x<26;x++){let v=at(x,y),b=btn('',()=>clickTile(x,y));b.className='tile'+(u===v?' sel':'')+(v?.done?' spent':'')+(v?.side==='foe'?' enemy':v?.side==='guest'?' guest':'')+(!v&&range.has(x+','+y)?' reach':'')+(['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')?' hit':'');if(threat)b.className='tile'+(threat.has(x+','+y)?' danger':'')+(v===inspectedUnit?' source':'')+(v?.side==='foe'?' enemy':'');if(g.n===0&&x>=11&&x<=14&&y>=18)b.style.borderBottom='2px solid #ffdb7c';b.setAttribute('aria-label',v?P[v.id][0]+' 체력 '+v.hp:(x+1)+','+(y+1));if(v){let im=new Image;paint(im,v);b.append(im);if(v.id===146&&g.captive?.taken){let c=new Image;c.src=P[24][2][0];c.style.left='-35%';b.append(c)}let i=document.createElement('i');i.style.width=72*v.hp/v.max+'%';b.append(i)}if(g.captive&&!g.captive.taken&&g.captive.x===x&&g.captive.y===y){let c=new Image;c.src=P[24][2][0];b.append(c)}m.append(b)}panel(P[u.id][0],'체력 '+u.hp+'/'+u.max+'　내공 '+u.mp+'\n'+g.log);tools([['배율 '+zoom+'%',()=>{zoom=zoom===175?100:175;battleUI();focusUnit()}],['턴 종료',()=>popup('남은 행동을 마치고 턴을 종료할까?',[['턴 종료',endTurn],['취소',()=>{}]])]]);if(inspectedUnit){panel(P[inspectedUnit.id][0],'붉은 칸은 이동 후 일반 공격이 닿을 수 있는 위치입니다.');controls('tools',[]);controls('actions',[['범위 닫기',()=>{inspectedUnit=null;battleUI();focusUnit()}]]);return}let act=[];if(!u.done){if(g.step==='move'||g.step==='act'){act.push(['공격',()=>{g.step='attack';g.log='인접한 붉은 칸의 적을 선택하세요.';battleUI()},!live().some(v=>valid(u,v,false))]);if(arts[u.id]&&(u.id!==0||(g.learned??g.n!==0)))act.push([arts[u.id][0],()=>{g.step='skill';g.log=u.id===22?'자신의 칸을 눌러 주변 적을 공격하세요.':'대상 칸을 선택하세요.';battleUI()},u.mp<arts[u.id][1]||!live().some(v=>valid(u,v,true))]);act.push(['대기',()=>{g.log=P[u.id][0]+' 대기.';finish()}])}if(g.step!=='move')act.push(['취소',()=>{if(g.step==='act'&&g.origin){[u.x,u.y]=g.origin;g.origin=null;g.step='move'}else g.step=g.origin?'act':'move';g.log='행동을 선택하세요.';battleUI()}])}controls('actions',act)}
+function battleRender(){let u=sel(),m=$('map'),range=!u.done&&g.step==='move'?paths(u,4):new Map;const threat=inspectedUnit?inspectRange(inspectedUnit):null;m.replaceChildren();m.style.width=zoom+'%';m.style.backgroundImage='url('+D.battle[g.n]+')';$('place').textContent=({0:'우가촌 탈출전',3:'역참 추격전',4:'산사의 혈투'}[g.n])+' · '+g.turn+'턴';for(let y=0;y<22;y++)for(let x=0;x<26;x++){let v=at(x,y),b=btn('',()=>clickTile(x,y));b.className='tile'+(u===v?' sel':'')+(v?.done?' spent':'')+(v?.side==='foe'?' enemy':v?.side==='guest'?' guest':'')+(!v&&range.has(x+','+y)?' reach':'')+(['attack','skill'].includes(g.step)&&valid(u,v,g.step==='skill')?' hit':'');if(threat)b.className='tile'+(threat.has(x+','+y)?' danger':'')+(v===inspectedUnit?' source':'')+(v?.side==='foe'?' enemy':'');if(g.n===0&&x>=11&&x<=14&&y>=18)b.style.borderBottom='2px solid #ffdb7c';b.setAttribute('aria-label',v?P[v.id][0]+' 체력 '+v.hp:(x+1)+','+(y+1));if(v){let im=new Image;paint(im,v);b.append(im);if(v.id===146&&g.captive?.taken){let c=new Image;c.src=P[24][2][0];c.style.left='-35%';b.append(c)}let i=document.createElement('i');i.style.width=72*v.hp/v.max+'%';b.append(i)}if(g.captive&&!g.captive.taken&&g.captive.x===x&&g.captive.y===y){let c=new Image;c.src=P[24][2][0];b.append(c)}m.append(b)}panel(P[u.id][0],'체력 '+u.hp+'/'+u.max+'　내공 '+u.mp+'\n'+g.log);tools([['배율 '+zoom+'%',()=>{zoom=zoom===175?100:175;battleUI();focusUnit()}],['턴 종료',()=>popup('남은 행동을 마치고 턴을 종료할까?',[['턴 종료',endTurn],['취소',()=>{}]])]]);if(inspectedUnit){panel(P[inspectedUnit.id][0],'붉은 칸은 이동 후 일반 공격이 닿을 수 있는 위치입니다.');controls('tools',[]);controls('actions',[['범위 닫기',()=>{inspectedUnit=null;battleUI();focusUnit()}]]);return}let act=[];if(!u.done){if(g.step==='move'||g.step==='act'){act.push(['공격',()=>{g.step='attack';g.log='인접한 붉은 칸의 적을 선택하세요.';battleUI()},!live().some(v=>valid(u,v,false))]);if(arts[u.id]&&(u.id!==0||(g.learned??g.n!==0)))act.push([arts[u.id][0],()=>{g.step='skill';g.log=u.id===22?'자신의 칸을 눌러 주변 적을 공격하세요.':'대상 칸을 선택하세요.';battleUI()},u.mp<arts[u.id][1]||!live().some(v=>valid(u,v,true))]);act.push(['대기',()=>{g.log=P[u.id][0]+' 대기.';finish()}])}if(g.step!=='move')act.push(['취소',()=>{if(g.step==='act'&&g.origin){[u.x,u.y]=g.origin;g.origin=null;g.step='move'}else g.step=g.origin?'act':'move';g.log='행동을 선택하세요.';battleUI()}])}controls('actions',act)}
+let radialSelection=null;
+function closeOrders(){
+ $('radialOrders').hidden=true;
+}
+function openOrders(unit){
+ if(unit.done||unit.side!=='ally')return;
+ const menu=$('radialOrders');
+ menu.replaceChildren();
+ const art=arts[unit.id],learned=art&&(unit.id!==0||(g.learned??g.n!==0));
+ const command=(label,position,fn,disabled=false)=>{
+  const button=btn(label,()=>{if(animating)return;closeOrders();fn()},disabled);
+  button.className='radialOrder '+position;menu.append(button)
+ };
+ command('공격','north',()=>{g.step='attack';battleUI()},!live().some(v=>valid(unit,v,false)));
+ command('무공','east',()=>{g.step='skill';battleUI()},!learned||unit.mp<art[1]||!live().some(v=>valid(unit,v,true)));
+ command('대기','south',()=>{g.log=P[unit.id][0]+' 대기.';finish()});
+ command(g.origin?'이동 취소':'닫기','west',()=>{
+  if(g.origin){[unit.x,unit.y]=g.origin;g.origin=null;g.step='move';battleUI();focusUnit()}
+ });
+ menu.setAttribute('aria-label',P[unit.id][0]+' 행동 명령');
+ camera(unit);
+ menu.hidden=false;
+ const field=$('field'),map=$('map');
+ const radius=field.clientWidth*.13;
+ const centerX=(unit.x+.5)*map.clientWidth/26-field.scrollLeft;
+ const centerY=(unit.y+.5)*map.clientHeight/22-field.scrollTop;
+ menu.style.left=Math.max(radius,Math.min(field.clientWidth-radius,centerX))+'px';
+ menu.style.top=(field.offsetTop+Math.max(radius,Math.min(field.clientHeight-radius,centerY)))+'px';
+}
+function battleUI(){
+ closeOrders();$('frame').classList.add('battle');
+ battleRender();
+ const actions=$('tools');
+ if(inspectedUnit){
+  controls('tools',[['범위 닫기',()=>{inspectedUnit=null;battleUI();focusUnit()}]]);
+ }else if(['attack','skill'].includes(g.step)){
+  actions.append(btn(g.step==='skill'&&arts[sel().id]?arts[sel().id][0]+' 취소':'공격 취소',()=>{
+   g.step=g.origin?'act':'move';battleUI();openOrders(sel())
+  }));
+ }else if(!sel().done){
+  actions.append(btn('명령',()=>openOrders(sel())));
+ }
+}
+
 bootResources();document.addEventListener('keydown',e=>{if(g.mode==='lesson'&&e.key==='ArrowRight'&&$('modal').hidden&&$('title').hidden){$('actions').querySelector('button').click();return}if(g.mode==='story'&&$('modal').hidden&&$('title').hidden&&e.key==='ArrowRight')next()});
+
+$('field').addEventListener('touchmove',closeOrders,{passive:true});
