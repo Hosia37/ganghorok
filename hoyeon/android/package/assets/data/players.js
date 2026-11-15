@@ -1,6 +1,6 @@
 const players = {
   "0": [
-    "호연",
+    "백호연",
     "assets/players/0/1.jpg",
     [
       "assets/players/0/2/0.png",
